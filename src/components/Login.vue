@@ -53,7 +53,7 @@ export default {
       if (this.confirmation === null) return
       this.confirmation.confirm(this.otp).then(result => {
         console.log('login success ', result)
-        this.$router.push('dashboard')
+        this.$router.push('/')
       })
     },
     initRecaptcha () {
