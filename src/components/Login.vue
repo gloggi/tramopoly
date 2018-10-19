@@ -27,9 +27,21 @@ export default {
       confirmation: null
     }
   },
+  computed: {
+    normalizedPhone () {
+      let cleaned = this.phone.trim().replace(/[^0-9+]/gi, '')
+      // handle most swiss mobile phone numbers
+      if (cleaned.startsWith('07')) {
+        return '+41' + cleaned.substr(1)
+      } else if (cleaned.startsWith('0041')) {
+        return '+41' + cleaned.substr(4)
+      }
+      return cleaned
+    }
+  },
   methods: {
     login () {
-      auth().signInWithPhoneNumber(this.phone, this.appVerifier)
+      auth().signInWithPhoneNumber(this.normalizedPhone, this.appVerifier)
         .then(result => {
           this.confirmation = result
           console.log('SMS sent')
