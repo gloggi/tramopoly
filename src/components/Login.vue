@@ -1,12 +1,16 @@
 <template>
   <div>
     <h2>Login</h2>
-    <input type="tel" placeholder="Handynummärä" v-model="phone"/><br>
-    <input type="text" placeholder="Gruppänamä" v-model="groupName"/><br/>
-    <button @click="login">Iiloggä</button>
+    <form v-on:submit.prevent="login">
+      <input type="tel" placeholder="Handynummärä" v-model="phone"/><br>
+      <input type="text" placeholder="Gruppänamä" v-model="groupName"/><br/>
+      <button type="submit">Iiloggä</button>
+    </form>
     <div id="recaptcha-container"></div>
-    <input type="text" placeholder="SMS-Code" v-model="otp"/><br/>
-    <button @click="verifyOtp">SMS-Code beschtätigä</button>
+    <form v-on:submit.prevent="verifyOtp">
+      <input type="text" placeholder="SMS-Code" v-model="otp"/><br/>
+      <button type="submit">SMS-Code beschtätigä</button>
+    </form>
   </div>
 </template>
 
