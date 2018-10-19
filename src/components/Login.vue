@@ -30,7 +30,7 @@ export default {
           this.confirmation = result
           console.log('SMS sent')
         }).catch(error => {
-          console.error('SMS not sent, error: ', error)
+          console.error('SMS not sent, error code ', error.code, ': ', error.message)
         })
     },
     verifyOtp () {
