@@ -51,6 +51,13 @@ export default {
   $weight-medium: 500;
   $weight-semibold: 500;
   $weight-bold: 600;
+  $size-1: 4rem;
+  $size-2: 3.5rem;
+  $size-3: 3rem;
+  $size-4: 2.5rem;
+  $size-5: 2rem;
+  $size-6: 1.5rem;
+  $size-7: 1.25rem;
 
   @import "~bulma";
   @import "~buefy/src/scss/buefy";
