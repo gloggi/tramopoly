@@ -3,14 +3,14 @@
     <header class="title column is-full is-one-third-desktop is-offset-one-third-desktop">Login</header>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
       <form v-on:submit.prevent="login">
-        <b-field label="Handynummärä"><b-input type="tel" pattern="((\+41\s?)?|(0041\s?)?|0)7[6-9]\s?[0-9]{3}\s?[0-9]{2}\s?[0-9]{2}" placeholder="079 het sie gseit" v-model="phone"/></b-field>
+        <b-field label="Händynummärä"><b-input type="tel" pattern="((\+41\s?)?|(0041\s?)?|0)7[6-9]\s?\d{3}\s?\d{2}\s?\d{2}" placeholder="079 het sie gseit" v-model="phone"/></b-field>
         <b-field label="Gruppänamä"><b-input type="text" v-model="groupName"/></b-field>
         <button class="button is-link" type="submit">Iiloggä</button>
       </form>
     </div>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
       <form v-on:submit.prevent="verifyOtp">
-        <b-field label="SMS-Code"><b-input type="text" placeholder="000000" pattern="[0-9]{6}" v-model="otp"/></b-field>
+        <b-field label="SMS-Code"><b-input type="text" ref="otp" placeholder="000000" pattern="[0-9]{6}" v-model="otp"/></b-field>
         <button class="button is-link" type="submit">SMS-Code beschtätigä</button>
       </form>
     </div>
@@ -52,6 +52,7 @@ export default {
         .then(result => {
           this.confirmation = result
           console.log('SMS sent')
+          this.$refs.otp.focus()
         }).catch(error => {
           console.error('SMS not sent, error code ', error.code, ': ', error.message)
         })
