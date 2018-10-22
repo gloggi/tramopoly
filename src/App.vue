@@ -1,7 +1,7 @@
 <template>
-  <div id="app" class="tile is-ancestor is-vertical">
-    <div v-if="user != null" class="tile is-parent"><div class="tile is-child">Willkommä, {{user.phoneNumber}}. <a @click="signout()">Uusloggä</a></div></div>
-    <div v-else class="tile is-parent"><div class="tile is-child"><router-link to="/login">Iiloggä</router-link></div></div>
+  <div id="app">
+    <div v-if="user != null">Willkommä, {{user.phoneNumber}}. <a @click="signout()">Uusloggä</a></div>
+    <div v-else><router-link to="/login">Iiloggä</router-link></div>
     <router-view/>
   </div>
 </template>

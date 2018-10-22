@@ -1,9 +1,7 @@
 <template>
-  <div class="tile is-parent is-vertical">
-    <div class="box tile is-child">
-      <header class="title">Dashboard</header>
-      <b-table :data="groups" :columns="groupTableColumns" striped hoverable></b-table>
-    </div>
+  <div class="box">
+    <header class="title">Dashboard</header>
+    <b-table :data="groups" :columns="groupTableColumns" striped hoverable></b-table>
   </div>
 </template>
 
