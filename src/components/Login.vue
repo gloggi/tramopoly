@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { auth } from '@/firebaseConfig'
+import { auth, RecaptchaVerifier } from '@/firebaseConfig'
 import BField from 'buefy/src/components/field/Field'
 import BInput from 'buefy/src/components/input/Input'
 
@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     login () {
-      auth().signInWithPhoneNumber(this.normalizedPhone, this.appVerifier)
+      auth.signInWithPhoneNumber(this.normalizedPhone, this.appVerifier)
         .then(result => {
           this.confirmation = result
           console.log('SMS sent')
@@ -64,7 +64,7 @@ export default {
       })
     },
     initRecaptcha () {
-      this.appVerifier = new auth.RecaptchaVerifier('recaptcha-container', {
+      this.appVerifier = new RecaptchaVerifier('recaptcha-container', {
         'size': 'invisible',
         'callback': function () {
           console.log('ReCaptcha success')

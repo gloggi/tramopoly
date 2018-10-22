@@ -1,8 +1,6 @@
-import Vue from 'vue'
-import VueFire from 'vuefire'
 import firebase from 'firebase/app'
-
-Vue.use(VueFire)
+import 'firebase/auth'
+import 'firebase/database'
 
 const year = '2019'
 
@@ -18,5 +16,8 @@ let config = {
 let app = firebase.initializeApp(config)
 let db = app.database()
 
+let auth = firebase.auth()
+let RecaptchaVerifier = firebase.auth.RecaptchaVerifier
+
 export const groupsRef = db.ref(`${year}/groups`)
-export { auth } from 'firebase'
+export { auth, RecaptchaVerifier }

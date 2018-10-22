@@ -18,7 +18,7 @@ export default {
   },
   methods: {
     getLoginStatus () {
-      auth().onAuthStateChanged(user => {
+      auth.onAuthStateChanged(user => {
         if (user) {
           this.user = user
         } else {
@@ -27,7 +27,7 @@ export default {
       })
     },
     signout () {
-      auth().signOut()
+      auth.signOut()
       this.$router.push('login')
     }
   },
