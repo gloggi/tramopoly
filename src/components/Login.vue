@@ -1,23 +1,30 @@
 <template>
-  <div>
-    <h2>Login</h2>
-    <form v-on:submit.prevent="login">
-      <input type="tel" placeholder="Handynummärä" v-model="phone"/><br>
-      <input type="text" placeholder="Gruppänamä" v-model="groupName"/><br/>
-      <button type="submit">Iiloggä</button>
-    </form>
+  <div class="tile is-parent is-vertical">
+    <header class="title">Login</header>
+    <div class="card tile is-vertical is-parent is-4">
+      <form v-on:submit.prevent="login">
+        <b-field label="Handynummärä"><b-input type="tel" pattern="((\+41\s?)?|(0041\s?)?|0)7[6-9]\s?[0-9]{3}\s?[0-9]{2}\s?[0-9]{2}" placeholder="079 het sie gseit" v-model="phone"/></b-field>
+        <b-field label="Gruppänamä"><b-input type="text" v-model="groupName"/></b-field>
+        <button class="button is-link" type="submit">Iiloggä</button>
+      </form>
+    </div>
+    <div class="card tile is-vertical is-parent is-4">
+      <form v-on:submit.prevent="verifyOtp">
+        <b-field label="SMS-Code"><b-input type="text" placeholder="000000" pattern="[0-9]{6}" v-model="otp"/></b-field>
+        <button class="button is-link" type="submit">SMS-Code beschtätigä</button>
+      </form>
+    </div>
     <div id="recaptcha-container"></div>
-    <form v-on:submit.prevent="verifyOtp">
-      <input type="text" placeholder="SMS-Code" v-model="otp"/><br/>
-      <button type="submit">SMS-Code beschtätigä</button>
-    </form>
   </div>
 </template>
 
 <script>
 import { auth } from '@/firebaseConfig'
+import BField from 'buefy/src/components/field/Field'
+import BInput from 'buefy/src/components/input/Input'
 
 export default {
+  components: { BInput, BField },
   data () {
     return {
       phone: '',

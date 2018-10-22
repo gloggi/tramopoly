@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
-    <div v-if="user != null">Willkommä, {{user.phoneNumber}}. <button @click="signout()">Uusloggä</button></div>
-    <div v-else><router-link to="/login">Iiloggä</router-link></div>
+  <div id="app" class="tile is-ancestor is-vertical">
+    <div v-if="user != null" class="tile is-parent"><div class="tile is-child">Willkommä, {{user.phoneNumber}}. <a @click="signout()">Uusloggä</a></div></div>
+    <div v-else class="tile is-parent"><div class="tile is-child"><router-link to="/login">Iiloggä</router-link></div></div>
     <router-view/>
   </div>
 </template>
@@ -43,15 +43,19 @@ export default {
 <style lang="scss">
   @import "~bulma/sass/utilities/_all";
 
-  @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,500,600,300italic');
+  @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,500,600,300italic');
   $family-sans-serif: "Source Sans Pro", BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
   $body-family: $family-sans-serif;
   $weight-light: 200;
   $weight-normal: 300;
-  $weight-medium: 400;
+  $weight-medium: 500;
   $weight-semibold: 500;
   $weight-bold: 600;
 
   @import "~bulma";
   @import "~buefy/src/scss/buefy";
+
+  body {
+    padding: 1.25rem;
+  }
 </style>

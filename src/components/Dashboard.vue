@@ -1,20 +1,9 @@
 <template>
-  <div>
-    <h1>Dashboard</h1>
-    <table>
-      <thead>
-        <tr>
-          <td>Gruppe</td>
-          <td>Abteilung</td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="group in groups" v-bind:key="group.name">
-          <td>{{group.name}}</td>
-          <td>{{group.abteilung}}</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="tile is-parent is-vertical">
+    <div class="box tile is-child">
+      <header class="title">Dashboard</header>
+      <b-table :data="groups" :columns="groupTableColumns" striped hoverable></b-table>
+    </div>
   </div>
 </template>
 
@@ -25,6 +14,14 @@ export default {
   name: 'Dashboard',
   firebase: {
     groups: groupsRef
+  },
+  data () {
+    return {
+      groupTableColumns: [
+        { field: 'name', label: 'Gruppä' },
+        { field: 'abteilung', label: 'Abteilig' }
+      ]
+    }
   }
 }
 </script>
