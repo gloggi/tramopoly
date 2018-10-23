@@ -4,7 +4,7 @@
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
       <form v-on:submit.prevent="login">
         <b-field label="Händynummärä"><b-input type="tel" pattern="((\+41\s?)?|(0041\s?)?|0)7[6-9]\s?\d{3}\s?\d{2}\s?\d{2}" placeholder="079 het sie gseit" v-model="phone"/></b-field>
-        <b-field label="Gruppänamä"><b-input type="text" v-model="groupName"/></b-field>
+        <b-field label="Gruppänamä"><b-autocomplete v-model="groupName" open-on-focus :data="groups" field="name"/></b-field>
         <button class="button is-link" type="submit">Iiloggä</button>
       </form>
     </div>
@@ -19,12 +19,16 @@
 </template>
 
 <script>
-import { auth, RecaptchaVerifier } from '@/firebaseConfig'
+import { auth, RecaptchaVerifier, groupsRef } from '@/firebaseConfig'
 import BField from 'buefy/src/components/field/Field'
 import BInput from 'buefy/src/components/input/Input'
+import BAutocomplete from 'buefy/src/components/autocomplete/Autocomplete'
 
 export default {
-  components: { BInput, BField },
+  components: { BAutocomplete, BInput, BField },
+  firebase: {
+    groups: groupsRef.orderByChild('name')
+  },
   data () {
     return {
       phone: '',
