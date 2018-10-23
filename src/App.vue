@@ -43,13 +43,13 @@ export default {
 <style lang="scss">
   @import "~bulma/sass/utilities/_all";
 
-  @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,500,600,300italic');
+  @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,600,300italic');
   $family-sans-serif: "Source Sans Pro", BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
   $body-family: $family-sans-serif;
   $weight-light: 200;
   $weight-normal: 300;
-  $weight-medium: 500;
-  $weight-semibold: 500;
+  $weight-medium: 600;
+  $weight-semibold: 600;
   $weight-bold: 600;
   $size-1: 4rem;
   $size-2: 3.5rem;
