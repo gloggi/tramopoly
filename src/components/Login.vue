@@ -1,6 +1,6 @@
 <template>
   <div class="columns is-multiline">
-    <header class="title column is-full is-one-third-desktop is-offset-one-third-desktop">Login</header>
+    <header class="title has-text-centered column is-full is-one-third-desktop is-offset-one-third-desktop">Login</header>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
       <form v-on:submit.prevent="login">
         <b-field label="Händynummärä"><b-input type="tel" pattern="((\+41\s?)?|(0041\s?)?|0)7[6-9]\s?\d{3}\s?\d{2}\s?\d{2}" placeholder="079 het sie gseit" v-model="phone"/></b-field>

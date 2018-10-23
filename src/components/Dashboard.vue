@@ -1,15 +1,19 @@
 <template>
-  <div class="box">
-    <header class="title">Dashboard</header>
-    <b-table :data="groups" :columns="groupTableColumns" striped hoverable></b-table>
+  <div class="columns is-multiline">
+    <header class="title has-text-centered column is-full">Dashboard</header>
+    <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
+         <b-table :data="groups" :columns="groupTableColumns" striped hoverable></b-table>
+    </div>
   </div>
 </template>
 
 <script>
 import { groupsRef } from '@/firebaseConfig'
+import BTable from 'buefy/src/components/table/Table'
 
 export default {
   name: 'Dashboard',
+  components: { BTable },
   firebase: {
     groups: groupsRef
   },
