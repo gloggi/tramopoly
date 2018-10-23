@@ -19,5 +19,5 @@ let db = app.database()
 let auth = firebase.auth()
 let RecaptchaVerifier = firebase.auth.RecaptchaVerifier
 
-export const groupsRef = db.ref(`${year}/groups`)
+export const groupsDB = db.ref(`${year}/groups`)
 export { auth, RecaptchaVerifier }

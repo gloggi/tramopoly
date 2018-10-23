@@ -8,14 +8,14 @@
 </template>
 
 <script>
-import { groupsRef } from '@/firebaseConfig'
+import { groupsDB } from '@/firebaseConfig'
 import BTable from 'buefy/src/components/table/Table'
 
 export default {
   name: 'Dashboard',
   components: { BTable },
   firebase: {
-    groups: groupsRef
+    groups: groupsDB
   },
   data () {
     return {

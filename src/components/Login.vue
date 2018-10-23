@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { auth, RecaptchaVerifier, groupsRef } from '@/firebaseConfig'
+import { auth, RecaptchaVerifier, groupsDB } from '@/firebaseConfig'
 import BField from 'buefy/src/components/field/Field'
 import BInput from 'buefy/src/components/input/Input'
 import BAutocomplete from 'buefy/src/components/autocomplete/Autocomplete'
@@ -27,7 +27,7 @@ import BAutocomplete from 'buefy/src/components/autocomplete/Autocomplete'
 export default {
   components: { BAutocomplete, BInput, BField },
   firebase: {
-    groups: groupsRef.orderByChild('name')
+    groups: groupsDB.orderByChild('name')
   },
   data () {
     return {
