@@ -25,14 +25,19 @@ const router = new Router({
   ]
 })
 
-router.beforeEach((to, from, next) => {
-  const requiresAuth = to.matched.some(x => x.meta.requiresAuth)
-  const currentUser = auth.currentUser
+function routeRequiresAuth (route) {
+  return route.matched.some(x => x.meta.requiresAuth)
+}
 
-  if (requiresAuth && !currentUser) {
-    next('/login')
-  } else if (requiresAuth && currentUser) {
-    next()
+router.beforeEach((to, from, next) => {
+  if (routeRequiresAuth(to)) {
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        next('/login')
+      } else {
+        next()
+      }
+    })
   } else {
     next()
   }
