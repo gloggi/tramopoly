@@ -24,7 +24,9 @@ export const abteilungenDB = db.ref(`${year}/abteilungen`)
 export { auth, RecaptchaVerifier }
 
 export function bindUserByPhone (vm, member, phone) {
-  if (phone) {
-    vm.$bindAsObject(member, firebase.database().ref(`${year}/users/${phone}`))
-  }
+  vm.$watch(phone, (changedPhone) => {
+    if (changedPhone) {
+      vm.$bindAsObject(member, firebase.database().ref(`${year}/users/${changedPhone}`))
+    }
+  }, { immediate: true })
 }

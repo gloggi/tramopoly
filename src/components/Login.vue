@@ -111,9 +111,7 @@ export default {
     this.initRecaptcha()
   },
   created () {
-    this.$watch('normalizedPhone', (phone) => {
-      bindUserByPhone(this, 'specifiedUser', phone)
-    }, { immediate: true })
+    bindUserByPhone(this, 'specifiedUser', 'normalizedPhone')
   }
 }
 </script>

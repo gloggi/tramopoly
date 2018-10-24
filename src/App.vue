@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <div v-if="user != null">
-        <span v-if="user.phoneNumber">Willkommä, {{user.phoneNumber}}.</span>
+    <div v-if="firebaseUser != null">
+        <span v-if="firebaseUser.phoneNumber">Willkommä, {{firebaseUser.phoneNumber}}.</span>
         <span v-else>Willkommä.</span>
         <a @click="signout()">Uusloggä</a>
     </div>
@@ -11,22 +11,23 @@
 </template>
 
 <script>
-import { auth } from '@/firebaseConfig'
+import { auth, bindUserByPhone } from '@/firebaseConfig'
 
 export default {
   name: 'Tramopoly',
   data () {
     return {
+      firebaseUser: {},
       user: {}
     }
   },
   methods: {
     getLoginStatus () {
-      auth.onAuthStateChanged(user => {
-        if (user) {
-          this.user = user
+      auth.onAuthStateChanged(firebaseUser => {
+        if (firebaseUser) {
+          this.firebaseUser = firebaseUser
         } else {
-          this.user = null
+          this.firebaseUser = null
         }
       })
     },
@@ -40,6 +41,7 @@ export default {
   },
   created () {
     this.getLoginStatus()
+    bindUserByPhone(this, 'user', 'firebaseUser.phoneNumber')
   }
 }
 </script>
