@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <div v-if="firebaseUser != null">
-        <span v-if="firebaseUser.phoneNumber">Willkommä, {{firebaseUser.phoneNumber}}.</span>
+    <div v-if="userIsLoggedIn">
+        <span v-if="user.scoutName">Willkommä, {{user.scoutName}}.</span>
         <span v-else>Willkommä.</span>
         <a @click="signout()">Uusloggä</a>
     </div>
@@ -19,6 +19,11 @@ export default {
     return {
       firebaseUser: {},
       user: {}
+    }
+  },
+  computed: {
+    userIsLoggedIn () {
+      return this.user !== {}
     }
   },
   methods: {
