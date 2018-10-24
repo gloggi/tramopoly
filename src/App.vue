@@ -1,6 +1,10 @@
 <template>
   <div id="app">
-    <div v-if="user != null">Willkommä, {{user.phoneNumber}}. <a @click="signout()">Uusloggä</a></div>
+    <div v-if="user != null">
+        <span v-if="user.phoneNumber">Willkommä, {{user.phoneNumber}}.</span>
+        <span v-else>Willkommä.</span>
+        <a @click="signout()">Uusloggä</a>
+    </div>
     <div v-else><router-link to="/login">Iiloggä</router-link></div>
     <router-view/>
   </div>
