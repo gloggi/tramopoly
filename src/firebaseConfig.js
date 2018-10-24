@@ -21,3 +21,9 @@ let RecaptchaVerifier = firebase.auth.RecaptchaVerifier
 
 export const groupsDB = db.ref(`${year}/groups`)
 export { auth, RecaptchaVerifier }
+
+export function bindUserByPhone (vm, member, phone) {
+  if (phone) {
+    vm.$bindAsObject(member, firebase.database().ref(`${year}/users/${phone}`))
+  }
+}
