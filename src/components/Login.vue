@@ -19,7 +19,7 @@
     </div>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
       <form v-on:submit.prevent="verifyOtp">
-        <b-field label="SMS-Code"><b-input type="text" ref="otp" placeholder="000000" pattern="[0-9]{6}" v-model="otp"/></b-field>
+        <b-field label="SMS-Code"><b-input type="number" ref="otp" placeholder="000000" pattern="\d*" inputmode="numeric" v-model="otp"/></b-field>
         <button class="button is-link" type="submit">SMS-Code beschtätigä</button>
       </form>
     </div>
@@ -112,3 +112,14 @@ export default {
   }
 }
 </script>
+
+<style>
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+</style>
