@@ -8,6 +8,12 @@
           <b-autocomplete v-if="!userIsAlreadyRegistered" v-model="groupName" open-on-focus :data="groups" field="name"/>
           <b-input v-else v-model="specifiedUser.groupName" disabled />
         </b-field>
+        <b-field label="Abteilig">
+          <b-select v-if="!groupIsAlreadyRegistered" v-model="abteilung" expanded>
+            <option v-for="abteilung in abteilungen" :value="abteilung['.value']" :key="abteilung['.value']">{{ abteilung['.value'] }}</option>
+          </b-select>
+          <b-input v-else v-model="specifiedGroup.abteilung" disabled />
+        </b-field>
         <button class="button is-link" type="submit">Iiloggä</button>
       </form>
     </div>
@@ -22,20 +28,23 @@
 </template>
 
 <script>
-import { auth, RecaptchaVerifier, groupsDB, bindUserByPhone } from '@/firebaseConfig'
+import { auth, RecaptchaVerifier, groupsDB, abteilungenDB, bindUserByPhone } from '@/firebaseConfig'
 import BField from 'buefy/src/components/field/Field'
 import BInput from 'buefy/src/components/input/Input'
 import BAutocomplete from 'buefy/src/components/autocomplete/Autocomplete'
+import BSelect from 'buefy/src/components/select/Select'
 
 export default {
-  components: { BAutocomplete, BInput, BField },
+  components: { BSelect, BAutocomplete, BInput, BField },
   firebase: {
-    groups: groupsDB.orderByChild('name')
+    groups: groupsDB.orderByChild('name'),
+    abteilungen: abteilungenDB.orderByValue()
   },
   data () {
     return {
       phone: '',
       groupName: '',
+      abteilung: '',
       otp: '',
       appVerifier: null,
       confirmation: null,
@@ -55,6 +64,12 @@ export default {
     },
     userIsAlreadyRegistered () {
       return this.specifiedUser.hasOwnProperty('groupName')
+    },
+    specifiedGroup () {
+      return this.groups.find(group => group.name === (this.userIsAlreadyRegistered ? this.specifiedUser.groupName : this.groupName))
+    },
+    groupIsAlreadyRegistered () {
+      return this.specifiedGroup !== undefined
     }
   },
   methods: {

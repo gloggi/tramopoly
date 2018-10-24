@@ -20,6 +20,7 @@ let auth = firebase.auth()
 let RecaptchaVerifier = firebase.auth.RecaptchaVerifier
 
 export const groupsDB = db.ref(`${year}/groups`)
+export const abteilungenDB = db.ref(`${year}/abteilungen`)
 export { auth, RecaptchaVerifier }
 
 export function bindUserByPhone (vm, member, phone) {
