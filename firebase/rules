@@ -1,0 +1,41 @@
+{
+  "rules": {
+    "$year": {
+      "settings": {
+        ".read": true,
+        ".write": false,
+      },
+      "abteilungen": {
+        ".read": true,
+        ".write": false,
+      },
+      "events": {
+        ".read": true,
+        ".write": "auth.uid !== null",
+        "$eventtype": {
+          "$index": { ".validate": "newData.hasChildren(['group', 'time']) && newData.child('group').isNumber() && newData.child('time').isNumber()" },
+        }
+      },
+      "groups": {
+        ".read": true,
+        ".write": false,
+      },
+      "jokers": {
+        ".read": true,
+        ".write": false,
+      },
+      "stations": {
+        ".read": true,
+        ".write": false,
+      },
+      "users": {
+        "$tel": {
+          ".read": true,
+          ".write": false,
+        }
+      }
+    },
+    ".read": false,
+    ".write": false,
+  }
+}
