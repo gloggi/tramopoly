@@ -38,7 +38,7 @@ export default {
     },
     signout () {
       auth.signOut()
-      this.$router.push('login')
+      this.$router.push('/login')
     }
   },
   updated () {
