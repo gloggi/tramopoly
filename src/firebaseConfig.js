@@ -26,7 +26,17 @@ export { auth, RecaptchaVerifier }
 export function bindUserByPhone (vm, member, phone) {
   vm.$watch(phone, (changedPhone) => {
     if (changedPhone) {
-      vm.$bindAsObject(member, firebase.database().ref(`${year}/users/${changedPhone}`))
+      vm.$bindAsObject(member, db.ref(`${year}/users/${changedPhone}`))
     }
   }, { immediate: true })
+}
+
+export function bindLoggedInUser (vm, member) {
+  auth.onAuthStateChanged(loggedInUser => {
+    if (loggedInUser) {
+      vm.$bindAsObject(member, db.ref(`${year}/users/${loggedInUser.phoneNumber}`))
+    } else if (vm._firebaseSources[member]) {
+      vm.$unbind(member)
+    }
+  })
 }
