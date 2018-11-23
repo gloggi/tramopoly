@@ -1,11 +1,13 @@
 <template>
   <div id="app">
-    <div v-if="userIsLoggedIn">
-        <span v-if="user.scoutName">Willkommä, {{user.scoutName}}.</span>
-        <span v-else>Willkommä.</span>
-        <a @click="signout()">Uusloggä</a>
+    <div class="level">
+      <div v-if="userIsLoggedIn" class="level-left">
+          <span v-if="user.scoutName" class="level-item">Willkommä, {{user.scoutName}}.</span>
+          <span v-else class="level-item">Willkommä.</span>
+          <button class="button is-outlined level-item" @click="signout()">Uusloggä</button>
+      </div>
+      <div v-else class="level-left"><router-link to="/login" class="level-item">Iiloggä</router-link></div>
     </div>
-    <div v-else><router-link to="/login">Iiloggä</router-link></div>
     <router-view/>
   </div>
 </template>
