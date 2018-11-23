@@ -76,4 +76,8 @@ export default {
   body {
     padding: 1.25rem;
   }
+
+  .button {
+    font-weight: $weight-medium;
+  }
 </style>
