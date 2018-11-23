@@ -32,6 +32,11 @@
         "$tel": {
           ".read": true,
           ".write": false,
+          "activeCall": {
+            ".read": true,
+            ".write": true,
+            ".validate": "auth.token.phone_number === $tel || auth.token.phone_number === newData.val()",
+          }
         }
       }
     },

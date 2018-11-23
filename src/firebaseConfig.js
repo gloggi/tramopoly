@@ -54,8 +54,8 @@ export function requireAuth (to, from, next) {
 
 export function requireOperator (to, from, next) {
   next(vm => {
-    bindLoggedInUser(vm, 'loggedInUser', null, () => {
-      if (!vm.loggedInUser || !vm.loggedInUser.isOperator) {
+    bindLoggedInUser(vm, 'loggedInOperator', null, () => {
+      if (!vm.loggedInOperator || !vm.loggedInOperator['isOperator']) {
         vm.$router.push('/login')
       }
     })

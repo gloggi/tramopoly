@@ -2,7 +2,9 @@
   <div class="columns is-multiline">
     <header class="title has-text-centered column is-full">Dashboard</header>
     <div v-if="operator != null" class="box column is-full is-one-third-desktop is-offset-one-third-desktop has-text-centered">
-      <a class="button is-link is-outlined" @click="callOperator" :href="'tel:' + operatorPhone">📞 Zentrale ({{ operatorName }})</a>
+      <button v-if="!operatorBusy" class="button is-link is-outlined" @click="callOperator">📞 Zentrale ({{ operatorName }})</button>
+      <button v-else-if="loggedInUserIsActiveCaller" class="button is-link is-outlined is-danger" @click="finishCall">🚫 Meinen Anruf beenden</button>
+      <button v-else class="button is-link is-outlined" @click="callOperator">🚫 Zentrale ({{ operatorName }} besetzt)</button>
     </div>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
       <b-table :data="groupsOrDummy" striped hoverable>
@@ -77,14 +79,24 @@ export default {
         return null
       }
       return abteilungOfLoggedInUser['operatorPhone']
+    },
+    operatorBusy () {
+      console.log(this.operator['activeCall'])
+      return this.operator['activeCall'] !== undefined
+    },
+    loggedInUserIsActiveCaller () {
+      return this.operatorBusy && this.operator['activeCall'] === this.loggedInUser['.key']
     }
   },
   watch: {
     operatorPhone: function () {
       if (!this.operatorPhone) {
-        return this.operator && this.$unbind('operator')
+        if (this.operator) {
+          this.$unbind('operator')
+        }
+      } else {
+        bindUserByPhone(this, 'operator', 'operatorPhone')
       }
-      bindUserByPhone(this, 'operator', 'operatorPhone')
     }
   },
   methods: {
@@ -92,7 +104,13 @@ export default {
       groupsDB.child(group['.key']).remove()
     },
     callOperator () {
-      console.log('test')
+      this.$firebaseRefs.operator.child('activeCall').set(this.loggedInUser['.key'])
+      setTimeout(() => { window.location = 'tel:' + this.operatorPhone }, 300)
+    },
+    finishCall () {
+      if (this.loggedInUserIsActiveCaller) {
+        this.$firebaseRefs.operator.child('activeCall').remove()
+      }
     }
   }
 }
