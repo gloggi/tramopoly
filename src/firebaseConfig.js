@@ -31,12 +31,33 @@ export function bindUserByPhone (vm, member, phone) {
   }, { immediate: true })
 }
 
-export function bindLoggedInUser (vm, member) {
+export function bindLoggedInUser (vm, member, cancelCallback, readyCallback) {
   auth.onAuthStateChanged(loggedInUser => {
     if (loggedInUser) {
-      vm.$bindAsObject(member, db.ref(`${year}/users/${loggedInUser.phoneNumber}`))
+      vm.$bindAsObject(member, db.ref(`${year}/users/${loggedInUser.phoneNumber}`), cancelCallback, readyCallback)
     } else if (vm._firebaseSources[member]) {
       vm.$unbind(member)
     }
+  })
+}
+
+export function requireAuth (to, from, next) {
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      return next('/login')
+    }
+    next(vm => {
+      bindLoggedInUser(vm, 'loggedInUser')
+    })
+  })
+}
+
+export function requireOperator (to, from, next) {
+  next(vm => {
+    bindLoggedInUser(vm, 'loggedInUser', null, () => {
+      if (!vm.loggedInUser || !vm.loggedInUser.isOperator) {
+        vm.$router.push('/login')
+      }
+    })
   })
 }

@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { groupsDB } from '@/firebaseConfig'
+import { groupsDB, requireAuth } from '@/firebaseConfig'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
 import BIcon from 'buefy/src/components/icon/Icon'
@@ -47,6 +47,9 @@ export default {
   },
   data () {
     return {}
+  },
+  beforeRouteEnter (to, from, next) {
+    requireAuth(to, from, next)
   },
   computed: {
     groupsLoaded () {
