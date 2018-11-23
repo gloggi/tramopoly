@@ -20,12 +20,12 @@ export default {
   data () {
     return {
       firebaseUser: {},
-      user: {}
+      user: null
     }
   },
   computed: {
     userIsLoggedIn () {
-      return this.user !== {}
+      return this.user !== null
     }
   },
   methods: {
@@ -41,10 +41,9 @@ export default {
     signout () {
       auth.signOut()
       this.$router.push('/login')
+      this.$unbind('user')
+      this.getLoginStatus()
     }
-  },
-  updated () {
-    this.getLoginStatus()
   },
   created () {
     this.getLoginStatus()
