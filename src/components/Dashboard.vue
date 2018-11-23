@@ -21,12 +21,8 @@
             </b-table-column>
             <b-table-column field="delete" label="" width="44">
               <transition name="fade" mode="out-in">
-                <button v-if="groupsLoaded" class="button is-small is-danger" @click="deleteGroup(props.row)">
-                  <b-icon icon="delete"></b-icon>
-                </button>
-                <button v-else class="button is-small is-danger" disabled>
-                  <b-icon icon="delete"></b-icon>
-                </button>
+                <button v-if="groupsLoaded" class="button is-small is-danger is-outlined" @click="deleteGroup(props.row)">🗑️</button>
+                <button v-else class="button is-small is-danger is-outlined" disabled>🗑️</button>
               </transition>
             </b-table-column>
         </template>
