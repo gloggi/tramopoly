@@ -1,83 +1,101 @@
 {
-  "abteilungen" : [ null, "Gryfensee", "Hadlaub", "Lägern", "Manegg", "PTA Gloggi", "Seepfadi", "Wildert" ],
-  "events" : {
-    "jokerVisits" : [ {
-      "group" : 0,
-      "joker" : "auzelgOst",
-      "time" : "2019-01-01 00:00:00"
+  "2019" : {
+    "abteilungen" : [ null, {
+      "name" : "Gryfensee",
+      "operatorPhone" : "+41790000000"
+    }, {
+      "name" : "Hadlaub"
+    }, {
+      "name" : "Lägern",
+      "operatorPhone" : "+41790000000"
+    }, {
+      "name" : "Manegg"
+    }, {
+      "name" : "PTA Gloggi"
+    }, {
+      "name" : "Seepfadi"
+    }, {
+      "name" : "Wildert"
     } ],
-    "mrT" : [ {
-      "group" : 0,
-      "location" : "Rennweg Tram 7 richtung Paradeplatz",
-      "time" : "2019-01-01 00:00:00"
+    "events" : {
+      "jokerVisits" : [ {
+        "group" : 0,
+        "joker" : "auzelgOst",
+        "time" : "2019-01-01 00:00:00"
+      } ],
+      "mrT" : [ {
+        "group" : 0,
+        "location" : "Rennweg Tram 7 richtung Paradeplatz",
+        "time" : "2019-01-01 00:00:00"
+      } ],
+      "stationVisits" : [ {
+        "group" : 0,
+        "station" : "burkliplatz",
+        "time" : "2019-01-01 00:00:00"
+      } ]
+    },
+    "groups" : [ {
+      "abteilung" : "Gryfensee",
+      "name" : "Lindo"
+    }, {
+      "abteilung" : "Wildert",
+      "name" : "Wilderter"
+    }, {
+      "abteilung" : "Lägern",
+      "name" : "Cece"
     } ],
-    "stationVisits" : [ {
-      "group" : 0,
-      "station" : "burkliplatz",
-      "time" : "2019-01-01 00:00:00"
-    } ]
-  },
-  "groups" : [ {
-    "abteilung" : "Gryfensee",
-    "name" : "Gry1"
-  }, {
-    "abteilung" : "Wildert",
-    "name" : "Wilderter"
-  }, {
-    "abteilung" : "Lägern",
-    "name" : "Niederweni"
-  } ],
-  "jokers" : {
-    "auzelgOst" : {
-      "name" : "Auzelg Ost",
-      "value" : 3000
+    "jokers" : {
+      "auzelgOst" : {
+        "name" : "Auzelg Ost",
+        "value" : 3000
+      },
+      "gutstrasse" : {
+        "name" : "Gutstrasse",
+        "value" : 500
+      },
+      "imKlosterli" : {
+        "name" : "Im Klösterli",
+        "value" : 1500
+      }
     },
-    "gutstrasse" : {
-      "name" : "Gutstrasse",
-      "value" : 500
+    "settings" : {
+      "interestPeriod" : 15,
+      "interestRate" : 0.1,
+      "mrT" : {
+        "15" : 300,
+        "30" : 1000,
+        "45" : 1750,
+        "60" : 3000,
+        "75" : 5000,
+        "90" : 10000
+      },
+      "realEstateValueRatio" : 0.5,
+      "rentRate" : 0.2,
+      "starterCash" : 5000
     },
-    "imKlosterli" : {
-      "name" : "Im Klösterli",
-      "value" : 1500
-    }
-  },
-  "settings" : {
-    "interestPeriod" : 15,
-    "interestRate" : 0.1,
-    "mrT" : {
-      "15" : 300,
-      "30" : 1000,
-      "45" : 1750,
-      "60" : 3000,
-      "75" : 5000,
-      "90" : 10000
+    "stations" : {
+      "affolternBhf" : {
+        "name" : "Affoltern, Bhf.",
+        "value" : 2000
+      },
+      "burkliplatz" : {
+        "name" : "Bürkliplatz",
+        "value" : 7000
+      },
+      "sukkulentensammlung" : {
+        "name" : "Sukkulentensammlung",
+        "value" : 1000
+      },
+      "zoo" : {
+        "name" : "Zoo",
+        "value" : 2000
+      }
     },
-    "realEstateValueRatio" : 0.5,
-    "rentRate" : 0.2,
-    "starterCash" : 5000
-  },
-  "stations" : {
-    "affolternBhf" : {
-      "name" : "Affoltern, Bhf.",
-      "value" : 2000
-    },
-    "burkliplatz" : {
-      "name" : "Bürkliplatz",
-      "value" : 7000
-    },
-    "sukkulentensammlung" : {
-      "name" : "Sukkulentensammlung",
-      "value" : 1000
-    },
-    "zoo" : {
-      "name" : "Zoo",
-      "value" : 2000
-    }
-  },
-  "users" : {
-    "+41790000000" : {
-      "groupName" : "Gry1",
-      "scoutName" : "Cosinus"
+    "users" : {
+      "+41790000000" : {
+        "groupName" : "Cece",
+        "scoutName" : "Cosinus"
+      }
     }
   }
 }

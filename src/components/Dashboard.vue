@@ -1,6 +1,9 @@
 <template>
   <div class="columns is-multiline">
     <header class="title has-text-centered column is-full">Dashboard</header>
+    <div v-if="operator != null" class="box column is-full is-one-third-desktop is-offset-one-third-desktop has-text-centered">
+      <a class="button is-link is-outlined" @click="callOperator" :href="'tel:' + operatorPhone">📞 Zentrale ({{ operatorName }})</a>
+    </div>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
       <b-table :data="groupsOrDummy" striped hoverable>
         <template slot-scope="props">
@@ -33,7 +36,7 @@
 </template>
 
 <script>
-import { groupsDB, requireAuth } from '@/firebaseConfig'
+import { bindUserByPhone, groupsDB, abteilungenDB, requireAuth } from '@/firebaseConfig'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
 import BIcon from 'buefy/src/components/icon/Icon'
@@ -43,10 +46,14 @@ export default {
   name: 'Dashboard',
   components: { Placeholder, BIcon, BTable, BTableColumn },
   firebase: {
-    groups: groupsDB
+    groups: groupsDB,
+    abteilungen: abteilungenDB
   },
   data () {
-    return {}
+    return {
+      loggedInUser: null,
+      operator: null
+    }
   },
   beforeRouteEnter (to, from, next) {
     requireAuth(to, from, next)
@@ -57,11 +64,39 @@ export default {
     },
     groupsOrDummy () {
       return this.groupsLoaded ? this.groups : [{}, {}, {}, {}, {}]
+    },
+    operatorName () {
+      return this.operator ? this.operator['scoutName'] : null
+    },
+    operatorPhone () {
+      if (!this.loggedInUser || !this.loggedInUser['groupName'] || !this.groups) {
+        return null
+      }
+      let groupOfLoggedInUser = this.groups.find(g => g['name'] === this.loggedInUser['groupName'])
+      if (!groupOfLoggedInUser || !groupOfLoggedInUser['abteilung'] || !this.abteilungen) {
+        return null
+      }
+      let abteilungOfLoggedInUser = this.abteilungen.find(a => a['name'] === groupOfLoggedInUser['abteilung'])
+      if (!abteilungOfLoggedInUser || !abteilungOfLoggedInUser['operatorPhone']) {
+        return null
+      }
+      return abteilungOfLoggedInUser['operatorPhone']
+    }
+  },
+  watch: {
+    operatorPhone: function () {
+      if (!this.operatorPhone) {
+        return this.operator && this.$unbind('operator')
+      }
+      bindUserByPhone(this, 'operator', 'operatorPhone')
     }
   },
   methods: {
     deleteGroup (group) {
       groupsDB.child(group['.key']).remove()
+    },
+    callOperator () {
+      console.log('test')
     }
   }
 }

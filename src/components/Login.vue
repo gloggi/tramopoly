@@ -42,7 +42,7 @@ export default {
   components: { BSelect, BAutocomplete, BInput, BField },
   firebase: {
     groups: groupsDB.orderByChild('name'),
-    abteilungen: abteilungenDB.orderByValue()
+    abteilungen: abteilungenDB.orderByChild('name')
   },
   data () {
     return {
