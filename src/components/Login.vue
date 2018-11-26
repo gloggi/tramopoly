@@ -3,17 +3,17 @@
     <header class="title has-text-centered column is-full is-one-third-desktop is-offset-one-third-desktop">Login</header>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
       <form v-on:submit.prevent="login">
-        <b-field label="Händynummärä"><b-input type="tel" pattern="((\+41\s?)?|(0041\s?)?|0)7[6-9]\s?\d{3}\s?\d{2}\s?\d{2}" placeholder="079 het sie gseit" v-model="phone" autofocus/></b-field>
+        <b-field label="Händynummärä"><b-input type="tel" pattern="((\+41\s?)?|(0041\s?)?|0)7[6-9]\s?\d{3}\s?\d{2}\s?\d{2}" placeholder="079 het sie gseit" v-model="phone" autofocus required/></b-field>
         <b-field label="Pfadinamä">
-          <b-input v-if="!userIsAlreadyRegistered" v-model="scoutName" />
+          <b-input v-if="!userIsAlreadyRegistered" v-model="scoutName" required />
           <b-input v-else v-model="specifiedUser.scoutName" disabled />
         </b-field>
         <b-field label="Gruppänamä">
-          <b-autocomplete v-if="!userIsAlreadyRegistered" v-model="groupName" open-on-focus :data="groups" field="name"/>
+          <b-autocomplete v-if="!userIsAlreadyRegistered" v-model="groupName" open-on-focus :data="groups" field="name" required/>
           <b-input v-else v-model="specifiedUser.groupName" disabled />
         </b-field>
         <b-field label="Abteilig">
-          <b-select v-if="!groupIsAlreadyRegistered" v-model="abteilung" expanded>
+          <b-select v-if="!groupIsAlreadyRegistered" v-model="abteilung" expanded required>
             <option v-for="abteilung in abteilungen" :value="abteilung['name']" :key="abteilung['name']">{{ abteilung['name'] }}</option>
           </b-select>
           <b-input v-else v-model="specifiedGroup.abteilung" disabled />
@@ -23,7 +23,7 @@
     </div>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
       <form v-on:submit.prevent="verifyOtp">
-        <b-field label="SMS-Code"><b-input type="number" ref="otp" placeholder="000000" pattern="\d*" inputmode="numeric" v-model="otp"/></b-field>
+        <b-field label="SMS-Code"><b-input type="number" ref="otp" placeholder="000000" pattern="\d*" inputmode="numeric" v-model="otp" required/></b-field>
         <button class="button is-link" type="submit">SMS-Code beschtätigä</button>
       </form>
     </div>
