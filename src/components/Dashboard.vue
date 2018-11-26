@@ -21,12 +21,6 @@
                 <placeholder v-else></placeholder>
               </transition>
             </b-table-column>
-            <b-table-column field="delete" label="" width="44">
-              <transition name="fade" mode="out-in">
-                <button v-if="groupsLoaded" class="button is-small is-danger is-outlined" @click="deleteGroup(props.row)">🗑️</button>
-                <button v-else class="button is-small is-danger is-outlined" disabled>🗑️</button>
-              </transition>
-            </b-table-column>
         </template>
       </b-table>
     </div>
@@ -99,9 +93,6 @@ export default {
     }
   },
   methods: {
-    deleteGroup (group) {
-      groupsDB.child(group['.key']).remove()
-    },
     callOperator () {
       this.$firebaseRefs.operator.child('activeCall').set(this.loggedInUser['.key'])
       setTimeout(() => { window.location = 'tel:' + this.operatorPhone }, 300)
