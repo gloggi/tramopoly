@@ -56,7 +56,7 @@ export function requireOperator (to, from, next) {
   next(vm => {
     bindLoggedInUser(vm, 'loggedInOperator', null, () => {
       if (!vm.loggedInOperator || !vm.loggedInOperator['isOperator']) {
-        vm.$router.push('/login')
+        vm.$router.replace({ name: 'index' })
       }
     })
   })

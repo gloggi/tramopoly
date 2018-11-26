@@ -16,7 +16,7 @@ const router = new Router({
     },
     {
       path: '/',
-      name: 'groupinfo',
+      name: 'index',
       component: Dashboard
     },
     {
