@@ -81,7 +81,6 @@ export default {
       return abteilungOfLoggedInUser['operatorPhone']
     },
     operatorBusy () {
-      console.log(this.operator['activeCall'])
       return this.operator['activeCall'] !== undefined
     },
     loggedInUserIsActiveCaller () {

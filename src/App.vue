@@ -1,12 +1,13 @@
 <template>
   <div id="app">
     <div class="level">
-      <div v-if="userIsLoggedIn" class="level-left">
-          <span v-if="user.scoutName" class="level-item">Willkommä, {{user.scoutName}}.</span>
-          <span v-else class="level-item">Willkommä.</span>
-          <button class="button is-outlined level-item" @click="signout()">Uusloggä</button>
+      <div class="level-left">
+        <span v-if="userIsLoggedIn && user.scoutName" class="level-item">Willkommä, {{user.scoutName}}.</span>
+        <span v-else-if="userIsLoggedIn" class="level-item">Willkommä.</span>
+        <a v-if="userIsLoggedIn" class="level-item" @click="signout()">Uusloggä</a>
+        <router-link v-else to="/login" class="level-item">Iiloggä</router-link>
+        <router-link v-if="userIsOperator" to="/zentrale" class="level-item">Zentrale</router-link>
       </div>
-      <div v-else class="level-left"><router-link to="/login" class="level-item">Iiloggä</router-link></div>
     </div>
     <router-view/>
   </div>
@@ -26,6 +27,9 @@ export default {
   computed: {
     userIsLoggedIn () {
       return this.user !== null
+    },
+    userIsOperator () {
+      return this.userIsLoggedIn && this.user['isOperator']
     }
   },
   methods: {
