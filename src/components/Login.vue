@@ -14,7 +14,7 @@
         </b-field>
         <b-field label="Abteilig">
           <b-select v-if="!groupIsAlreadyRegistered" v-model="abteilung" expanded>
-            <option v-for="abteilung in abteilungen" :value="abteilung['.value']" :key="abteilung['.value']">{{ abteilung['.value'] }}</option>
+            <option v-for="abteilung in abteilungen" :value="abteilung['name']" :key="abteilung['name']">{{ abteilung['name'] }}</option>
           </b-select>
           <b-input v-else v-model="specifiedGroup.abteilung" disabled />
         </b-field>
