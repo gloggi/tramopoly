@@ -39,6 +39,7 @@ import BAutocomplete from 'buefy/src/components/autocomplete/Autocomplete'
 import BSelect from 'buefy/src/components/select/Select'
 
 export default {
+  name: 'Login',
   components: { BSelect, BAutocomplete, BInput, BField },
   firebase: {
     groups: groupsDB.orderByChild('name'),
