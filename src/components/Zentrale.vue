@@ -55,7 +55,7 @@ export default {
   },
   computed: {
     groupsLoaded () {
-      return this.groups && this.groups.length
+      return this.$firebaseRefs && this.$firebaseRefs['groups']
     },
     groupsOrDummy () {
       return this.groupsLoaded ? this.groups : [{}, {}, {}, {}, {}]

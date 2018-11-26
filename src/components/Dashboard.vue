@@ -52,7 +52,7 @@ export default {
   },
   computed: {
     groupsLoaded () {
-      return this.groups && this.groups.length
+      return this.$firebaseRefs && this.$firebaseRefs['groups']
     },
     groupsOrDummy () {
       return this.groupsLoaded ? this.groups : [{}, {}, {}, {}, {}]
@@ -84,7 +84,7 @@ export default {
   watch: {
     operatorPhone: function () {
       if (!this.operatorPhone) {
-        if (this.operator) {
+        if (this.$firebaseRefs['operator']) {
           this.$unbind('operator')
         }
       } else {

@@ -26,6 +26,9 @@ export { auth, RecaptchaVerifier }
 export function bindUserByPhone (vm, member, phone) {
   vm.$watch(phone, (changedPhone) => {
     if (changedPhone) {
+      if (vm.$firebaseRefs && vm.$firebaseRefs[member]) {
+        vm.$unbind(member)
+      }
       vm.$bindAsObject(member, db.ref(`${year}/users/${changedPhone}`))
     }
   }, { immediate: true })
@@ -35,7 +38,7 @@ export function bindLoggedInUser (vm, member, cancelCallback, readyCallback) {
   auth.onAuthStateChanged(loggedInUser => {
     if (loggedInUser) {
       vm.$bindAsObject(member, db.ref(`${year}/users/${loggedInUser.phoneNumber}`), cancelCallback, readyCallback)
-    } else if (vm._firebaseSources[member]) {
+    } else if (vm.$firebaseRefs && vm.$firebaseRefs[member]) {
       vm.$unbind(member)
     }
   })

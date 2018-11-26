@@ -33,25 +33,29 @@ export default {
     }
   },
   methods: {
-    getLoginStatus () {
+    getLoginStatus (onLoginStatusAvailable = null) {
       auth.onAuthStateChanged(firebaseUser => {
         if (firebaseUser) {
           this.firebaseUser = firebaseUser
         } else {
           this.firebaseUser = null
         }
+        if (onLoginStatusAvailable !== null) {
+          onLoginStatusAvailable(firebaseUser)
+        }
       })
     },
     signout () {
       auth.signOut()
       this.$router.push({ name: 'login' })
-      this.$unbind('user')
+      if (this.$firebaseRefs['user']) {
+        this.$unbind('user')
+      }
       this.getLoginStatus()
     }
   },
   created () {
-    this.getLoginStatus()
-    bindUserByPhone(this, 'user', 'firebaseUser.phoneNumber')
+    this.getLoginStatus(() => bindUserByPhone(this, 'user', 'firebaseUser.phoneNumber'))
   }
 }
 </script>
