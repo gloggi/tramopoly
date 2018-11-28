@@ -1,6 +1,6 @@
 <template>
   <div class="columns is-multiline">
-    <header class="title has-text-centered column is-full is-one-third-desktop is-offset-one-third-desktop">Login</header>
+    <tram-header>Login</tram-header>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
       <form v-on:submit.prevent="login">
         <b-field label="Händynummärä"><b-input type="tel" pattern="((\+41\s?)?|(0041\s?)?|0)7[6-9]\s?\d{3}\s?\d{2}\s?\d{2}" placeholder="079 het sie gseit" v-model="phone" autofocus required/></b-field>
@@ -37,10 +37,11 @@ import BField from 'buefy/src/components/field/Field'
 import BInput from 'buefy/src/components/input/Input'
 import BAutocomplete from 'buefy/src/components/autocomplete/Autocomplete'
 import BSelect from 'buefy/src/components/select/Select'
+import TramHeader from '@/components/TramHeader'
 
 export default {
   name: 'Login',
-  components: { BSelect, BAutocomplete, BInput, BField },
+  components: { BSelect, BAutocomplete, BInput, BField, TramHeader },
   firebase: {
     groups: groupsDB.orderByChild('name'),
     abteilungen: abteilungenDB.orderByChild('name')

@@ -1,6 +1,6 @@
 <template>
   <div class="columns is-multiline">
-    <header class="title has-text-centered column is-full">Zentrale</header>
+    <tram-header>Zentrale</tram-header>
     <div v-if="loggedInOperatorBusy" class="box column is-full is-one-third-desktop is-offset-one-third-desktop has-text-centered">
       <div>Aktiver Anruf: {{ loggedInOperator['activeCall'] }}</div>
       <button @click="clearActiveCall" class="button is-danger">Aktiven Anruf beenden</button>
@@ -38,10 +38,11 @@ import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
 import BIcon from 'buefy/src/components/icon/Icon'
 import Placeholder from '@/components/Placeholder'
+import TramHeader from '@/components/TramHeader'
 
 export default {
   name: 'Zentrale',
-  components: { Placeholder, BIcon, BTable, BTableColumn },
+  components: { Placeholder, BIcon, BTable, BTableColumn, TramHeader },
   firebase: {
     groups: groupsDB
   },

@@ -1,6 +1,6 @@
 <template>
   <div class="columns is-multiline">
-    <header class="title has-text-centered column is-full">Dashboard</header>
+    <tram-header>Dashboard</tram-header>
     <div v-if="operator != null" class="box column is-full is-one-third-desktop is-offset-one-third-desktop has-text-centered">
       <button v-if="!operatorBusy" class="button is-link is-outlined" @click="callOperator">📞 Zentrale ({{ operatorName }})</button>
       <button v-else-if="loggedInUserIsActiveCaller" class="button is-link is-outlined is-danger" @click="finishCall">🚫 Meinen Anruf beenden</button>
@@ -33,10 +33,11 @@ import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
 import BIcon from 'buefy/src/components/icon/Icon'
 import Placeholder from '@/components/Placeholder'
+import TramHeader from '@/components/TramHeader'
 
 export default {
   name: 'Dashboard',
-  components: { Placeholder, BIcon, BTable, BTableColumn },
+  components: { Placeholder, BIcon, BTable, BTableColumn, TramHeader },
   firebase: {
     groups: groupsDB,
     abteilungen: abteilungenDB
