@@ -6,7 +6,7 @@
       <button @click="clearActiveCall" class="button is-danger">Aktiven Anruf beenden</button>
     </div>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
-      <group-list :groups="groups" :loaded="groupsLoaded"></group-list>
+      <group-list :groups="groups" :loaded="groupsLoaded" :calling-column="true"></group-list>
     </div>
   </div>
 </template>

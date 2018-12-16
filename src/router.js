@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Dashboard from '@/components/Dashboard'
 import Login from '@/components/Login'
 import Zentrale from '@/components/Zentrale'
+import Action from '@/components/Action'
 
 Vue.use(Router)
 
@@ -23,6 +24,11 @@ const router = new Router({
       path: '/zentrale',
       name: 'zentrale',
       component: Zentrale
+    },
+    {
+      path: '/zentrale/:caller/aktion',
+      name: 'action',
+      component: Action
     }
   ]
 })
