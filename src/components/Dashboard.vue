@@ -7,22 +7,7 @@
       <button v-else class="button is-link is-outlined" @click="callOperator">🚫 Zentrale ({{ operatorName }} besetzt)</button>
     </div>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
-      <b-table :data="groupsOrDummy" striped hoverable>
-        <template slot-scope="props">
-            <b-table-column field="name" label="Gruppä">
-              <transition name="fade" mode="out-in">
-                <span v-if="groupsLoaded">{{ props.row.name }}</span>
-                <placeholder v-else></placeholder>
-              </transition>
-            </b-table-column>
-            <b-table-column field="abteilung" label="Abteilig">
-              <transition name="fade" mode="out-in">
-                <span v-if="groupsLoaded">{{ props.row.abteilung }}</span>
-                <placeholder v-else></placeholder>
-              </transition>
-            </b-table-column>
-        </template>
-      </b-table>
+      <group-list :groups="groups" :loaded="groupsLoaded"></group-list>
     </div>
   </div>
 </template>
@@ -34,10 +19,11 @@ import BTableColumn from 'buefy/src/components/table/TableColumn'
 import BIcon from 'buefy/src/components/icon/Icon'
 import Placeholder from '@/components/Placeholder'
 import TramHeader from '@/components/TramHeader'
+import GroupList from '@/components/GroupList'
 
 export default {
   name: 'Dashboard',
-  components: { Placeholder, BIcon, BTable, BTableColumn, TramHeader },
+  components: { GroupList, Placeholder, BIcon, BTable, BTableColumn, TramHeader },
   firebase: {
     groups: groupsDB,
     abteilungen: abteilungenDB
@@ -53,10 +39,7 @@ export default {
   },
   computed: {
     groupsLoaded () {
-      return this.$firebaseRefs && this.$firebaseRefs['groups']
-    },
-    groupsOrDummy () {
-      return this.groupsLoaded ? this.groups : [{}, {}, {}, {}, {}]
+      return !!(this.$firebaseRefs && this.$firebaseRefs['groups'])
     },
     operatorName () {
       return this.operator ? this.operator['scoutName'] : null
