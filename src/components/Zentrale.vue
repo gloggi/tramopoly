@@ -6,23 +6,30 @@
       <button @click="clearActiveCall" class="button is-danger">Aktiven Anruf beenden</button>
     </div>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
-      <group-list :groups="groups" :loaded="groupsLoaded" :calling-column="true"></group-list>
+      <group-list :groups="groups" :loaded="groupsLoaded">
+        <template slot-scope="props">
+          <b-table-column field="calling" label="Aktion">
+            <transition name="fade" mode="out-in">
+              <span v-if="props.loaded">
+                <router-link class="button btn-primary is-outlined" :to="{ name: 'action', params: { caller: 'test' } }">📞</router-link>
+              </span>
+            </transition>
+          </b-table-column>
+        </template>
+      </group-list>
     </div>
   </div>
 </template>
 
 <script>
-import { requireOperator, groupsDB } from '@/firebaseConfig'
-import BTable from 'buefy/src/components/table/Table'
+import { groupsDB, requireOperator } from '@/firebaseConfig'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
-import BIcon from 'buefy/src/components/icon/Icon'
-import Placeholder from '@/components/Placeholder'
 import TramHeader from '@/components/TramHeader'
 import GroupList from '@/components/GroupList'
 
 export default {
   name: 'Zentrale',
-  components: { GroupList, Placeholder, BIcon, BTable, BTableColumn, TramHeader },
+  components: { GroupList, BTableColumn, TramHeader },
   firebase: {
     groups: groupsDB
   },
@@ -48,6 +55,9 @@ export default {
     },
     deleteGroup (group) {
       groupsDB.child(group['.key']).remove()
+    },
+    caller (groupKey) {
+      return 'test phone number'
     }
   }
 }

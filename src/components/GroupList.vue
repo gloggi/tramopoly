@@ -13,13 +13,7 @@
           <placeholder v-else></placeholder>
         </transition>
       </b-table-column>
-      <b-table-column v-if="callingColumn" field="calling" label="Aktion">
-        <transition name="fade" mode="out-in">
-          <span v-if="loaded">
-            <router-link class="button btn-primary is-outlined" :to="{ name: 'action', params: { caller: caller(props.row._key) } }">📞</router-link>
-          </span>
-        </transition>
-      </b-table-column>
+      <slot :data="props.row" :loaded="loaded" />
     </template>
   </b-table>
 </template>
@@ -39,11 +33,6 @@ export default {
   computed: {
     groupsOrDummy () {
       return this.loaded ? this.groups : [{}, {}, {}, {}, {}]
-    }
-  },
-  methods: {
-    caller (groupKey) {
-      return 'test phone number'
     }
   }
 }
