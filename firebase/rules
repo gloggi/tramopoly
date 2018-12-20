@@ -1,46 +1,48 @@
-{
-  "rules": {
-    "$year": {
-      "settings": {
-        ".read": true,
-        ".write": false,
-      },
-      "abteilungen": {
-        ".read": true,
-        ".write": false,
-      },
-      "events": {
-        ".read": true,
-        ".write": "auth.uid !== null",
-        "$eventtype": {
-          "$index": { ".validate": "newData.hasChildren(['group', 'time']) && newData.child('group').isNumber() && newData.child('time').isNumber()" },
-        }
-      },
-      "groups": {
-        ".read": true,
-        ".write": false,
-      },
-      "jokers": {
-        ".read": true,
-        ".write": false,
-      },
-      "stations": {
-        ".read": true,
-        ".write": false,
-      },
-      "users": {
-        "$tel": {
-          ".read": true,
-          ".write": false,
-          "activeCall": {
-            ".read": true,
-            ".write": true,
-            ".validate": "auth.token.phone_number === $tel || auth.token.phone_number === newData.val()",
-          }
-        }
-      }
-    },
-    ".read": false,
-    ".write": false,
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isLoggedIn() {
+      return request.auth != null && request.auth.uid != null && request.auth.uid != ""
+      		&& request.auth.token != null && request.auth.token.phone_number != null && request.auth.token.phone_number != "";
+    }
+
+    function isOperator() {
+    	return isLoggedIn()
+      		&& exists(path("/databases/" + database + "/documents/users/" + request.auth.token.phone_number))
+          && get(path("/databases/" + database + "/documents/users/" + request.auth.token.phone_number)).data.isOperator == true;
+    }
+
+    match /{collection=**} {
+      allow read: if collection == path("/databases/" + database + "/documents/groups")
+                  || collection == path("/databases/" + database + "/documents/abteilungen")
+    }
+    match /abteilungen/{document=**} {
+    	allow read: if true;
+    }
+    match /groups/{document=**} {
+      allow read: if true;
+      allow write: if isOperator();
+    }
+    match /jokerVisits/{document=**} {
+    	allow read: if isLoggedIn()
+    }
+    match /jokers/{document=**} {
+      allow read: if isLoggedIn();
+    }
+    match /mrTChanges/{document=**} {
+    	allow read: if isLoggedIn();
+    }
+    match /settings/{document=**} {
+    	allow read: if isLoggedIn();
+    }
+    match /stationVisits/{document=**} {
+    	allow read: if isLoggedIn();
+    }
+    match /stations/{document=**} {
+      allow read: if isLoggedIn();
+    }
+    match /users/{tel} {
+    	allow read: if true;
+      allow list: if false;
+    }
   }
 }

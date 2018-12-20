@@ -1,35 +1,32 @@
 import firebase from 'firebase/app'
+import 'firebase/firestore'
 import 'firebase/auth'
 import 'firebase/database'
 
-const year = '2019'
-
 let config = {
-  apiKey: 'AIzaSyAZwEsQJIMdrF5IlNn4R6qK0Rwekzf6Gs8',
-  authDomain: 'gloggi-tramopoly.firebaseapp.com',
-  databaseURL: 'https://gloggi-tramopoly.firebaseio.com',
-  projectId: 'gloggi-tramopoly',
-  storageBucket: 'gloggi-tramopoly.appspot.com',
-  messagingSenderId: '874624059610'
+  apiKey: 'AIzaSyAayb2jkXiBRdyqVlaAWuOTTQNA9waqtmA',
+  authDomain: 'tramopoly-92c49.firebaseapp.com',
+  databaseURL: 'https://tramopoly-92c49.firebaseio.com',
+  projectId: 'tramopoly-92c49',
+  storageBucket: '',
+  messagingSenderId: '414240119625'
 }
 
-let app = firebase.initializeApp(config)
-let db = app.database()
+firebase.initializeApp(config)
+const db = firebase.firestore()
+db.settings({ timestampsInSnapshots: true })
 
 let auth = firebase.auth()
 let RecaptchaVerifier = firebase.auth.RecaptchaVerifier
 
-export const groupsDB = db.ref(`${year}/groups`)
-export const abteilungenDB = db.ref(`${year}/abteilungen`)
+export const groupsDB = db.collection('groups')
+export const abteilungenDB = db.collection('abteilungen')
 export { auth, RecaptchaVerifier }
 
 export function bindUserByPhone (vm, member, phone) {
   vm.$watch(phone, (changedPhone) => {
     if (changedPhone) {
-      if (vm.$firebaseRefs && vm.$firebaseRefs[member]) {
-        vm.$unbind(member)
-      }
-      vm.$bindAsObject(member, db.ref(`${year}/users/${changedPhone}`))
+      vm.$bind(member, db.collection('users').doc(changedPhone))
     }
   }, { immediate: true })
 }
@@ -37,8 +34,8 @@ export function bindUserByPhone (vm, member, phone) {
 export function bindLoggedInUser (vm, member, cancelCallback, readyCallback) {
   auth.onAuthStateChanged(loggedInUser => {
     if (loggedInUser) {
-      vm.$bindAsObject(member, db.ref(`${year}/users/${loggedInUser.phoneNumber}`), cancelCallback, readyCallback)
-    } else if (vm.$firebaseRefs && vm.$firebaseRefs[member]) {
+      vm.$bind(member, db.collection('users').doc(loggedInUser.phoneNumber)).then(readyCallback).catch(cancelCallback)
+    } else if (vm.$firestoreRefs && vm.$firestoreRefs[member]) {
       vm.$unbind(member)
     }
   })

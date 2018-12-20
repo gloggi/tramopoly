@@ -9,7 +9,7 @@
       </b-table-column>
       <b-table-column field="abteilung" label="Abteilig">
         <transition name="fade" mode="out-in">
-          <span v-if="loaded">{{ props.row.abteilung }}</span>
+          <span v-if="loaded">{{ props.row.abteilung.name }}</span>
           <placeholder v-else></placeholder>
         </transition>
       </b-table-column>

@@ -48,7 +48,7 @@ export default {
     signout () {
       auth.signOut()
       this.$router.push({ name: 'login' })
-      if (this.$firebaseRefs['user']) {
+      if (this.$firestoreRefs['user']) {
         this.$unbind('user')
       }
       this.getLoginStatus()

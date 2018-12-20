@@ -10,13 +10,13 @@
         </b-field>
         <b-field label="Gruppänamä">
           <b-autocomplete v-if="!userIsAlreadyRegistered" v-model="groupName" open-on-focus :data="groups" field="name" required/>
-          <b-input v-else v-model="specifiedUser.groupName" disabled />
+          <b-input v-else v-model="specifiedUser.group.name" disabled />
         </b-field>
         <b-field label="Abteilig">
           <b-select v-if="!groupIsAlreadyRegistered" v-model="abteilung" expanded required>
             <option v-for="abteilung in abteilungen" :value="abteilung['name']" :key="abteilung['name']">{{ abteilung['name'] }}</option>
           </b-select>
-          <b-input v-else v-model="specifiedGroup.abteilung" disabled />
+          <b-input v-else v-model="specifiedGroup.abteilung.name" disabled />
         </b-field>
         <button class="button is-link" type="submit">Iiloggä</button>
       </form>
@@ -42,9 +42,9 @@ import TramHeader from '@/components/TramHeader'
 export default {
   name: 'Login',
   components: { BSelect, BAutocomplete, BInput, BField, TramHeader },
-  firebase: {
-    groups: groupsDB.orderByChild('name'),
-    abteilungen: abteilungenDB.orderByChild('name')
+  firestore: {
+    groups: groupsDB.orderBy('name'),
+    abteilungen: abteilungenDB.orderBy('name')
   },
   data () {
     return {
@@ -55,7 +55,9 @@ export default {
       otp: '',
       appVerifier: null,
       confirmation: null,
-      specifiedUser: {}
+      specifiedUser: {},
+      groups: [],
+      abteilungen: []
     }
   },
   computed: {
@@ -70,10 +72,10 @@ export default {
       return cleaned
     },
     userIsAlreadyRegistered () {
-      return this.specifiedUser.hasOwnProperty('groupName')
+      return this.specifiedUser.hasOwnProperty('group')
     },
     specifiedGroup () {
-      return this.groups.find(group => group.name === (this.userIsAlreadyRegistered ? this.specifiedUser.groupName : this.groupName))
+      return this.groups.find(group => group.name === (this.userIsAlreadyRegistered ? this.specifiedUser.group.name : this.groupName))
     },
     groupIsAlreadyRegistered () {
       return this.specifiedGroup !== undefined

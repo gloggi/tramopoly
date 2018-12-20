@@ -24,14 +24,16 @@ import GroupList from '@/components/GroupList'
 export default {
   name: 'Dashboard',
   components: { GroupList, Placeholder, BIcon, BTable, BTableColumn, TramHeader },
-  firebase: {
+  firestore: {
     groups: groupsDB,
     abteilungen: abteilungenDB
   },
   data () {
     return {
       loggedInUser: null,
-      operator: null
+      operator: null,
+      groups: [],
+      abteilungen: []
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -39,7 +41,7 @@ export default {
   },
   computed: {
     groupsLoaded () {
-      return !!(this.$firebaseRefs && this.$firebaseRefs['groups'])
+      return !!(this.$firestoreRefs && this.$firestoreRefs['groups'])
     },
     operatorName () {
       return this.operator ? this.operator['scoutName'] : null
@@ -68,7 +70,7 @@ export default {
   watch: {
     operatorPhone: function () {
       if (!this.operatorPhone) {
-        if (this.$firebaseRefs['operator']) {
+        if (this.$firestoreRefs['operator']) {
           this.$unbind('operator')
         }
       } else {
@@ -78,12 +80,12 @@ export default {
   },
   methods: {
     callOperator () {
-      this.$firebaseRefs.operator.child('activeCall').set(this.loggedInUser['.key'])
+      this.$firestoreRefs.operator.child('activeCall').set(this.loggedInUser['.key'])
       setTimeout(() => { window.location = 'tel:' + this.operatorPhone }, 300)
     },
     finishCall () {
       if (this.loggedInUserIsActiveCaller) {
-        this.$firebaseRefs.operator.child('activeCall').remove()
+        this.$firestoreRefs.operator.child('activeCall').remove()
       }
     }
   }

@@ -30,12 +30,13 @@ import GroupList from '@/components/GroupList'
 export default {
   name: 'Zentrale',
   components: { GroupList, BTableColumn, TramHeader },
-  firebase: {
+  firestore: {
     groups: groupsDB
   },
   data () {
     return {
-      loggedInOperator: null
+      loggedInOperator: null,
+      groups: []
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -43,15 +44,15 @@ export default {
   },
   computed: {
     groupsLoaded () {
-      return !!(this.$firebaseRefs && this.$firebaseRefs['groups'])
+      return !!(this.$firestoreRefs && this.$firestoreRefs['groups'])
     },
     loggedInOperatorBusy () {
-      return this.loggedInOperator && this.loggedInOperator['activeCall'] !== undefined
+      return this.loggedInOperator && this.loggedInOperator['activeCall'] !== ''
     }
   },
   methods: {
     clearActiveCall () {
-      this.$firebaseRefs.loggedInOperator.child('activeCall').remove()
+      this.$firestoreRefs.loggedInOperator.child('activeCall').remove()
     },
     deleteGroup (group) {
       groupsDB.child(group['.key']).remove()
