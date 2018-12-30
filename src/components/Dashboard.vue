@@ -7,7 +7,22 @@
       <button v-else class="button is-link is-outlined" @click="callOperator">🚫 Zentrale ({{ operatorName }} besetzt)</button>
     </div>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
-      <group-list :groups="groups" :loaded="groupsLoaded"></group-list>
+      <b-table :data="groupsOrDummy" striped hoverable>
+        <template slot-scope="props">
+          <b-table-column field="name" label="Gruppä">
+            <transition name="fade" mode="out-in">
+              <span v-if="groupsLoaded">{{ props.row.name }}</span>
+              <placeholder v-else></placeholder>
+            </transition>
+          </b-table-column>
+          <b-table-column field="abteilung" label="Abteilig">
+            <transition name="fade" mode="out-in">
+              <span v-if="groupsLoaded">{{ props.row.abteilung.name }}</span>
+              <placeholder v-else></placeholder>
+            </transition>
+          </b-table-column>
+        </template>
+      </b-table>
     </div>
   </div>
 </template>
@@ -19,11 +34,10 @@ import BTableColumn from 'buefy/src/components/table/TableColumn'
 import BIcon from 'buefy/src/components/icon/Icon'
 import Placeholder from '@/components/Placeholder'
 import TramHeader from '@/components/TramHeader'
-import GroupList from '@/components/GroupList'
 
 export default {
   name: 'Dashboard',
-  components: { GroupList, Placeholder, BIcon, BTable, BTableColumn, TramHeader },
+  components: { Placeholder, BIcon, BTable, BTableColumn, TramHeader },
   firestore: {
     groups: groupsDB,
     abteilungen: abteilungenDB
@@ -42,6 +56,8 @@ export default {
     groupsLoaded () {
       return !!(this.$firestoreRefs && this.$firestoreRefs['groups'])
     },
+    groupsOrDummy () {
+      return this.groupsLoaded ? this.groups : [ {}, {}, {} ]
     },
     operator () {
       if (!this.loggedInUser || !this.loggedInUser.group || !this.loggedInUser.group.abteilung) {
