@@ -2,6 +2,9 @@
   <div class="columns is-multiline">
     <tram-header>Gruppä {{ group.name }}</tram-header>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
+      Saldo: {{ saldo(group.id) }}.-
+    </div>
+    <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
       <header class="title is-5">Station chaufä oder bsuächä</header>
       <b-table :data="stations" striped hoverable>
         <template slot-scope="props">
@@ -18,10 +21,11 @@
 </template>
 
 <script>
-import { groupsDB, requireOperator, stationsDB } from '@/firebaseConfig'
+import { groupsDB, requireOperator, settingsDB, stationsDB } from '@/firebaseConfig'
 import TramHeader from '@/components/TramHeader'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
+import { groupSaldo } from '@/business'
 
 export default {
   name: 'Action',
@@ -29,17 +33,24 @@ export default {
   data () {
     return {
       group: { name: '' },
-      stations: []
+      stations: [],
+      settings: null
     }
   },
   firestore: {
-    stations: stationsDB
+    stations: stationsDB,
+    settings: settingsDB
   },
   beforeRouteEnter (to, from, next) {
     requireOperator(to, from, next)
   },
   created () {
     this.$bind('group', groupsDB.doc(this.$route.params.group))
+  },
+  methods: {
+    saldo (groupId) {
+      return groupSaldo(groupId, this.settings)
+    }
   }
 }
 </script>
