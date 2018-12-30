@@ -86,4 +86,8 @@ export default {
   .button {
     font-weight: $weight-medium;
   }
+
+  tr.is-strikethrough {
+    color: $grey-light;
+  }
 </style>

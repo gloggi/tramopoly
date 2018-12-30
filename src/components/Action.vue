@@ -6,7 +6,7 @@
     </div>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
       <header class="title is-5">Station chaufä oder bsuächä</header>
-      <b-table :data="stations" striped hoverable>
+      <b-table :data="stations" striped hoverable :row-class="stationListRowClass">
         <template slot-scope="props">
           <b-table-column field="name" label="Station">
             {{ props.row.name }}
@@ -50,11 +50,10 @@ export default {
   methods: {
     saldo (groupId) {
       return groupSaldo(groupId, this.settings)
+    },
+    stationListRowClass (row) {
+      return row.value > this.saldo(this.group.id) ? 'is-strikethrough' : ''
     }
   }
 }
 </script>
-
-<style scoped>
-
-</style>
