@@ -26,7 +26,7 @@ const router = new Router({
       component: Zentrale
     },
     {
-      path: '/zentrale/:caller/aktion',
+      path: '/zentrale/:group/aktion',
       name: 'action',
       component: Action
     }

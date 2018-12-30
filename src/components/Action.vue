@@ -1,5 +1,5 @@
 <template>
-  <span>Aktionä für d Gruppä vom Leiter mit Nummärä {{ $route.params.caller }}</span>
+  <span>Aktionä für d Gruppä {{ $route.params.group }}</span>
 </template>
 
 <script>

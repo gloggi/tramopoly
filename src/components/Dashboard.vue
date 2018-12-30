@@ -2,9 +2,9 @@
   <div class="columns is-multiline">
     <tram-header>Dashboard</tram-header>
     <div v-if="operator != null" class="box column is-full is-one-third-desktop is-offset-one-third-desktop has-text-centered">
-      <button v-if="!operatorBusy" class="button is-link is-outlined" @click="callOperator">📞 Zentrale ({{ operatorName }})</button>
-      <button v-else-if="loggedInUserIsActiveCaller" class="button is-link is-outlined is-danger" @click="finishCall">🚫 Meinen Anruf beenden</button>
-      <button v-else class="button is-link is-outlined" @click="callOperator">🚫 Zentrale ({{ operatorName }} besetzt)</button>
+      <button v-if="!operatorBusy" class="button is-link is-outlined" @click="callOperator">📞 Zentralä ({{ operatorName }})</button>
+      <button v-else-if="loggedInUserIsActiveCaller" class="button is-link is-outlined is-danger" @click="finishCall">🚫 Färtig telefoniärt</button>
+      <button v-else class="button is-link is-outlined" @click="callOperator">🚫 Zentralä ({{ operatorName }} bsetzt)</button>
     </div>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
       <b-table :data="groupsOrDummy" striped hoverable>
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { groupsDB, abteilungenDB, requireAuth } from '@/firebaseConfig'
+import { groupsDB, abteilungenDB, requireAuth, updateUser } from '@/firebaseConfig'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
 import BIcon from 'buefy/src/components/icon/Icon'
@@ -75,6 +75,11 @@ export default {
     operatorPhone () {
       return this.operator ? this.operator.phone : null
     },
+    operatorId () {
+      // ugly hack because vuefire doesn't add id to referenced documents
+      return this.operator ? this.loggedInUser.group.abteilung.operator.substring(
+        this.loggedInUser.group.abteilung.operator.lastIndexOf('/') + 1) : null
+    },
     operatorBusy () {
       return this.operator !== null && this.operator.activeCall !== ''
     },
@@ -84,12 +89,17 @@ export default {
   },
   methods: {
     callOperator () {
-      this.$firestoreRefs.operator.child('activeCall').set(this.loggedInUser.phone)
-      setTimeout(() => { window.location = 'tel:' + this.operatorPhone }, 300)
+      if (!this.operatorBusy) {
+        updateUser(this.operatorId, { 'activeCall': this.loggedInUser.phone }).then(() => {
+          window.location = 'tel:' + this.operatorPhone
+        })
+      } else {
+        window.location = 'tel:' + this.operatorPhone
+      }
     },
     finishCall () {
       if (this.loggedInUserIsActiveCaller) {
-        this.$firestoreRefs.operator.child('activeCall').remove()
+        updateUser(this.operatorId, {'activeCall': ''})
       }
     }
   }

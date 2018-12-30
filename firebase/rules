@@ -7,8 +7,8 @@ service cloud.firestore {
 
     function isOperator() {
     	return isLoggedIn()
-      		&& exists(path("/databases/" + database + "/documents/users/" + request.auth.token.phone_number))
-          && get(path("/databases/" + database + "/documents/users/" + request.auth.token.phone_number)).data.isOperator == true;
+      		&& exists(path("/databases/" + database + "/documents/users/" + request.auth.uid))
+          && get(path("/databases/" + database + "/documents/users/" + request.auth.uid)).data.isOperator == true;
     }
 
     match /{collection=**} {
@@ -40,9 +40,9 @@ service cloud.firestore {
     match /stations/{document=**} {
       allow read: if isLoggedIn();
     }
-    match /users/{tel} {
+    match /users/{uid} {
     	allow read: if true;
-      allow list: if false;
+      allow write: if isLoggedIn();
     }
   }
 }

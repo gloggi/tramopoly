@@ -43,6 +43,10 @@ export function bindUserById (vm, member, uid) {
   }
 }
 
+export function updateUser (uid, changes) {
+  return db.collection('users').doc(uid).update(changes)
+}
+
 export function bindLoggedInUser (vm, member, cancelCallback, readyCallback) {
   auth.onAuthStateChanged(loggedInUser => {
     if (loggedInUser) {
