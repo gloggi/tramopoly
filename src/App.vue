@@ -14,13 +14,13 @@
 </template>
 
 <script>
-import { auth, bindUserByPhone } from '@/firebaseConfig'
+import { auth, bindUserById } from '@/firebaseConfig'
 
 export default {
   name: 'Tramopoly',
   data () {
     return {
-      firebaseUser: {},
+      firestoreUser: {},
       user: null
     }
   },
@@ -34,14 +34,14 @@ export default {
   },
   methods: {
     getLoginStatus (onLoginStatusAvailable = null) {
-      auth.onAuthStateChanged(firebaseUser => {
-        if (firebaseUser) {
-          this.firebaseUser = firebaseUser
+      auth.onAuthStateChanged(firestoreUser => {
+        if (firestoreUser) {
+          this.firestoreUser = firestoreUser
         } else {
-          this.firebaseUser = null
+          this.firestoreUser = null
         }
         if (onLoginStatusAvailable !== null) {
-          onLoginStatusAvailable(firebaseUser)
+          onLoginStatusAvailable(firestoreUser)
         }
       })
     },
@@ -55,7 +55,7 @@ export default {
     }
   },
   created () {
-    this.getLoginStatus(() => bindUserByPhone(this, 'user', 'firebaseUser.phoneNumber'))
+    this.getLoginStatus(firestoreUser => bindUserById(this, 'user', firestoreUser.uid || null))
   }
 }
 </script>

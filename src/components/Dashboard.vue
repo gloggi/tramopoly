@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { bindUserByPhone, groupsDB, abteilungenDB, requireAuth } from '@/firebaseConfig'
+import { groupsDB, abteilungenDB, requireAuth } from '@/firebaseConfig'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
 import BIcon from 'buefy/src/components/icon/Icon'
@@ -31,7 +31,6 @@ export default {
   data () {
     return {
       loggedInUser: null,
-      operator: null,
       groups: [],
       abteilungen: []
     }
@@ -43,44 +42,33 @@ export default {
     groupsLoaded () {
       return !!(this.$firestoreRefs && this.$firestoreRefs['groups'])
     },
+    },
+    operator () {
+      if (!this.loggedInUser || !this.loggedInUser.group || !this.loggedInUser.group.abteilung) {
+        return null
+      }
+      let loggedInUserAbteilung = this.abteilungen.find(abteilung => abteilung.name === this.loggedInUser.group.abteilung.name)
+      if (!loggedInUserAbteilung || !loggedInUserAbteilung.operator) {
+        return null
+      }
+      return loggedInUserAbteilung.operator
+    },
     operatorName () {
-      return this.operator ? this.operator['scoutName'] : null
+      return this.operator ? this.operator.scoutName : null
     },
     operatorPhone () {
-      if (!this.loggedInUser || !this.loggedInUser['groupName'] || !this.groups) {
-        return null
-      }
-      let groupOfLoggedInUser = this.groups.find(g => g['name'] === this.loggedInUser['groupName'])
-      if (!groupOfLoggedInUser || !groupOfLoggedInUser['abteilung'] || !this.abteilungen) {
-        return null
-      }
-      let abteilungOfLoggedInUser = this.abteilungen.find(a => a['name'] === groupOfLoggedInUser['abteilung'])
-      if (!abteilungOfLoggedInUser || !abteilungOfLoggedInUser['operatorPhone']) {
-        return null
-      }
-      return abteilungOfLoggedInUser['operatorPhone']
+      return this.operator ? this.operator.phone : null
     },
     operatorBusy () {
-      return this.operator['activeCall'] !== undefined
+      return this.operator !== null && this.operator.activeCall !== ''
     },
     loggedInUserIsActiveCaller () {
-      return this.operatorBusy && this.operator['activeCall'] === this.loggedInUser['.key']
-    }
-  },
-  watch: {
-    operatorPhone: function () {
-      if (!this.operatorPhone) {
-        if (this.$firestoreRefs['operator']) {
-          this.$unbind('operator')
-        }
-      } else {
-        bindUserByPhone(this, 'operator', 'operatorPhone')
-      }
+      return this.operatorBusy && this.operator.activeCall === this.loggedInUser.phone
     }
   },
   methods: {
     callOperator () {
-      this.$firestoreRefs.operator.child('activeCall').set(this.loggedInUser['.key'])
+      this.$firestoreRefs.operator.child('activeCall').set(this.loggedInUser.phone)
       setTimeout(() => { window.location = 'tel:' + this.operatorPhone }, 300)
     },
     finishCall () {

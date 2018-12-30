@@ -23,18 +23,30 @@ export const groupsDB = db.collection('groups')
 export const abteilungenDB = db.collection('abteilungen')
 export { auth, RecaptchaVerifier }
 
-export function bindUserByPhone (vm, member, phone) {
+export function bindUserByReactivePhone (vm, member, phone) {
   vm.$watch(phone, (changedPhone) => {
     if (changedPhone) {
-      vm.$bind(member, db.collection('users').doc(changedPhone))
+      db.collection('users').where('phone', '==', changedPhone).onSnapshot(snapshot => {
+        if (!snapshot.empty) {
+          vm.$bind(member, db.collection('users').doc(snapshot.docs[0].id))
+        }
+      })
     }
   }, { immediate: true })
+}
+
+export function bindUserById (vm, member, uid) {
+  if (uid !== null) {
+    vm.$bind(member, db.collection('users').doc(uid))
+  } else {
+    vm.$unbind(member)
+  }
 }
 
 export function bindLoggedInUser (vm, member, cancelCallback, readyCallback) {
   auth.onAuthStateChanged(loggedInUser => {
     if (loggedInUser) {
-      vm.$bind(member, db.collection('users').doc(loggedInUser.phoneNumber)).then(readyCallback).catch(cancelCallback)
+      vm.$bind(member, db.collection('users').doc(loggedInUser.uid)).then(readyCallback).catch(cancelCallback)
     } else if (vm.$firestoreRefs && vm.$firestoreRefs[member]) {
       vm.$unbind(member)
     }
@@ -55,7 +67,7 @@ export function requireAuth (to, from, next) {
 export function requireOperator (to, from, next) {
   next(vm => {
     bindLoggedInUser(vm, 'loggedInOperator', null, () => {
-      if (!vm.loggedInOperator || !vm.loggedInOperator['isOperator']) {
+      if (!vm.loggedInOperator || !vm.loggedInOperator.isOperator) {
         vm.$router.replace({ name: 'index' })
       }
     })

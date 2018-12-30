@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { auth, RecaptchaVerifier, groupsDB, abteilungenDB, bindUserByPhone } from '@/firebaseConfig'
+import { auth, RecaptchaVerifier, groupsDB, abteilungenDB, bindUserByReactivePhone } from '@/firebaseConfig'
 import BField from 'buefy/src/components/field/Field'
 import BInput from 'buefy/src/components/input/Input'
 import BAutocomplete from 'buefy/src/components/autocomplete/Autocomplete'
@@ -115,7 +115,7 @@ export default {
     this.initRecaptcha()
   },
   created () {
-    bindUserByPhone(this, 'specifiedUser', 'normalizedPhone')
+    bindUserByReactivePhone(this, 'specifiedUser', 'normalizedPhone')
   }
 }
 </script>
