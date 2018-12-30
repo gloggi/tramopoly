@@ -1,10 +1,46 @@
 <template>
-  <span>Aktionä für d Gruppä {{ $route.params.group }}</span>
+  <div class="columns is-multiline">
+    <tram-header>Gruppä {{ group.name }}</tram-header>
+    <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
+      <header class="title is-5">Station chaufä oder bsuächä</header>
+      <b-table :data="stations" striped hoverable>
+        <template slot-scope="props">
+          <b-table-column field="name" label="Station">
+            {{ props.row.name }}
+          </b-table-column>
+          <b-table-column field="value" label="Wert">
+            {{ props.row.value }}.-
+          </b-table-column>
+        </template>
+      </b-table>
+    </div>
+  </div>
 </template>
 
 <script>
+import { groupsDB, requireOperator, stationsDB } from '@/firebaseConfig'
+import TramHeader from '@/components/TramHeader'
+import BTable from 'buefy/src/components/table/Table'
+import BTableColumn from 'buefy/src/components/table/TableColumn'
+
 export default {
-  name: 'Action'
+  name: 'Action',
+  components: { BTableColumn, BTable, TramHeader },
+  data () {
+    return {
+      group: { name: '' },
+      stations: []
+    }
+  },
+  firestore: {
+    stations: stationsDB
+  },
+  beforeRouteEnter (to, from, next) {
+    requireOperator(to, from, next)
+  },
+  created () {
+    this.$bind('group', groupsDB.doc(this.$route.params.group))
+  }
 }
 </script>
 

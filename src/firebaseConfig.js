@@ -21,6 +21,7 @@ let RecaptchaVerifier = firebase.auth.RecaptchaVerifier
 
 export const groupsDB = db.collection('groups')
 export const abteilungenDB = db.collection('abteilungen')
+export const stationsDB = db.collection('stations')
 export { auth, RecaptchaVerifier }
 
 export function bindUserByReactivePhone (vm, member, phone) {
