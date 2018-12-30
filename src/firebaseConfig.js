@@ -51,7 +51,9 @@ export function updateUser (uid, changes) {
 export function bindLoggedInUser (vm, member, cancelCallback, readyCallback) {
   auth.onAuthStateChanged(loggedInUser => {
     if (loggedInUser) {
-      vm.$bind(member, db.collection('users').doc(loggedInUser.uid)).then(readyCallback).catch(cancelCallback)
+      vm.$bind(member, db.collection('users').doc(loggedInUser.uid), { maxRefDepth: 3 })
+        .then(readyCallback)
+        .catch(cancelCallback)
     } else if (vm.$firestoreRefs && vm.$firestoreRefs[member]) {
       vm.$unbind(member)
     }

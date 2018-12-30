@@ -60,14 +60,10 @@ export default {
       return this.groupsLoaded ? this.groups : [ {}, {}, {} ]
     },
     operator () {
-      if (!this.loggedInUser || !this.loggedInUser.group || !this.loggedInUser.group.abteilung) {
+      if (!this.loggedInUser || !this.loggedInUser.group || !this.loggedInUser.group.abteilung || !this.loggedInUser.group.abteilung.operator) {
         return null
       }
-      let loggedInUserAbteilung = this.abteilungen.find(abteilung => abteilung.name === this.loggedInUser.group.abteilung.name)
-      if (!loggedInUserAbteilung || !loggedInUserAbteilung.operator) {
-        return null
-      }
-      return loggedInUserAbteilung.operator
+      return this.loggedInUser.group.abteilung.operator
     },
     operatorName () {
       return this.operator ? this.operator.scoutName : null
@@ -76,9 +72,7 @@ export default {
       return this.operator ? this.operator.phone : null
     },
     operatorId () {
-      // ugly hack because vuefire doesn't add id to referenced documents
-      return this.operator ? this.loggedInUser.group.abteilung.operator.substring(
-        this.loggedInUser.group.abteilung.operator.lastIndexOf('/') + 1) : null
+      return this.operator ? this.operator.id : null
     },
     operatorBusy () {
       return this.operator !== null && this.operator.activeCall !== ''
