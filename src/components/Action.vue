@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { groupsDB, requireOperator, settingsDB, stationsDB } from '@/firebaseConfig'
+import { groupsDB, requireOperator, settingsDB, stationsDB, stationVisitsDB } from '@/firebaseConfig'
 import TramHeader from '@/components/TramHeader'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
@@ -34,12 +34,14 @@ export default {
     return {
       group: { name: '' },
       stations: [],
-      settings: null
+      settings: null,
+      stationVisits: []
     }
   },
   firestore: {
     stations: stationsDB,
-    settings: settingsDB
+    settings: settingsDB,
+    stationVisits: stationVisitsDB
   },
   beforeRouteEnter (to, from, next) {
     requireOperator(to, from, next)
@@ -49,7 +51,7 @@ export default {
   },
   methods: {
     saldo (groupId) {
-      return groupSaldo(groupId, this.settings)
+      return groupSaldo(groupId, this.settings, this.stationVisits)
     },
     stationListRowClass (row) {
       return row.value > this.saldo(this.group.id) ? 'is-strikethrough' : ''
