@@ -2,20 +2,23 @@
   <div class="columns is-multiline">
     <tram-header>Gruppä {{ group.name }}</tram-header>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
-      Saldo: {{ saldo(group.id) }}.-
+      Saldo: {{ saldo }}.-
     </div>
-    <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
-      <header class="title is-5">Station chaufä oder bsuächä</header>
-      <b-table :data="stations" striped hoverable :row-class="stationListRowClass">
-        <template slot-scope="props">
-          <b-table-column field="name" label="Station">
-            {{ props.row.name }}
-          </b-table-column>
-          <b-table-column field="value" label="Wert">
-            {{ props.row.value }}.-
-          </b-table-column>
-        </template>
-      </b-table>
+    <div class="panel column is-full is-one-third-desktop is-offset-one-third-desktop">
+      <header class="panel-heading">Station chaufä oder bsuächä</header>
+      <div class="panel-block">
+        <div class="field has-addons" style="width: 100%">
+          <p class="control has-icons-left is-expanded">
+            <input class="input is-small" type="text" placeholder="Filtärä" v-model="searchterm">
+            <span class="icon is-small is-left">🔍</span>
+          </p>
+          <a class="button is-small" v-if="searchterm !== ''" @click="resetSearchTerm">❌</a>
+        </div>
+      </div>
+      <template v-for="station in filteredStations">
+        <a v-if="canVisitStation(station)" :key="station.id" class="panel-block">{{ station.name }} {{ station.value }}.-</a>
+        <a v-else :key="station.id" class="panel-block is-strikethrough">{{ station.name }} {{ station.value }}.-</a>
+      </template>
     </div>
   </div>
 </template>
@@ -35,7 +38,8 @@ export default {
       group: { name: '' },
       stations: [],
       settings: null,
-      stationVisits: []
+      stationVisits: [],
+      searchterm: ''
     }
   },
   firestore: {
@@ -50,11 +54,19 @@ export default {
     this.$bind('group', groupsDB.doc(this.$route.params.group))
   },
   methods: {
-    saldo (groupId) {
-      return groupSaldo(groupId, this.settings, this.stationVisits)
+    canVisitStation (station) {
+      return station.value <= this.saldo
     },
-    stationListRowClass (row) {
-      return row.value > this.saldo(this.group.id) ? 'is-strikethrough' : ''
+    resetSearchTerm () {
+      this.searchterm = ''
+    }
+  },
+  computed: {
+    saldo () {
+      return groupSaldo(this.group.id, this.settings, this.stationVisits)
+    },
+    filteredStations () {
+      return this.stations.filter(station => station.name && station.name.toLocaleLowerCase().includes(this.searchterm.toLocaleLowerCase()))
     }
   }
 }

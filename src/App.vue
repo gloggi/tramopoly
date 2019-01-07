@@ -87,7 +87,7 @@ export default {
     font-weight: $weight-medium;
   }
 
-  tr.is-strikethrough {
+  .panel-block.is-strikethrough {
     color: $grey-light;
   }
 </style>
