@@ -6,7 +6,7 @@
         <span v-else-if="userIsLoggedIn" class="level-item">Willkommä.</span>
         <a v-if="userIsLoggedIn" class="level-item" @click="signout()">Uusloggä</a>
         <router-link v-else :to="{ name: 'login' }" class="level-item">Iiloggä</router-link>
-        <router-link v-if="userIsOperator" :to="{ name: 'zentrale' }" class="level-item">Zentrale</router-link>
+        <router-link v-if="userIsOperator" :to="{ name: 'zentrale' }" class="level-item">Zentralä</router-link>
       </div>
     </div>
     <router-view/>
