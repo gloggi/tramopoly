@@ -23,7 +23,7 @@ export const groupsDB = db.collection('groups')
 export const abteilungenDB = db.collection('abteilungen')
 export const stationsDB = db.collection('stations')
 export const settingsDB = db.collection('settings').doc('settings')
-export const stationVisitsDB = db.collection('stationVisits').where('time', '>', new Date(0))
+export const stationVisitsDB = db.collection('stationVisits').where('time', '>', new Date(0)).orderBy('time')
 export { auth, RecaptchaVerifier }
 
 export function bindUserByReactivePhone (vm, member, phone) {
@@ -52,7 +52,7 @@ export function updateUser (uid, changes) {
 
 export function addStationVisit (groupId, stationId) {
   let time = new Date()
-  return db.collection('stationVisits').doc(groupId + '.' + stationId + '.' + time.toLocaleTimeString('de-CH')).set({
+  return db.collection('stationVisits').doc(time.toLocaleTimeString('de-CH') + ' ' + groupId + ' ' + stationId).set({
     group: db.collection('groups').doc(groupId),
     station: db.collection('stations').doc(stationId),
     time

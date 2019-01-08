@@ -26,3 +26,7 @@ function buyingCost (visits) {
 function rentAmount (visits, rentRate) {
   return visits.reduce((total, visit) => total + visit.station.value * rentRate, 0)
 }
+
+export function stationOwners (stationVisits) {
+  return stationVisits.reduceRight((map, visit) => map.set(visit.station.id, visit.group.id), new Map())
+}

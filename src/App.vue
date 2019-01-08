@@ -90,4 +90,8 @@ export default {
   .panel-block.is-strikethrough {
     color: $grey-light;
   }
+
+  .panel-block span {
+    margin-right: 0.3em;
+  }
 </style>

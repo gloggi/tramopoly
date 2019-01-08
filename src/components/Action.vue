@@ -16,8 +16,22 @@
         </div>
       </div>
       <template v-for="station in filteredStations">
-        <a v-if="canVisitStation(station)" :key="station.id" class="panel-block" @click="visitStation(station)">{{ station.name }} {{ station.value }}.-</a>
-        <a v-else :key="station.id" class="panel-block is-strikethrough">{{ station.name }} {{ station.value }}.-</a>
+        <div v-if="ownsStation(station)" :key="station.id" class="panel-block is-owned">
+          <span class="panel-icon">✅</span>
+          <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
+        </div>
+        <div v-else-if="visitedStations.map(visited => visited.id).includes(station.id)" :key="station.id" class="panel-block is-visited-before">
+          <span class="panel-icon">❎</span>
+          <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
+        </div>
+        <div v-else-if="!canVisitStation(station)" :key="station.id" class="panel-block is-strikethrough">
+          <span class="panel-icon"></span>
+          <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
+        </div>
+        <a v-else :key="station.id" class="panel-block" @click="visitStation(station)">
+          <span class="panel-icon"></span>
+          <span class="has-text-weight-bold">{{ station.name }}</span> <span>{{ station.value }}.-</span>
+        </a>
       </template>
     </div>
   </div>
@@ -28,7 +42,7 @@ import { addStationVisit, groupsDB, requireOperator, settingsDB, stationsDB, sta
 import TramHeader from '@/components/TramHeader'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
-import { groupSaldo } from '@/business'
+import { groupSaldo, stationOwners } from '@/business'
 
 export default {
   name: 'Action',
@@ -57,6 +71,9 @@ export default {
     canVisitStation (station) {
       return station.value <= this.saldo
     },
+    ownsStation (station) {
+      return this.stationOwners.get(station.id) === this.group.id
+    },
     resetSearchTerm () {
       this.searchterm = ''
     },
@@ -70,6 +87,12 @@ export default {
     },
     filteredStations () {
       return this.stations.filter(station => station.name && station.name.toLocaleLowerCase().includes(this.searchterm.toLocaleLowerCase()))
+    },
+    stationOwners () {
+      return stationOwners(this.stationVisits)
+    },
+    visitedStations () {
+      return this.stationVisits.filter(visit => visit.group.id === this.group.id).map(visit => visit.station)
     }
   }
 }
