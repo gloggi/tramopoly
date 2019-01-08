@@ -16,7 +16,7 @@
         </div>
       </div>
       <template v-for="station in filteredStations">
-        <a v-if="canVisitStation(station)" :key="station.id" class="panel-block">{{ station.name }} {{ station.value }}.-</a>
+        <a v-if="canVisitStation(station)" :key="station.id" class="panel-block" @click="visitStation(station)">{{ station.name }} {{ station.value }}.-</a>
         <a v-else :key="station.id" class="panel-block is-strikethrough">{{ station.name }} {{ station.value }}.-</a>
       </template>
     </div>
@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { groupsDB, requireOperator, settingsDB, stationsDB, stationVisitsDB } from '@/firebaseConfig'
+import { addStationVisit, groupsDB, requireOperator, settingsDB, stationsDB, stationVisitsDB } from '@/firebaseConfig'
 import TramHeader from '@/components/TramHeader'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
@@ -59,6 +59,9 @@ export default {
     },
     resetSearchTerm () {
       this.searchterm = ''
+    },
+    visitStation (station) {
+      addStationVisit(this.group.id, station.id)
     }
   },
   computed: {

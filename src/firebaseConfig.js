@@ -50,6 +50,15 @@ export function updateUser (uid, changes) {
   return db.collection('users').doc(uid).update(changes)
 }
 
+export function addStationVisit (groupId, stationId) {
+  let time = new Date()
+  return db.collection('stationVisits').doc(groupId + '.' + stationId + '.' + time.toLocaleTimeString('de-CH')).set({
+    group: db.collection('groups').doc(groupId),
+    station: db.collection('stations').doc(stationId),
+    time
+  })
+}
+
 export function bindLoggedInUser (vm, member, cancelCallback, readyCallback) {
   auth.onAuthStateChanged(loggedInUser => {
     if (loggedInUser) {
