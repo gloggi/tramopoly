@@ -1,8 +1,9 @@
 
-export function groupSaldo (groupId, settings, stationVisits, now = new Date()) {
+export function groupSaldo (groupId, settings, stationVisits, jokerVisits, now = new Date()) {
   if (!settings) return 0
   return settings.starterCash +
-    stationExpenses(groupId, stationVisits, settings, now)
+    stationExpenses(groupId, stationVisits, settings, now) +
+    jokerIncome(groupId, jokerVisits, now)
 }
 
 export function stationOwners (stationVisits, now = new Date()) {
@@ -35,6 +36,11 @@ function interestAmount (visits, period, rate, gameEnd, now) {
   return Math.round(visits.map(visit => (Math.min(now, gameEnd.toDate()) - visit.time.toDate()) / 60000.0 / period * rate * visit.station.value).reduce((sum, stationInterest) => sum + stationInterest, 0.0))
 }
 
-function filter (stationVisits, now) {
-  return stationVisits.filter(visit => visit.time.toDate() <= now)
+function jokerIncome (groupId, jokerVisits, now) {
+  if (!jokerVisits) return 0
+  return filter(jokerVisits, now).filter(visit => visit.group.id === groupId).reduce((sum, visit) => sum + visit.station.value, 0)
+}
+
+function filter (visits, now) {
+  return visits.filter(visit => visit.time.toDate() <= now)
 }

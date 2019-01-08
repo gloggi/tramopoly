@@ -24,6 +24,7 @@ service cloud.firestore {
     }
     match /jokerVisits/{document=**} {
       allow read: if isLoggedIn()
+      allow write: if isOperator();
     }
     match /jokers/{document=**} {
       allow read: if isLoggedIn();

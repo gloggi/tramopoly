@@ -16,7 +16,15 @@
         </div>
       </div>
       <template v-for="station in filteredStations">
-        <div v-if="ownsStation(station)" :key="station.id" class="panel-block is-owned">
+        <div v-if="station.joker && hasVisitedJoker(station)" :key="'joker-' + station.name" class="panel-block is-owned">
+          <span class="panel-icon">🃏</span>
+          <span class="has-text-weight-bold">{{ station.name }} (Joker)</span><span>{{ station.value }}.-</span>
+        </div>
+        <a v-else-if="station.joker" :key="'joker-' + station.name" class="panel-block" @click="visitJoker(station)">
+          <span class="panel-icon"></span>
+          <span class="has-text-weight-bold">{{ station.name }} (Joker)</span><span>{{ station.value }}.-</span>
+        </a>
+        <div v-else-if="ownsStation(station)" :key="station.id" class="panel-block is-owned">
           <span class="panel-icon">✅</span>
           <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
         </div>
@@ -38,7 +46,16 @@
 </template>
 
 <script>
-import { addStationVisit, groupsDB, requireOperator, settingsDB, stationsDB, stationVisitsDB } from '@/firebaseConfig'
+import {
+  addJokerVisit,
+  addStationVisit,
+  groupsDB, jokersDB,
+  jokerVisitsDB,
+  requireOperator,
+  settingsDB,
+  stationsDB,
+  stationVisitsDB
+} from '@/firebaseConfig'
 import TramHeader from '@/components/TramHeader'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
@@ -51,8 +68,10 @@ export default {
     return {
       group: { name: '' },
       stations: [],
+      jokers: [],
       settings: null,
       stationVisits: [],
+      jokerVisits: [],
       searchterm: '',
       now: new Date(),
       saldoTimer: null
@@ -60,8 +79,10 @@ export default {
   },
   firestore: {
     stations: stationsDB,
+    jokers: jokersDB,
     settings: settingsDB,
-    stationVisits: stationVisitsDB
+    stationVisits: stationVisitsDB,
+    jokerVisits: jokerVisitsDB
   },
   beforeRouteEnter (to, from, next) {
     requireOperator(to, from, next)
@@ -82,19 +103,28 @@ export default {
     ownsStation (station) {
       return this.stationOwners.get(station.id) === this.group.id
     },
+    hasVisitedJoker (joker) {
+      return this.jokerVisits.some(visit => visit.group.id === this.group.id && visit.station.id === joker.id)
+    },
     resetSearchTerm () {
       this.searchterm = ''
     },
     visitStation (station) {
       addStationVisit(this.group.id, station.id).then(() => this.updateNow())
+    },
+    visitJoker (joker) {
+      addJokerVisit(this.group.id, joker.id).then(() => this.updateNow())
     }
   },
   computed: {
     saldo () {
-      return groupSaldo(this.group.id, this.settings, this.stationVisits, this.now)
+      return groupSaldo(this.group.id, this.settings, this.stationVisits, this.jokerVisits, this.now)
+    },
+    combinedStations () {
+      return this.stations.map(station => ({ id: station.id, ...station })).concat(this.jokers.map(joker => ({ joker: true, id: joker.id, ...joker }))).sort((a, b) => a.name.localeCompare(b.name))
     },
     filteredStations () {
-      return this.stations.filter(station => station.name && station.name.toLocaleLowerCase().includes(this.searchterm.toLocaleLowerCase()))
+      return this.combinedStations.filter(station => station.name && (station.name + (station.joker ? ' (Joker)' : '')).toLocaleLowerCase().includes(this.searchterm.toLocaleLowerCase()))
     },
     stationOwners () {
       return stationOwners(this.stationVisits)

@@ -22,8 +22,10 @@ let RecaptchaVerifier = firebase.auth.RecaptchaVerifier
 export const groupsDB = db.collection('groups')
 export const abteilungenDB = db.collection('abteilungen')
 export const stationsDB = db.collection('stations')
+export const jokersDB = db.collection('jokers')
 export const settingsDB = db.collection('settings').doc('settings')
 export const stationVisitsDB = db.collection('stationVisits').where('time', '>', new Date(0)).orderBy('time')
+export const jokerVisitsDB = db.collection('jokerVisits').where('time', '>', new Date(0)).orderBy('time')
 export { auth, RecaptchaVerifier }
 
 export function bindUserByReactivePhone (vm, member, phone) {
@@ -55,6 +57,15 @@ export function addStationVisit (groupId, stationId) {
   return db.collection('stationVisits').doc(time.toLocaleTimeString('de-CH') + ' ' + groupId + ' ' + stationId).set({
     group: db.collection('groups').doc(groupId),
     station: db.collection('stations').doc(stationId),
+    time
+  })
+}
+
+export function addJokerVisit (groupId, jokerId) {
+  let time = new Date()
+  return db.collection('jokerVisits').doc(groupId + ' ' + jokerId).set({
+    group: db.collection('groups').doc(groupId),
+    station: db.collection('jokers').doc(jokerId),
     time
   })
 }
