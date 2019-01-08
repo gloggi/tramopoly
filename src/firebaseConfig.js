@@ -23,7 +23,7 @@ export const groupsDB = db.collection('groups')
 export const abteilungenDB = db.collection('abteilungen')
 export const stationsDB = db.collection('stations')
 export const settingsDB = db.collection('settings').doc('settings')
-export const stationVisitsDB = db.collection('stationVisits').where('time', '<=', new Date())
+export const stationVisitsDB = db.collection('stationVisits').where('time', '>', new Date(0))
 export { auth, RecaptchaVerifier }
 
 export function bindUserByReactivePhone (vm, member, phone) {
