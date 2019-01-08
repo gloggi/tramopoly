@@ -53,7 +53,9 @@ export default {
       stations: [],
       settings: null,
       stationVisits: [],
-      searchterm: ''
+      searchterm: '',
+      now: new Date(),
+      saldoTimer: null
     }
   },
   firestore: {
@@ -66,8 +68,14 @@ export default {
   },
   created () {
     this.$bind('group', groupsDB.doc(this.$route.params.group))
+    this.updateNow()
   },
   methods: {
+    updateNow () {
+      clearInterval(this.saldoTimer)
+      this.now = new Date()
+      this.saldoTimer = setInterval(this.updateNow, 1000 * 5)
+    },
     canVisitStation (station) {
       return station.value <= this.saldo
     },
@@ -78,12 +86,12 @@ export default {
       this.searchterm = ''
     },
     visitStation (station) {
-      addStationVisit(this.group.id, station.id)
+      addStationVisit(this.group.id, station.id).then(() => this.updateNow())
     }
   },
   computed: {
     saldo () {
-      return groupSaldo(this.group.id, this.settings, this.stationVisits)
+      return groupSaldo(this.group.id, this.settings, this.stationVisits, this.now)
     },
     filteredStations () {
       return this.stations.filter(station => station.name && station.name.toLocaleLowerCase().includes(this.searchterm.toLocaleLowerCase()))
