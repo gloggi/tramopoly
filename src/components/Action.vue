@@ -1,9 +1,7 @@
 <template>
   <div class="columns is-multiline">
     <tram-header>Gruppä {{ group.name }}</tram-header>
-    <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
-      Saldo: {{ saldo }}.-
-    </div>
+    <group-detail ref="groupDetails" :group-id="group && group.id" :update-interval="5"/>
     <div class="panel column is-full is-one-third-desktop is-offset-one-third-desktop">
       <header class="panel-heading">Station chaufä oder bsuächä</header>
       <div class="panel-block">
@@ -52,35 +50,31 @@ import {
   groupsDB, jokersDB,
   jokerVisitsDB,
   requireOperator,
-  settingsDB,
   stationsDB,
   stationVisitsDB
 } from '@/firebaseConfig'
 import TramHeader from '@/components/TramHeader'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
-import { groupSaldo, stationOwners } from '@/business'
+import { stationOwners } from '@/business'
+import GroupDetail from '@/components/GroupDetail'
 
 export default {
   name: 'Action',
-  components: { BTableColumn, BTable, TramHeader },
+  components: { GroupDetail, BTableColumn, BTable, TramHeader },
   data () {
     return {
       group: { name: '' },
       stations: [],
       jokers: [],
-      settings: null,
       stationVisits: [],
       jokerVisits: [],
-      searchterm: '',
-      now: new Date(),
-      saldoTimer: null
+      searchterm: ''
     }
   },
   firestore: {
     stations: stationsDB,
     jokers: jokersDB,
-    settings: settingsDB,
     stationVisits: stationVisitsDB,
     jokerVisits: jokerVisitsDB
   },
@@ -89,16 +83,10 @@ export default {
   },
   created () {
     this.$bind('group', groupsDB.doc(this.$route.params.group))
-    this.updateNow()
   },
   methods: {
-    updateNow () {
-      clearInterval(this.saldoTimer)
-      this.now = new Date()
-      this.saldoTimer = setInterval(this.updateNow, 1000 * 5)
-    },
     canVisitStation (station) {
-      return station.value <= this.saldo
+      return station.value <= this.$refs.groupDetails.saldo
     },
     ownsStation (station) {
       return this.stationOwners.get(station.id) === this.group.id
@@ -117,9 +105,6 @@ export default {
     }
   },
   computed: {
-    saldo () {
-      return groupSaldo(this.group.id, this.settings, this.stationVisits, this.jokerVisits, this.now)
-    },
     combinedStations () {
       return this.stations.map(station => ({ id: station.id, ...station })).concat(this.jokers.map(joker => ({ joker: true, id: joker.id, ...joker }))).sort((a, b) => a.name.localeCompare(b.name))
     },
