@@ -6,7 +6,7 @@
       <button @click="clearActiveCall" class="button is-danger">Aktivä Aruäf beändä</button>
     </div>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
-      <b-table :data="groupsOrDummy" striped hoverable selectable @select="selectGroup">
+      <b-table :data="groupsOrDummy" striped hoverable selectable @select="selectGroup" :row-class="markIfCallingGroup">
         <template slot-scope="props">
           <b-table-column field="name" label="Gruppä">
             <transition name="fade" mode="out-in">
@@ -64,6 +64,12 @@ export default {
     },
     selectGroup (group) {
       this.$router.push({ name: 'action', params: { group: group.id } })
+    },
+    markIfCallingGroup (group) {
+      return (this.loggedInOperator &&
+        this.loggedInOperator.activeCall &&
+        this.loggedInOperator.activeCall.group &&
+        this.loggedInOperator.activeCall.group.id === group.id) ? 'is-active-call' : ''
     }
   }
 }

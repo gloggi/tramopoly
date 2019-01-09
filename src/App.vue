@@ -93,4 +93,8 @@ export default {
   .panel-block span {
     margin-right: 0.3em;
   }
+
+  tr.is-active-call {
+    background: $green !important;
+  }
 </style>
