@@ -6,7 +6,7 @@
       <button @click="clearActiveCall" class="button is-danger">Aktivä Aruäf beändä</button>
     </div>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
-      <b-table :data="groupsOrDummy" striped hoverable>
+      <b-table :data="groupsOrDummy" striped hoverable selectable @select="selectGroup">
         <template slot-scope="props">
           <b-table-column field="name" label="Gruppä">
             <transition name="fade" mode="out-in">
@@ -18,13 +18,6 @@
             <transition name="fade" mode="out-in">
               <span v-if="groupsLoaded">{{ props.row.abteilung.name }}</span>
               <placeholder v-else></placeholder>
-            </transition>
-          </b-table-column>
-          <b-table-column field="calling" label="Aktion">
-            <transition name="fade" mode="out-in">
-              <span v-if="groupsLoaded">
-                <router-link class="button btn-primary is-outlined" :to="{ name: 'action', params: { group: props.row.id } }">📞</router-link>
-              </span>
             </transition>
           </b-table-column>
         </template>
@@ -69,8 +62,8 @@ export default {
     clearActiveCall () {
       updateUser(this.operatorId, { 'activeCall': '' })
     },
-    deleteGroup (group) {
-      groupsDB.child(group['.key']).remove()
+    selectGroup (group) {
+      this.$router.push({ name: 'action', params: { group: group.id } })
     }
   }
 }
