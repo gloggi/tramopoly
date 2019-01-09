@@ -37,7 +37,7 @@ import {
   addGroup,
   addUser,
   auth,
-  bindUserByReactivePhone,
+  bindUserByPhone,
   groupsDB,
   RecaptchaVerifier
 } from '@/firebaseConfig'
@@ -137,8 +137,10 @@ export default {
   mounted () {
     this.initRecaptcha()
   },
-  created () {
-    bindUserByReactivePhone(this, 'specifiedUser', 'normalizedPhone')
+  watch: {
+    normalizedPhone: function (changedPhone) {
+      bindUserByPhone(this, 'specifiedUser', changedPhone)
+    }
   }
 }
 </script>

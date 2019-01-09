@@ -28,19 +28,15 @@ export const stationVisitsDB = db.collection('stationVisits').where('time', '>',
 export const jokerVisitsDB = db.collection('jokerVisits').where('time', '>', new Date(0)).orderBy('time')
 export { auth, RecaptchaVerifier }
 
-export function bindUserByReactivePhone (vm, member, phone) {
-  vm.$watch(phone, (changedPhone) => {
-    if (changedPhone) {
-      db.collection('users').where('phone', '==', changedPhone).onSnapshot(snapshot => {
-        if (!snapshot.empty) {
-          vm.$bind(member, db.collection('users').doc(snapshot.docs[0].id))
-        } else if (vm._firestoreUnbinds[member]) {
-          vm.$unbind(member)
-          vm[member] = null
-        }
-      })
+export function bindUserByPhone (vm, member, phone) {
+  db.collection('users').where('phone', '==', phone).onSnapshot(snapshot => {
+    if (!snapshot.empty) {
+      vm.$bind(member, db.collection('users').doc(snapshot.docs[0].id))
+    } else if (vm._firestoreUnbinds[member]) {
+      vm.$unbind(member)
+      vm[member] = null
     }
-  }, { immediate: true })
+  })
 }
 
 export function bindUserById (vm, member, uid) {
