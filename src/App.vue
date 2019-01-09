@@ -4,9 +4,10 @@
       <div class="level-left">
         <span v-if="userIsLoggedIn && user.scoutName" class="level-item">Willkommä, {{user.scoutName}}.</span>
         <span v-else-if="userIsLoggedIn" class="level-item">Willkommä.</span>
-        <a v-if="userIsLoggedIn" class="level-item" @click="signout()">Uusloggä</a>
+        <a v-if="userIsLoggedIn" class="level-item" @click="signout">Uusloggä</a>
         <router-link v-else :to="{ name: 'login' }" class="level-item">Iiloggä</router-link>
         <router-link v-if="userIsOperator" :to="{ name: 'zentrale' }" class="level-item">Zentralä</router-link>
+        <a class="level-item" @click="support">Hilfe</a>
       </div>
     </div>
     <router-view @login="refreshLoginStatus"/>
@@ -51,6 +52,13 @@ export default {
       auth.signOut()
       await this.refreshLoginStatus()
       this.$router.push({ name: 'login' })
+    },
+    support () {
+      this.$snackbar.open({
+        message: 'Lüüt am Cosinus aa: Null Sibä Nüün, Drüü Acht Sächs, Sächs Sibä, Null Sächs',
+        position: 'is-top',
+        indefinite: true
+      })
     }
   },
   created () {
