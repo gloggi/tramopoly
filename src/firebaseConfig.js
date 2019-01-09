@@ -34,6 +34,9 @@ export function bindUserByReactivePhone (vm, member, phone) {
       db.collection('users').where('phone', '==', changedPhone).onSnapshot(snapshot => {
         if (!snapshot.empty) {
           vm.$bind(member, db.collection('users').doc(snapshot.docs[0].id))
+        } else if (vm._firestoreUnbinds[member]) {
+          vm.$unbind(member)
+          vm[member] = null
         }
       })
     }
@@ -42,10 +45,31 @@ export function bindUserByReactivePhone (vm, member, phone) {
 
 export function bindUserById (vm, member, uid) {
   if (uid !== null) {
-    vm.$bind(member, db.collection('users').doc(uid))
-  } else {
+    return vm.$bind(member, db.collection('users').doc(uid))
+  } else if (vm._firestoreUnbinds[member]) {
     vm.$unbind(member)
+    vm[member] = null
   }
+}
+
+export function addGroup (groupData, existingGroups) {
+  let abteilungId = groupData.abteilung.id
+  groupData.abteilung = abteilungenDB.doc(abteilungId)
+  let groupId = createUniqueGroupId(abteilungId, existingGroups)
+  let groupRef = db.collection('groups').doc(groupId)
+  groupRef.set(groupData)
+  return groupRef
+}
+
+function createUniqueGroupId (abteilungId, existingGroups) {
+  let existingGroupIds = existingGroups.map(group => group.id)
+  let index = 0
+  while (existingGroupIds.includes(abteilungId + index)) index++
+  return abteilungId + index
+}
+
+export function addUser (uid, userData) {
+  return db.collection('users').doc(uid).set(userData)
 }
 
 export function updateUser (uid, changes) {

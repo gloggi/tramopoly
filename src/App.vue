@@ -9,7 +9,7 @@
         <router-link v-if="userIsOperator" :to="{ name: 'zentrale' }" class="level-item">Zentralä</router-link>
       </div>
     </div>
-    <router-view/>
+    <router-view @login="refreshLoginStatus"/>
   </div>
 </template>
 
@@ -29,33 +29,32 @@ export default {
       return this.user !== null
     },
     userIsOperator () {
-      return this.userIsLoggedIn && this.user['isOperator']
+      return this.userIsLoggedIn && this.user.isOperator
     }
   },
   methods: {
-    getLoginStatus (onLoginStatusAvailable = null) {
-      auth.onAuthStateChanged(firestoreUser => {
-        if (firestoreUser) {
-          this.firestoreUser = firestoreUser
-        } else {
-          this.firestoreUser = null
-        }
-        if (onLoginStatusAvailable !== null) {
-          onLoginStatusAvailable(firestoreUser)
-        }
+    refreshLoginStatus () {
+      return new Promise(resolve => {
+        auth.onAuthStateChanged(firestoreUser => {
+          if (firestoreUser) {
+            this.firestoreUser = firestoreUser
+            bindUserById(this, 'user', firestoreUser.uid)
+          } else {
+            this.firestoreUser = {}
+            bindUserById(this, 'user', null)
+          }
+          resolve(firestoreUser)
+        })
       })
     },
-    signout () {
+    async signout () {
       auth.signOut()
+      await this.refreshLoginStatus()
       this.$router.push({ name: 'login' })
-      if (this.$firestoreRefs['user']) {
-        this.$unbind('user')
-      }
-      this.getLoginStatus()
     }
   },
   created () {
-    this.getLoginStatus(firestoreUser => bindUserById(this, 'user', firestoreUser.uid || null))
+    this.refreshLoginStatus()
   }
 }
 </script>

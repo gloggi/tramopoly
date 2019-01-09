@@ -9,12 +9,12 @@
           <b-input v-else v-model="specifiedUser.scoutName" disabled />
         </b-field>
         <b-field label="Gruppänamä">
-          <b-autocomplete v-if="!userIsAlreadyRegistered" v-model="groupName" open-on-focus :data="groups" field="name" required/>
+          <b-autocomplete v-if="!userIsAlreadyRegistered" v-model="groupName" open-on-focus :data="groups" field="name" @select="group => selectedGroup = group" required/>
           <b-input v-else v-model="specifiedUser.group.name" disabled />
         </b-field>
         <b-field label="Abteilig">
           <b-select v-if="!groupIsAlreadyRegistered" v-model="abteilung" expanded required>
-            <option v-for="abteilung in abteilungen" :value="abteilung['name']" :key="abteilung['name']">{{ abteilung['name'] }}</option>
+            <option v-for="abteilung in abteilungen" :value="abteilung" :key="abteilung.name">{{ abteilung.name }}</option>
           </b-select>
           <b-input v-else v-model="specifiedGroup.abteilung.name" disabled />
         </b-field>
@@ -32,7 +32,15 @@
 </template>
 
 <script>
-import { auth, RecaptchaVerifier, groupsDB, abteilungenDB, bindUserByReactivePhone } from '@/firebaseConfig'
+import {
+  abteilungenDB,
+  addGroup,
+  addUser,
+  auth,
+  bindUserByReactivePhone,
+  groupsDB,
+  RecaptchaVerifier
+} from '@/firebaseConfig'
 import BField from 'buefy/src/components/field/Field'
 import BInput from 'buefy/src/components/input/Input'
 import BAutocomplete from 'buefy/src/components/autocomplete/Autocomplete'
@@ -55,9 +63,11 @@ export default {
       otp: '',
       appVerifier: null,
       confirmation: null,
-      specifiedUser: {},
+      specifiedUser: null,
+      selectedGroup: null,
       groups: [],
-      abteilungen: []
+      abteilungen: [],
+      specifiedUserData: {}
     }
   },
   computed: {
@@ -72,32 +82,45 @@ export default {
       return cleaned
     },
     userIsAlreadyRegistered () {
-      return this.specifiedUser.hasOwnProperty('group')
+      return this.specifiedUser && this.specifiedUser.hasOwnProperty('group')
     },
     specifiedGroup () {
-      return this.groups.find(group => group.name === (this.userIsAlreadyRegistered ? this.specifiedUser.group.name : this.groupName))
+      return this.selectedGroup || this.groups.find(group => group.name === (this.userIsAlreadyRegistered ? this.specifiedUser.group.name : this.groupName))
     },
     groupIsAlreadyRegistered () {
-      return this.specifiedGroup !== undefined
+      return !!this.specifiedGroup
     }
   },
   methods: {
     login () {
-      auth.signInWithPhoneNumber(this.normalizedPhone, this.appVerifier)
+      this.specifiedGroupData = { name: this.groupName, abteilung: this.abteilung }
+      this.specifiedUserData = { phone: this.normalizedPhone, scoutName: this.scoutName, group: this.groupName }
+      auth.signInWithPhoneNumber(this.specifiedUserData.phone, this.appVerifier)
         .then(result => {
           this.confirmation = result
           console.log('SMS sent')
           this.$refs.otp.focus()
         }).catch(error => {
-          console.error('SMS not sent, error code ', error.code, ': ', error.message)
+          console.error('SMS not sent, error code', error.code, error.message)
         })
     },
-    verifyOtp () {
+    async verifyOtp () {
       if (this.confirmation === null) return
-      this.confirmation.confirm(this.otp).then(result => {
-        console.log('login success ', result)
-        this.$router.push({ name: 'index' })
-      })
+      let result = await this.confirmation.confirm(this.otp)
+      console.log('login success ', result)
+      if (!this.groupIsAlreadyRegistered) {
+        let groupRef = await addGroup(this.specifiedGroupData, this.groups)
+        console.log('group created', groupRef)
+        this.specifiedUserData.group = groupRef
+      } else {
+        this.specifiedUserData.group = groupsDB.doc(this.specifiedGroup.id)
+      }
+      if (!this.userIsAlreadyRegistered) {
+        await addUser(result.user.uid, this.specifiedUserData)
+        console.log('user created')
+      }
+      this.$emit('login')
+      this.$router.push({ name: 'index' })
     },
     initRecaptcha () {
       this.appVerifier = new RecaptchaVerifier('recaptcha-container', {
