@@ -20,7 +20,7 @@ service cloud.firestore {
     }
     match /groups/{document=**} {
       allow read: if true;
-      allow write: if isOperator();
+      allow write: if isLoggedIn();
     }
     match /jokerVisits/{document=**} {
       allow read: if isLoggedIn()
