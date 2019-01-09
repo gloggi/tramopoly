@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { groupsDB, abteilungenDB, requireAuth, updateUser } from '@/firebaseConfig'
+import { abteilungenDB, bindUserById, groupsDB, requireAuth, setActiveCall } from '@/firebaseConfig'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
 import BIcon from 'buefy/src/components/icon/Icon'
@@ -46,7 +46,8 @@ export default {
     return {
       loggedInUser: null,
       groups: [],
-      abteilungen: []
+      abteilungen: [],
+      operator: null
     }
   },
   beforeRouteEnter (to, from, next) {
@@ -59,12 +60,6 @@ export default {
     groupsOrDummy () {
       return this.groupsLoaded ? this.groups : [ {}, {}, {} ]
     },
-    operator () {
-      if (!this.loggedInUser || !this.loggedInUser.group || !this.loggedInUser.group.abteilung || !this.loggedInUser.group.abteilung.operator) {
-        return null
-      }
-      return this.loggedInUser.group.abteilung.operator
-    },
     operatorName () {
       return this.operator ? this.operator.scoutName : null
     },
@@ -75,25 +70,28 @@ export default {
       return this.operator ? this.operator.id : null
     },
     operatorBusy () {
-      return this.operator !== null && this.operator.activeCall !== ''
+      return !!(this.operator && this.operator.activeCall)
     },
     loggedInUserIsActiveCaller () {
-      return this.operatorBusy && this.operator.activeCall === this.loggedInUser.phone
+      return this.operatorBusy && this.operator.activeCall.id === this.loggedInUser.id
     }
   },
   methods: {
     callOperator () {
-      if (!this.operatorBusy) {
-        updateUser(this.operatorId, { 'activeCall': this.loggedInUser.phone }).then(() => {
-          window.location = 'tel:' + this.operatorPhone
-        })
-      } else {
+      setActiveCall(this.operatorId, this.loggedInUser.id).then(() => {
         window.location = 'tel:' + this.operatorPhone
-      }
+      })
     },
     finishCall () {
       if (this.loggedInUserIsActiveCaller) {
-        updateUser(this.operatorId, {'activeCall': ''})
+        setActiveCall(this.operatorId, null)
+      }
+    }
+  },
+  watch: {
+    'loggedInUser.group.abteilung.operator': function (newOperator) {
+      if (newOperator.id) {
+        bindUserById(this, 'operator', newOperator.id)
       }
     }
   }

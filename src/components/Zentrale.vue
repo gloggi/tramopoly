@@ -2,7 +2,7 @@
   <div class="columns is-multiline">
     <tram-header>Zentralä</tram-header>
     <div v-if="loggedInOperatorBusy" class="box column is-full is-one-third-desktop is-offset-one-third-desktop has-text-centered">
-      <div>Aktivä Aruäf: {{ loggedInOperator['activeCall'] }}</div>
+      <div>Aktivä Aruäf: {{ loggedInOperator.activeCall.scoutName }}</div>
       <button @click="clearActiveCall" class="button is-danger">Aktivä Aruäf beändä</button>
     </div>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { groupsDB, requireOperator, updateUser } from '@/firebaseConfig'
+import { groupsDB, requireOperator, setActiveCall } from '@/firebaseConfig'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
 import TramHeader from '@/components/TramHeader'
@@ -55,12 +55,12 @@ export default {
       return this.groupsLoaded ? this.groups : [ {}, {}, {} ]
     },
     loggedInOperatorBusy () {
-      return this.loggedInOperator && this.loggedInOperator['activeCall'] !== ''
+      return !!(this.loggedInOperator && this.loggedInOperator.activeCall)
     }
   },
   methods: {
     clearActiveCall () {
-      updateUser(this.operatorId, { 'activeCall': '' })
+      setActiveCall(this.loggedInOperator.id, null)
     },
     selectGroup (group) {
       this.$router.push({ name: 'action', params: { group: group.id } })

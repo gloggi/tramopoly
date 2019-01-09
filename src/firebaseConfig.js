@@ -28,26 +28,6 @@ export const stationVisitsDB = db.collection('stationVisits').where('time', '>',
 export const jokerVisitsDB = db.collection('jokerVisits').where('time', '>', new Date(0)).orderBy('time')
 export { auth, RecaptchaVerifier }
 
-export function bindUserByPhone (vm, member, phone) {
-  db.collection('users').where('phone', '==', phone).onSnapshot(snapshot => {
-    if (!snapshot.empty) {
-      vm.$bind(member, db.collection('users').doc(snapshot.docs[0].id))
-    } else if (vm._firestoreUnbinds[member]) {
-      vm.$unbind(member)
-      vm[member] = null
-    }
-  })
-}
-
-export function bindUserById (vm, member, uid) {
-  if (uid !== null) {
-    return vm.$bind(member, db.collection('users').doc(uid))
-  } else if (vm._firestoreUnbinds[member]) {
-    vm.$unbind(member)
-    vm[member] = null
-  }
-}
-
 export function addGroup (groupData, existingGroups) {
   let abteilungId = groupData.abteilung.id
   groupData.abteilung = abteilungenDB.doc(abteilungId)
@@ -65,14 +45,17 @@ function createUniqueGroupId (abteilungId, existingGroups) {
 }
 
 export function addUser (uid, userData) {
+  if (!uid) return
   return db.collection('users').doc(uid).set(userData)
 }
 
-export function updateUser (uid, changes) {
-  return db.collection('users').doc(uid).update(changes)
+export function setActiveCall (operatorId, callerId) {
+  if (!operatorId) return
+  return db.collection('users').doc(operatorId).update({ 'activeCall': callerId ? db.collection('users').doc(callerId) : null })
 }
 
 export function addStationVisit (groupId, stationId) {
+  if (!groupId || !stationId) return
   let time = new Date()
   return db.collection('stationVisits').doc(time.toLocaleTimeString('de-CH') + ' ' + groupId + ' ' + stationId).set({
     group: db.collection('groups').doc(groupId),
@@ -82,12 +65,33 @@ export function addStationVisit (groupId, stationId) {
 }
 
 export function addJokerVisit (groupId, jokerId) {
+  if (!groupId || !jokerId) return
   let time = new Date()
   return db.collection('jokerVisits').doc(groupId + ' ' + jokerId).set({
     group: db.collection('groups').doc(groupId),
     station: db.collection('jokers').doc(jokerId),
     time
   })
+}
+
+export function bindUserByPhone (vm, member, phone) {
+  db.collection('users').where('phone', '==', phone).onSnapshot(snapshot => {
+    if (!snapshot.empty) {
+      vm.$bind(member, db.collection('users').doc(snapshot.docs[0].id))
+    } else if (vm._firestoreUnbinds[member]) {
+      vm.$unbind(member)
+      vm[member] = null
+    }
+  })
+}
+
+export function bindUserById (vm, member, uid) {
+  if (uid) {
+    return vm.$bind(member, db.collection('users').doc(uid))
+  } else if (vm._firestoreUnbinds[member]) {
+    vm.$unbind(member)
+    vm[member] = null
+  }
 }
 
 export function bindLoggedInUser (vm, member, cancelCallback, readyCallback) {
