@@ -94,6 +94,10 @@ export default {
     font-weight: $weight-medium;
   }
 
+  .column.panel {
+    padding: 0;
+  }
+
   .panel-block.is-strikethrough {
     color: $grey-light;
   }

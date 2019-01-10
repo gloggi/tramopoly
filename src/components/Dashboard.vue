@@ -25,13 +25,17 @@
         </template>
       </b-table>
     </div>
+    <div v-if="!groupIsCurrentlyMrT" class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
+      <h4 class="title is-4">Wo isch dä Mr. T? 🕵️</h4>
+      <p>{{ mrTLocation }}</p>
+    </div>
   </div>
 </template>
 
 <script>
 import {
   abteilungenDB,
-  bindUserById,
+  bindUserById, currentMrTDB,
   groupsDB,
   requireAuth,
   setActiveCall
@@ -41,6 +45,7 @@ import BTableColumn from 'buefy/src/components/table/TableColumn'
 import Placeholder from '@/components/Placeholder'
 import TramHeader from '@/components/TramHeader'
 import GroupDetail from '@/components/GroupDetail'
+import { renderMrTLocation } from '@/business'
 
 export default {
   name: 'Dashboard',
@@ -50,12 +55,16 @@ export default {
       loggedInUser: null,
       groups: [],
       abteilungen: [],
-      operator: null
+      operator: null,
+      currentMrTList: [],
+      now: new Date(),
+      timer: null
     }
   },
   firestore: {
     groups: groupsDB,
-    abteilungen: abteilungenDB
+    abteilungen: abteilungenDB,
+    currentMrTList: currentMrTDB
   },
   beforeRouteEnter (to, from, next) {
     requireAuth(to, from, next)
@@ -81,9 +90,23 @@ export default {
     },
     loggedInUserIsActiveCaller () {
       return this.operatorBusy && this.operator.activeCall.id === this.loggedInUser.id
+    },
+    groupIsCurrentlyMrT () {
+      return !!(this.loggedInUser && this.loggedInUser.group && this.currentMrT.group && this.currentMrT.group.id === this.loggedInUser.group.id)
+    },
+    mrTLocation () {
+      return renderMrTLocation(this.currentMrT, this.now)
+    },
+    currentMrT () {
+      return this.currentMrTList.length ? this.currentMrTList[0] : { disabled: true }
     }
   },
   methods: {
+    updateNow () {
+      clearInterval(this.timer)
+      this.now = new Date()
+      this.timer = setInterval(this.updateNow, 1000 * 5)
+    },
     callOperator () {
       setActiveCall(this.operatorId, this.loggedInUser.id).then(() => {
         window.location = 'tel:' + this.operatorPhone
@@ -101,6 +124,9 @@ export default {
         bindUserById(this, 'operator', newOperator.id)
       }
     }
+  },
+  created () {
+    this.updateNow()
   }
 }
 </script>

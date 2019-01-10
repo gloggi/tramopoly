@@ -3,7 +3,7 @@
     <tram-header>Gruppä {{ group.name }}</tram-header>
     <group-detail ref="groupDetails" :group-id="group && group.id" :update-interval="5"/>
     <div class="panel column is-full is-one-third-desktop is-offset-one-third-desktop">
-      <header class="panel-heading">Station chaufä oder bsuächä</header>
+      <header class="panel-heading"><h4 class="title is-4">Station chaufä oder bsuächä</h4></header>
       <div class="panel-block">
         <div class="field has-addons" style="width: 100%">
           <p class="control has-icons-left is-expanded">
@@ -40,28 +40,45 @@
         </a>
       </template>
     </div>
+    <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
+      <b-tag v-if="groupIsCurrentlyMrT" type="is-info is-large" style="float: right">Miär sind Mr. T!</b-tag>
+      <h4 class="title is-4">Mr. T</h4>
+      <form v-on:submit.prevent="updateMrT">
+        <b-field label="Tram / Zug"><b-input type="text" :placeholder="lastMrT.vehicle" v-model="mrT.vehicle"/></b-field>
+        <b-field label="Letschti bekannti Station"><b-autocomplete :data="allStationsInZurich" :placeholder="lastMrT.lastKnownStop" v-model="mrT.lastKnownStop" open-on-focus /></b-field>
+        <b-field label="Richtig"><b-autocomplete :data="allStationsInZurich" :placeholder="lastMrT.direction" v-model="mrT.direction" open-on-focus /></b-field>
+        <b-field label="Beschriibig"><b-input type="textarea" :placeholder="lastMrT.description" v-model="mrT.description"/></b-field>
+        <button class="button is-link" type="submit">Mr T. aktualisiärä</button>
+      </form>
+    </div>
   </div>
 </template>
 
 <script>
 import {
-  addJokerVisit,
+  addJokerVisit, addMrTChange,
   addStationVisit,
-  groupsDB, jokersDB,
+  groupsDB,
+  jokersDB,
   jokerVisitsDB,
+  mrTChangesDB,
   requireOperator,
   stationsDB,
   stationVisitsDB
 } from '@/firebaseConfig'
 import TramHeader from '@/components/TramHeader'
+import BField from 'buefy/src/components/field/Field'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
 import { stationOwners } from '@/business'
 import GroupDetail from '@/components/GroupDetail'
+import BTag from 'buefy/src/components/tag/Tag'
+import allStationsInZurich from '@/allStationsInZurich'
+import BAutocomplete from 'buefy/src/components/autocomplete/Autocomplete'
 
 export default {
   name: 'Action',
-  components: { GroupDetail, BTableColumn, BTable, TramHeader },
+  components: { BAutocomplete, BTag, GroupDetail, BTableColumn, BTable, BField, TramHeader },
   data () {
     return {
       group: { name: '' },
@@ -69,14 +86,18 @@ export default {
       jokers: [],
       stationVisits: [],
       jokerVisits: [],
-      searchterm: ''
+      mrTChanges: [],
+      searchterm: '',
+      mrT: { vehicle: '', direction: '', lastKnownStop: '', description: '', group: {} },
+      allStationsInZurich: allStationsInZurich
     }
   },
   firestore: {
     stations: stationsDB,
     jokers: jokersDB,
     stationVisits: stationVisitsDB,
-    jokerVisits: jokerVisitsDB
+    jokerVisits: jokerVisitsDB,
+    mrTChanges: mrTChangesDB
   },
   beforeRouteEnter (to, from, next) {
     requireOperator(to, from, next)
@@ -109,6 +130,9 @@ export default {
     visitJoker (joker) {
       addJokerVisit(this.group.id, joker.id).then(() => this.snackbar('🤑💰 Judihui! Ier händ Gäld übercho für diä Jokerstation! Schtämplä nöd vergässä ️🎫‼️', 'Gschtämplät 👍🏼'))
     },
+    updateMrT () {
+      addMrTChange(this.group.id, this.mrT)
+    },
     snackbar (message, button = 'OK', type = 'is-success') {
       this.$snackbar.open({ message, type, position: 'is-top', indefinite: true, actionText: button })
     }
@@ -125,6 +149,13 @@ export default {
     },
     visitedStations () {
       return this.stationVisits.filter(visit => visit.group.id === this.group.id).map(visit => visit.station)
+    },
+    lastMrT () {
+      if (this.mrTChanges.length === 0) return this.mrT
+      return this.mrTChanges[this.mrTChanges.length - 1]
+    },
+    groupIsCurrentlyMrT () {
+      return this.group.id && this.lastMrT.group.id === this.group.id
     }
   }
 }

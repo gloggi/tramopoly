@@ -26,6 +26,8 @@ export const jokersDB = db.collection('jokers')
 export const settingsDB = db.collection('settings').doc('settings')
 export const stationVisitsDB = db.collection('stationVisits').where('time', '>', new Date(0)).orderBy('time')
 export const jokerVisitsDB = db.collection('jokerVisits').where('time', '>', new Date(0)).orderBy('time')
+export const mrTChangesDB = db.collection('mrTChanges').where('time', '>', new Date(0)).orderBy('time')
+export const currentMrTDB = db.collection('mrTChanges').where('time', '>', new Date(0)).orderBy('time', 'desc').limit(1)
 export { auth, RecaptchaVerifier }
 
 export function addGroup (groupData, existingGroups) {
@@ -70,6 +72,16 @@ export function addJokerVisit (groupId, jokerId) {
   return db.collection('jokerVisits').doc(groupId + ' ' + jokerId).set({
     group: db.collection('groups').doc(groupId),
     station: db.collection('jokers').doc(jokerId),
+    time
+  })
+}
+
+export function addMrTChange (groupId, mrTChangeData) {
+  if (!groupId) return
+  let time = new Date()
+  return db.collection('mrTChanges').doc(time.toLocaleTimeString('de-CH') + ' ' + groupId).set({
+    ...mrTChangeData,
+    group: db.collection('groups').doc(groupId),
     time
   })
 }

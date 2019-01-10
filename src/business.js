@@ -1,4 +1,45 @@
 
+export function renderMrTLocation (mrT, now) {
+  if (!mrT || mrT.disabled) return 'Käinä wäiss es so rächt...'
+  let text = 'Dä Mr. T isch zletscht '
+  if (mrT.time) {
+    text = text + 'vor ' + renderDurationInMinutes(now - mrT.time.toDate()) + ' Minutä '
+  }
+  if (mrT.vehicle) {
+    if (/^[a-zäöü]/i.test(mrT.vehicle.match())) {
+      text = text + 'i dä ' + mrT.vehicle + ' '
+    } else if (parseInt(mrT.vehicle > 17)) {
+      text = text + 'im ' + mrT.vehicle + 'er '
+    } else {
+      text = text + 'im ' + mrT.vehicle + 'i '
+    }
+  }
+  if (mrT.lastKnownStop) {
+    text = text + 'bi ' + mrT.lastKnownStop + ' '
+  } else {
+    text = text + 'irgendwo '
+  }
+  if (mrT.direction) {
+    text = text + 'in Richtig ' + mrT.direction + ' '
+  }
+  text = text + 'gsichtät wordä.'
+  if (mrT.description) {
+    text = text + ' ' + mrT.description
+  }
+  return text
+}
+
+function renderDurationInMinutes (milliseconds) {
+  let halfMinutes = Math.round(milliseconds / 1000.0 / 30.0)
+  if (halfMinutes < 2) {
+    return 'wenigär als 1'
+  } else if (halfMinutes % 2 === 0) {
+    return '' + (halfMinutes / 2)
+  } else {
+    return '' + ((halfMinutes - 1) / 2) + 'ähalb'
+  }
+}
+
 export function groupSaldo (groupId, settings, stationVisits, jokerVisits, now = new Date()) {
   if (!settings) return 0
   return settings.starterCash +

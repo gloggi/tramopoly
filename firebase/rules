@@ -31,6 +31,7 @@ service cloud.firestore {
     }
     match /mrTChanges/{document=**} {
       allow read: if isLoggedIn();
+      allow write: if isOperator();
     }
     match /settings/{document=**} {
       allow read: if isLoggedIn();
