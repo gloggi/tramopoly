@@ -98,10 +98,19 @@ export default {
       this.searchterm = ''
     },
     visitStation (station) {
-      addStationVisit(this.group.id, station.id).then(() => this.updateNow())
+      addStationVisit(this.group.id, station.id).then(() => {
+        if (stationOwners(this.stationVisits, this.now).get(station.id) === this.group.id) {
+          this.snackbar('🎉🙌 Perf! Ier händ d Station gchauft! Schtämplä nöd vergässä ️🎫‼️', 'Gschtämplät 👍🏼')
+        } else {
+          this.snackbar('😓😣 Ja nääi! Die Station ghört scho anärä andärä Gruppä... Iär händ müäsä Miäti zahle 📉🆘', 'Okei... 😢', 'is-danger')
+        }
+      })
     },
     visitJoker (joker) {
-      addJokerVisit(this.group.id, joker.id).then(() => this.updateNow())
+      addJokerVisit(this.group.id, joker.id).then(() => this.snackbar('🤑💰 Judihui! Ier händ Gäld übercho für diä Jokerstation! Schtämplä nöd vergässä ️🎫‼️', 'Gschtämplät 👍🏼'))
+    },
+    snackbar (message, button = 'OK', type = 'is-success') {
+      this.$snackbar.open({ message, type, position: 'is-top', indefinite: true, actionText: button })
     }
   },
   computed: {
