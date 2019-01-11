@@ -31,10 +31,11 @@ import { groupsDB, requireOperator, setActiveCall } from '@/firebaseConfig'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
 import TramHeader from '@/components/TramHeader'
+import Placeholder from '@/components/Placeholder'
 
 export default {
   name: 'Zentrale',
-  components: { BTable, BTableColumn, TramHeader },
+  components: { Placeholder, BTable, BTableColumn, TramHeader },
   firestore: {
     groups: groupsDB
   },

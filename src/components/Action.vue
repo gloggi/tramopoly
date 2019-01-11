@@ -1,7 +1,10 @@
 <template>
   <div class="columns is-multiline">
     <tram-header>Gruppä {{ group.name }}</tram-header>
-    <group-detail ref="groupDetails" :group-id="group && group.id" :update-interval="5"/>
+    <group-detail ref="groupDetails" :group-id="group && group.id" :update-interval="5">
+      <button v-if="groupIsActiveCaller" class="button is-link is-outlined is-danger is-pulled-right" @click="finishCall">⬅️ Färtig telefoniärt</button>
+      <button v-else class="button is-link is-outlined is-info is-pulled-right" @click="redirectToZentrale">⬅️ Zrugg zu dä Übärsicht</button>
+    </group-detail>
     <div class="panel column is-full is-one-third-desktop is-offset-one-third-desktop">
       <header class="panel-heading"><h4 class="title is-4">Station chaufä oder bsuächä</h4></header>
       <div class="panel-block">
@@ -41,7 +44,7 @@
       </template>
     </div>
     <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
-      <b-tag v-if="groupIsCurrentlyMrT" type="is-info is-large" style="float: right">Miär sind Mr. T!</b-tag>
+      <b-tag v-if="groupIsCurrentlyMrT" type="is-info" class="is-pulled-right is-medium">Miär sind Mr. T!</b-tag>
       <h4 class="title is-4">Mr. T</h4>
       <form v-on:submit.prevent="updateMrT">
         <b-field label="Tram / Zug"><b-input type="text" :placeholder="lastMrT.vehicle" v-model="mrT.vehicle"/></b-field>
@@ -56,13 +59,15 @@
 
 <script>
 import {
-  addJokerVisit, addMrTChange,
+  addJokerVisit,
+  addMrTChange,
   addStationVisit,
   groupsDB,
   jokersDB,
   jokerVisitsDB,
   mrTChangesDB,
   requireOperator,
+  setActiveCall,
   stationsDB,
   stationVisitsDB
 } from '@/firebaseConfig'
@@ -75,12 +80,14 @@ import GroupDetail from '@/components/GroupDetail'
 import BTag from 'buefy/src/components/tag/Tag'
 import allStationsInZurich from '@/allStationsInZurich'
 import BAutocomplete from 'buefy/src/components/autocomplete/Autocomplete'
+import BInput from 'buefy/src/components/input/Input'
 
 export default {
   name: 'Action',
-  components: { BAutocomplete, BTag, GroupDetail, BTableColumn, BTable, BField, TramHeader },
+  components: { BInput, BAutocomplete, BTag, GroupDetail, BTableColumn, BTable, BField, TramHeader },
   data () {
     return {
+      loggedInOperator: null,
       group: { name: '' },
       stations: [],
       jokers: [],
@@ -135,6 +142,12 @@ export default {
     },
     snackbar (message, button = 'OK', type = 'is-success') {
       this.$snackbar.open({ message, type, position: 'is-top', indefinite: true, actionText: button })
+    },
+    finishCall () {
+      setActiveCall(this.loggedInOperator.id, null).then(this.redirectToZentrale)
+    },
+    redirectToZentrale () {
+      this.$router.push({ name: 'zentrale' })
     }
   },
   computed: {
@@ -156,6 +169,9 @@ export default {
     },
     groupIsCurrentlyMrT () {
       return this.group.id && this.lastMrT.group.id === this.group.id
+    },
+    groupIsActiveCaller () {
+      return !!(this.group.id && this.loggedInOperator && this.loggedInOperator.activeCall && this.loggedInOperator.activeCall.group && this.loggedInOperator.activeCall.group.id === this.group.id)
     }
   }
 }

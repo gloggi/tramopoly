@@ -1,6 +1,7 @@
 <template>
   <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
-    <b-tag v-if="groupIsCurrentlyMrT" type="is-info is-medium" style="float: right">Miär sind Mr. T!</b-tag>
+    <slot></slot>
+    <b-tag v-if="groupIsCurrentlyMrT" type="is-info" class="is-medium is-pulled-right">Miär sind Mr. T!</b-tag>
     Saldo: {{ saldo }}.-
   </div>
 </template>
