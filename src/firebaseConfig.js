@@ -86,15 +86,26 @@ export function addMrTChange (groupId, mrTChangeData) {
   })
 }
 
-export function bindUserByPhone (vm, member, phone) {
-  db.collection('users').where('phone', '==', phone).onSnapshot(snapshot => {
+function findUserByPhone (phone) {
+  return new Promise(resolve => {
+    db.collection('users').where('phone', '==', phone).onSnapshot(snapshot => resolve(snapshot))
+  })
+}
+
+let latestBindUserByPhonePromise
+
+export async function bindUserByPhone (vm, member, phone) {
+  let promise = findUserByPhone(phone)
+  latestBindUserByPhonePromise = promise
+  let snapshot = await promise
+  if (latestBindUserByPhonePromise === promise) {
     if (!snapshot.empty) {
       vm.$bind(member, db.collection('users').doc(snapshot.docs[0].id))
     } else if (vm._firestoreUnbinds[member]) {
       vm.$unbind(member)
       vm[member] = null
     }
-  })
+  }
 }
 
 export function bindUserById (vm, member, uid) {
