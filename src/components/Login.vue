@@ -52,7 +52,7 @@ export default {
   components: { BSelect, BAutocomplete, BInput, BField, TramHeader },
   firestore: {
     groups: groupsDB.orderBy('name'),
-    abteilungen: abteilungenDB.orderBy('name')
+    abteilungen: abteilungenDB
   },
   data () {
     return {

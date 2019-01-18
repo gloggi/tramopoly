@@ -20,7 +20,7 @@ let auth = firebase.auth()
 let RecaptchaVerifier = firebase.auth.RecaptchaVerifier
 
 export const groupsDB = db.collection('groups')
-export const abteilungenDB = db.collection('abteilungen')
+export const abteilungenDB = db.collection('abteilungen').where('active', '==', true)
 export const stationsDB = db.collection('stations')
 export const jokersDB = db.collection('jokers')
 export const settingsDB = db.collection('settings').doc('settings')
