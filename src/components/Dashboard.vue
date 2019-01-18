@@ -1,6 +1,6 @@
 <template>
   <div class="columns is-multiline">
-    <tram-header>Dashboard</tram-header>
+    <tram-header>Tramopoly</tram-header>
     <div class="column is-full is-one-third-desktop is-offset-one-third-desktop has-text-centered">
       <div v-if="operator != null" class="card">
         <div class="card-content">
