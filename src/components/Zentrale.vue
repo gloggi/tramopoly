@@ -1,27 +1,31 @@
 <template>
   <div class="columns is-multiline">
     <tram-header>Zentralä</tram-header>
-    <div v-if="loggedInOperatorBusy" class="box column is-full is-one-third-desktop is-offset-one-third-desktop has-text-centered">
-      <div>Aktivä Aruäf: {{ loggedInOperator.activeCall.scoutName }}</div>
-      <button @click="clearActiveCall" class="button is-danger">Aktivä Aruäf beändä</button>
-    </div>
-    <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
-      <b-table :data="groupsOrDummy" striped hoverable selectable @select="selectGroup" :row-class="markIfCallingGroup">
-        <template slot-scope="props">
-          <b-table-column field="name" label="Gruppä">
-            <transition name="fade" mode="out-in">
-              <span v-if="groupsLoaded">{{ props.row.name }}</span>
-              <placeholder v-else></placeholder>
-            </transition>
-          </b-table-column>
-          <b-table-column field="abteilung" label="Abteilig">
-            <transition name="fade" mode="out-in">
-              <span v-if="groupsLoaded">{{ props.row.abteilung.name }}</span>
-              <placeholder v-else></placeholder>
-            </transition>
-          </b-table-column>
-        </template>
-      </b-table>
+    <div class="column is-full is-one-third-desktop is-offset-one-third-desktop has-text-centered">
+      <div v-if="loggedInOperatorBusy" class="card">
+        <div class="card-content">
+          <header class="card-header-title is-centered">Aktivä Aruäf: {{ loggedInOperator.activeCall.scoutName }}</header>
+          <button @click="clearActiveCall" class="button is-danger">Aktivä Aruäf beändä</button>
+        </div>
+      </div>
+      <div class="card">
+        <b-table :data="groupsOrDummy" striped hoverable selectable @select="selectGroup" :row-class="markIfCallingGroup">
+          <template slot-scope="props">
+            <b-table-column field="name" label="Gruppä">
+              <transition name="fade" mode="out-in">
+                <span v-if="groupsLoaded">{{ props.row.name }}</span>
+                <placeholder v-else></placeholder>
+              </transition>
+            </b-table-column>
+            <b-table-column field="abteilung" label="Abteilig">
+              <transition name="fade" mode="out-in">
+                <span v-if="groupsLoaded">{{ props.row.abteilung.name }}</span>
+                <placeholder v-else></placeholder>
+              </transition>
+            </b-table-column>
+          </template>
+        </b-table>
+      </div>
     </div>
   </div>
 </template>
@@ -70,7 +74,7 @@ export default {
       return (this.loggedInOperator &&
         this.loggedInOperator.activeCall &&
         this.loggedInOperator.activeCall.group &&
-        this.loggedInOperator.activeCall.group.id === group.id) ? 'is-active-call' : ''
+        this.loggedInOperator.activeCall.group.id === group.id) ? 'is-active-call is-clickable' : 'is-clickable'
     }
   }
 }

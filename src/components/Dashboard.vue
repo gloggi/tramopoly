@@ -1,33 +1,37 @@
 <template>
   <div class="columns is-multiline">
     <tram-header>Dashboard</tram-header>
-    <div v-if="operator != null" class="box column is-full is-one-third-desktop is-offset-one-third-desktop has-text-centered">
-      <button v-if="!operatorBusy" class="button is-link is-outlined" @click="callOperator">📞 Zentralä ({{ operatorName }})</button>
-      <button v-else-if="loggedInUserIsActiveCaller" class="button is-link is-outlined is-danger" @click="finishCall">🚫 Färtig telefoniärt</button>
-      <button v-else class="button is-link is-outlined" @click="callOperator">🚫 Zentralä ({{ operatorName }} bsetzt)</button>
-    </div>
-    <group-detail :group-id="loggedInUser && loggedInUser.group.id" :update-interval="5"/>
-    <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
-      <b-table :data="groupsOrDummy" striped hoverable>
-        <template slot-scope="props">
-          <b-table-column field="name" label="Gruppä">
-            <transition name="fade" mode="out-in">
-              <span v-if="groupsLoaded">{{ props.row.name }}</span>
-              <placeholder v-else></placeholder>
-            </transition>
-          </b-table-column>
-          <b-table-column field="abteilung" label="Abteilig">
-            <transition name="fade" mode="out-in">
-              <span v-if="groupsLoaded">{{ props.row.abteilung.name }}</span>
-              <placeholder v-else></placeholder>
-            </transition>
-          </b-table-column>
-        </template>
-      </b-table>
-    </div>
-    <div v-if="!groupIsCurrentlyMrT" class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
-      <h4 class="title is-4">Wo isch dä Mr. T? 🕵️</h4>
-      <p>{{ mrTLocation }}</p>
+    <div class="column is-full is-one-third-desktop is-offset-one-third-desktop has-text-centered">
+      <div v-if="operator != null" class="card">
+        <div class="card-content">
+          <button v-if="!operatorBusy" class="button is-link is-outlined" @click="callOperator">📞 Zentralä ({{ operatorName }})</button>
+          <button v-else-if="loggedInUserIsActiveCaller" class="button is-link is-outlined is-danger" @click="finishCall">🚫 Färtig telefoniärt</button>
+          <button v-else class="button is-link is-outlined" @click="callOperator">🚫 Zentralä ({{ operatorName }} bsetzt)</button>
+        </div>
+      </div>
+      <group-detail v-if="loggedInUser && loggedInUser.group" :group="loggedInUser.group" :update-interval="5"/>
+      <div v-if="!groupIsCurrentlyMrT" class="card">
+        <header class="card-header has-background-light"><h4 class="card-header-title title is-4">Wo isch dä Mr. T? 🕵️</h4></header>
+        <div class="card-content"><p>{{ mrTLocation }}</p></div>
+      </div>
+      <div class="card">
+        <b-table :data="groupsOrDummy" striped hoverable>
+          <template slot-scope="props">
+            <b-table-column field="name" label="Gruppä">
+              <transition name="fade" mode="out-in">
+                <span v-if="groupsLoaded">{{ props.row.name }}</span>
+                <placeholder v-else></placeholder>
+              </transition>
+            </b-table-column>
+            <b-table-column field="abteilung" label="Abteilig">
+              <transition name="fade" mode="out-in">
+                <span v-if="groupsLoaded">{{ props.row.abteilung.name }}</span>
+                <placeholder v-else></placeholder>
+              </transition>
+            </b-table-column>
+          </template>
+        </b-table>
+      </div>
     </div>
   </div>
 </template>

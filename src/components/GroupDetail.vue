@@ -1,8 +1,68 @@
 <template>
-  <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
-    <slot></slot>
-    <b-tag v-if="groupIsCurrentlyMrT" type="is-info" class="is-medium is-pulled-right">Miär sind Mr. T!</b-tag>
-    Saldo: {{ saldo }}.-
+  <div class="card">
+    <header class="card-content has-background-light">
+      <slot></slot>
+      <b-tag v-if="groupIsCurrentlyMrT" type="is-info" class="is-medium is-pulled-right" style="margin-bottom: 10px">Aktuellä Mr. T!</b-tag>
+      <div style="clear: both">
+        <div class="is-pulled-right has-text-right" style="clear: both">
+          <div class="title is-4">{{ saldo }}</div>
+          <div class="subtitle is-6">Pünkt insgesamt</div>
+        </div>
+        <div class="columns is-vcentered is-gapless has-text-left" stlye="clear: left">
+          <div class="column is-narrow is-flex">
+            <span class="icon is-large is-left" style="margin-right: 10px"><img style="opacity: 0.7" :src="require('../../static/' + group.abteilung.id + '.svg')"/></span>
+          </div>
+          <div class="column">
+            <h4 class="title is-4" style="clear: left">{{ group.name }}</h4>
+            <h4 class="subtitle is-6">{{ group.abteilung.name }}</h4>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="card-content">
+      <div class="columns is-vcentered">
+        <div class="column">
+          <div class="title is-3">{{ saldo }}.-</div>
+          <div class="subtitle is-6">Guäthabä</div>
+        </div>
+        <div class="column">
+          <div class="title is-3">0</div>
+          <div class="subtitle is-6">Immobiliäpünkt</div>
+        </div>
+        <div class="column">
+          <div class="title is-3">0</div>
+          <div class="subtitle is-6">Mr. T Pünkt</div>
+        </div>
+      </div>
+    </div>
+    <section class="card-content has-background-grey-lighter">
+      <div class="columns is-mobile has-text-left">
+        <div class="column">
+          <div class="title is-6">Die Nächscht&shy;bessärä</div>
+          <div v-if="betterGroup" class="columns is-vcentered is-gapless">
+            <div class="column is-narrow is-flex">
+              <span class="icon is-large is-left" style="margin-right: 10px"><img :title="betterGroup.abteilung.name" style="opacity: 0.7" :src="require('../../static/' + betterGroup.abteilung.id + '.svg')"/></span>
+            </div>
+            <div class="column">
+              <h4 class="title is-4" style="clear: left">{{ betterGroup.name }}</h4>
+              <h4 class="subtitle is-6">{{ betterGroup.saldo }} Pünkt</h4>
+            </div>
+          </div>
+        </div>
+        <div class="column">
+          <div class="title is-6">Die Nächscht&shy;schlächtärä</div>
+          <div v-if="worseGroup" class="columns is-vcentered is-gapless">
+            <div class="column is-narrow is-flex">
+              <span class="icon is-large is-left" style="margin-right: 10px"><img :title="worseGroup.abteilung.name" style="opacity: 0.7" :src="require('../../static/' + worseGroup.abteilung.id + '.svg')"/></span>
+            </div>
+            <div class="column">
+              <h4 class="title is-4" style="clear: left">{{ worseGroup.name }}</h4>
+              <h4 class="subtitle is-6">{{ worseGroup.saldo }} Pünkt</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 <script>
@@ -30,7 +90,7 @@ export default {
     currentMrT: currentMrTDB
   },
   props: {
-    groupId: { type: String },
+    group: { type: Object },
     updateInterval: { type: Number, default: 5 }
   },
   methods: {
@@ -42,10 +102,16 @@ export default {
   },
   computed: {
     saldo () {
-      return groupSaldo(this.groupId, this.settings, this.stationVisits, this.jokerVisits, this.now)
+      return this.group && groupSaldo(this.group.id, this.settings, this.stationVisits, this.jokerVisits, this.now)
     },
     groupIsCurrentlyMrT () {
-      return this.groupId && this.currentMrT.length && this.currentMrT[0].group.id === this.groupId
+      return this.group && this.group.id && this.currentMrT.length && this.currentMrT[0].group.id === this.group.id
+    },
+    betterGroup () {
+      return { ...this.group, saldo: this.saldo + 100 }
+    },
+    worseGroup () {
+      return { ...this.group, saldo: this.saldo - 100 }
     }
   },
   created () {

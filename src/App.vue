@@ -98,6 +98,14 @@ export default {
     padding: 0;
   }
 
+  .card {
+    margin-bottom: 1.5rem;
+  }
+
+  tr.is-clickable {
+    cursor: pointer;
+  }
+
   .panel-block.is-strikethrough {
     color: $grey-light;
   }

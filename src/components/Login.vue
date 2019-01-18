@@ -1,7 +1,7 @@
 <template>
   <div class="columns is-multiline">
     <tram-header>Login</tram-header>
-    <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
+    <div class="card column is-full is-one-third-desktop is-offset-one-third-desktop">
       <form v-on:submit.prevent="login">
         <b-field label="Händynummärä"><b-input type="tel" pattern="((\+41\s?)?|(0041\s?)?|0)7[6-9]\s?\d{3}\s?\d{2}\s?\d{2}" placeholder="079 het sie gseit" v-model="phone" autofocus required/></b-field>
         <b-field label="Pfadinamä">
@@ -21,7 +21,7 @@
         <button class="button is-link" type="submit">Iiloggä</button>
       </form>
     </div>
-    <div class="box column is-full is-one-third-desktop is-offset-one-third-desktop">
+    <div class="card column is-full is-one-third-desktop is-offset-one-third-desktop">
       <form v-on:submit.prevent="verifyOtp">
         <b-field label="SMS-Code"><b-input type="number" ref="otp" placeholder="000000" pattern="\d*" inputmode="numeric" v-model="otp" required/></b-field>
         <button class="button is-link" type="submit">SMS-Code beschtätigä</button>
