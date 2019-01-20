@@ -3,18 +3,22 @@
     <header class="card-content has-background-light">
       <slot></slot>
       <b-tag v-if="groupIsCurrentlyMrT" type="is-info" class="is-medium is-pulled-right" style="margin-bottom: 10px">Aktuellä Mr. T!</b-tag>
-      <div style="clear: both">
-        <div class="is-pulled-right has-text-right" style="clear: both">
-          <div class="title is-4">{{ saldo }}</div>
-          <div class="subtitle is-6">Pünkt insgesamt</div>
-        </div>
-        <div class="columns is-vcentered is-gapless has-text-left" stlye="clear: left">
-          <div class="column is-narrow is-flex">
+      <div v-if="group.name" style="clear: both">
+        <div class="columns is-vcentered is-gapless has-text-left">
+          <div v-if="group.abteilung.id" class="column is-narrow is-flex">
             <span class="icon is-large is-left" style="margin-right: 10px"><img style="opacity: 0.7" :src="require('../../static/' + group.abteilung.id + '.svg')"/></span>
           </div>
           <div class="column">
-            <h4 class="title is-4" style="clear: left">{{ group.name }}</h4>
-            <h4 class="subtitle is-6">{{ group.abteilung.name }}</h4>
+            <div class="columns is-gapless is-mobile">
+              <div class="column">
+                <h4 class="title is-4">{{ group.name }}</h4>
+                <h4 class="subtitle is-6">{{ group.abteilung.name }}</h4>
+              </div>
+              <div class="column is-narrow has-text-right">
+                <div class="title is-4">{{ saldo }}</div>
+                <div class="subtitle is-6">Pünkt insgesamt</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -48,10 +52,13 @@
               <h4 class="subtitle is-6">{{ betterGroup.saldo }} Pünkt</h4>
             </div>
           </div>
+          <div v-else>
+            <h4 class="title is-4" style="clear: left">Käi Gruppä isch bessär!</h4>
+          </div>
         </div>
-        <div class="column">
+        <div class="column" v-if="worseGroup">
           <div class="title is-6">Die Nächscht&shy;schlächtärä</div>
-          <div v-if="worseGroup" class="columns is-vcentered is-gapless">
+          <div class="columns is-vcentered is-gapless">
             <div class="column is-narrow is-flex">
               <span class="icon is-large is-left" style="margin-right: 10px"><img :title="worseGroup.abteilung.name" style="opacity: 0.7" :src="require('../../static/' + worseGroup.abteilung.id + '.svg')"/></span>
             </div>
@@ -108,10 +115,10 @@ export default {
       return this.group && this.group.id && this.currentMrT.length && this.currentMrT[0].group.id === this.group.id
     },
     betterGroup () {
-      return { ...this.group, saldo: this.saldo + 100 }
+      return null
     },
     worseGroup () {
-      return { ...this.group, saldo: this.saldo - 100 }
+      return null
     }
   },
   created () {

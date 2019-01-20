@@ -9,7 +9,7 @@
           <button v-else class="button is-link is-outlined" @click="callOperator">🚫 Zentralä ({{ operatorName }} bsetzt)</button>
         </div>
       </div>
-      <group-detail v-if="loggedInUser && loggedInUser.group" :group="loggedInUser.group" :update-interval="5"/>
+      <group-detail v-if="loggedInUser && loggedInUser.group && loggedInUser.group.id" :group="loggedInUser.group" :update-interval="5"/>
       <div v-if="!groupIsCurrentlyMrT" class="card">
         <header class="card-header has-background-light"><h4 class="card-header-title title is-4">Wo isch dä Mr. T? 🕵️</h4></header>
         <div class="card-content"><p>{{ mrTLocation }}</p></div>
