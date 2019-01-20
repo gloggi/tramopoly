@@ -1,6 +1,6 @@
 <template>
   <div class="columns is-multiline">
-    <tram-header>Gruppä {{ group.name }}</tram-header>
+    <tram-header>{{ group.name }}</tram-header>
     <div class="column is-full is-one-third-desktop is-offset-one-third-desktop">
       <group-detail ref="groupDetails" v-if="group" :group="group" :update-interval="5">
         <button v-if="groupIsActiveCaller" class="button is-link is-outlined is-danger is-pulled-left" @click="finishCall" style="margin-bottom: 20px;">⬅️ Färtig telefoniärt</button>
@@ -87,9 +87,10 @@ import BTag from 'buefy/src/components/tag/Tag'
 import allStationsInZurich from '@/allStationsInZurich'
 import BAutocomplete from 'buefy/src/components/autocomplete/Autocomplete'
 import BInput from 'buefy/src/components/input/Input'
+import { setPageTitle } from '@/router'
 
 export default {
-  name: 'Action',
+  name: 'Aktion',
   components: { BInput, BAutocomplete, BTag, GroupDetail, BTableColumn, BTable, BField, TramHeader },
   data () {
     return {
@@ -116,7 +117,7 @@ export default {
     requireOperator(to, from, next)
   },
   created () {
-    this.$bind('group', groupsDB.doc(this.$route.params.group))
+    this.$bind('group', groupsDB.doc(this.$route.params.group)).then(() => setPageTitle(this.group.name))
   },
   methods: {
     canVisitStation (station) {

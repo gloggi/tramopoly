@@ -52,7 +52,6 @@ import GroupDetail from '@/components/GroupDetail'
 import { renderMrTLocation } from '@/business'
 
 export default {
-  name: 'Dashboard',
   components: { GroupDetail, Placeholder, BTable, BTableColumn, TramHeader },
   data () {
     return {

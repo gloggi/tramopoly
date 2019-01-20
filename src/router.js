@@ -35,12 +35,15 @@ const router = new Router({
 
 router.afterEach((to, from) => {
   const componentNames = to.matched.map(r => r.components.default.name).reverse()
-  const title = componentNames.length ? componentNames[0] : null
-  if (title != null && title.length) {
+  setPageTitle(componentNames.length ? componentNames[0] : null)
+})
+
+export default router
+
+export function setPageTitle (title) {
+  if (title && title.length) {
     document.title = title + ' - Tramopoly'
   } else {
     document.title = 'Tramopoly'
   }
-})
-
-export default router
+}
