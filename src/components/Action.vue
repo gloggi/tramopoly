@@ -1,13 +1,13 @@
 <template>
   <div class="columns is-multiline">
-    <tram-header>{{ group.name }}</tram-header>
+    <tram-header>{{ group && group.name || '...' }}</tram-header>
     <div class="column is-full is-one-third-desktop is-offset-one-third-desktop">
-      <group-detail ref="groupDetails" v-if="group" :group="group" :update-interval="5">
+      <group-detail v-if="group" :group-id="groupId" :all-groups="allGroups" :update-interval="5">
         <button v-if="groupIsActiveCaller" class="button is-link is-outlined is-danger is-pulled-left" @click="finishCall" style="margin-bottom: 20px;">⬅️ Färtig telefoniärt</button>
         <button v-else class="button is-link is-outlined is-info is-pulled-left" @click="redirectToZentrale" style="margin-bottom: 20px;">⬅️ Zrugg zu dä Übärsicht</button>
       </group-detail>
       <div class="panel">
-        <header class="panel-heading"><h4 class="title is-4">Station chaufä oder bsuächä</h4></header>
+        <header class="panel-heading"><h4 class="title is-4">🚉 Station chaufä oder bsuächä</h4></header>
         <div class="panel-block">
           <div class="field has-addons" style="width: 100%">
             <p class="control has-icons-left is-expanded">
@@ -44,10 +44,10 @@
           </a>
         </template>
       </div>
-      <div class="card">
+      <div class="card" v-if="group">
         <header class="card-content has-background-light">
-          <b-tag v-if="groupIsCurrentlyMrT" type="is-info" class="is-pulled-right is-medium">Aktuellä Mr. T!</b-tag>
-          <h4 class="card-header-title title is-4">Mr. T</h4>
+          <b-tag v-if="group.isCurrentlyMrT" type="is-info" class="is-pulled-right is-medium">Aktuellä Mr. T!</b-tag>
+          <h4 class="card-header-title title is-4">🕵️ Mr. T</h4>
         </header>
         <div class="card-content">
           <form v-on:submit.prevent="updateMrT">
@@ -55,7 +55,8 @@
             <b-field label="Letschti bekannti Station"><b-autocomplete :data="allStationsInZurich" :placeholder="lastMrT.lastKnownStop" v-model="mrT.lastKnownStop" open-on-focus /></b-field>
             <b-field label="Richtig"><b-autocomplete :data="allStationsInZurich" :placeholder="lastMrT.direction" v-model="mrT.direction" open-on-focus /></b-field>
             <b-field label="Beschriibig"><b-input type="textarea" :placeholder="lastMrT.description" v-model="mrT.description"/></b-field>
-            <button class="button is-link" type="submit">Mr T. aktualisiärä</button>
+            <button v-if="group.isCurrentlyMrT" class="button is-link" type="submit">Mr T. aktualisiärä</button>
+            <button v-else class="button is-link" type="submit">{{ group.name }} zum Mr T. machä!</button>
           </form>
         </div>
       </div>
@@ -68,7 +69,6 @@ import {
   addJokerVisit,
   addMrTChange,
   addStationVisit,
-  groupsDB,
   jokersDB,
   jokerVisitsDB,
   mrTChangesDB,
@@ -81,7 +81,6 @@ import TramHeader from '@/components/TramHeader'
 import BField from 'buefy/src/components/field/Field'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
-import { stationOwners } from '@/business'
 import GroupDetail from '@/components/GroupDetail'
 import BTag from 'buefy/src/components/tag/Tag'
 import allStationsInZurich from '@/allStationsInZurich'
@@ -92,10 +91,13 @@ import { setPageTitle } from '@/router'
 export default {
   name: 'Aktion',
   components: { BInput, BAutocomplete, BTag, GroupDetail, BTableColumn, BTable, BField, TramHeader },
+  props: {
+    allGroups: { type: Array, required: true },
+    stationOwners: { type: Map, required: true }
+  },
   data () {
     return {
       loggedInOperator: null,
-      group: { name: '' },
       stations: [],
       jokers: [],
       stationVisits: [],
@@ -116,25 +118,24 @@ export default {
   beforeRouteEnter (to, from, next) {
     requireOperator(to, from, next)
   },
-  created () {
-    this.$bind('group', groupsDB.doc(this.$route.params.group)).then(() => setPageTitle(this.group.name))
-  },
   methods: {
     canVisitStation (station) {
-      return station.value <= this.$refs.groupDetails.saldo
+      return this.group && station.value <= this.group.saldo
     },
     ownsStation (station) {
-      return this.stationOwners.get(station.id) === this.group.id
+      let owner = this.stationOwners.get(station.id)
+      return owner && owner.id === this.groupId
     },
     hasVisitedJoker (joker) {
-      return this.jokerVisits.some(visit => visit.group.id === this.group.id && visit.station.id === joker.id)
+      return this.jokerVisits.some(visit => visit.group.id === this.groupId && visit.station.id === joker.id)
     },
     resetSearchTerm () {
       this.searchterm = ''
     },
     visitStation (station) {
-      addStationVisit(this.group.id, station.id).then(() => {
-        if (stationOwners(this.stationVisits, this.now).get(station.id) === this.group.id) {
+      addStationVisit(this.groupId, station.id).then(() => {
+        this.$emit('updateNow')
+        if (this.stationOwners.get(station.id).id === this.groupId) {
           this.snackbar('🎉🙌 Perf! Ier händ d Station gchauft! Schtämplä nöd vergässä ️🎫‼️', 'Gschtämplät 👍🏼')
         } else {
           this.snackbar('😓😣 Ja nääi! Die Station ghört scho anärä andärä Gruppä... Iär händ müäsä Miäti zahle 📉🆘', 'Okei... 😢', 'is-danger')
@@ -142,10 +143,16 @@ export default {
       })
     },
     visitJoker (joker) {
-      addJokerVisit(this.group.id, joker.id).then(() => this.snackbar('🤑💰 Judihui! Ier händ Gäld übercho für diä Jokerstation! Schtämplä nöd vergässä ️🎫‼️', 'Gschtämplät 👍🏼'))
+      addJokerVisit(this.groupId, joker.id).then(() => {
+        this.$emit('updateNow')
+        this.snackbar('🤑💰 Judihui! Ier händ Gäld übercho für diä Jokerstation! Schtämplä nöd vergässä ️🎫‼️', 'Gschtämplät 👍🏼')
+      })
     },
     updateMrT () {
-      addMrTChange(this.group.id, this.mrT)
+      addMrTChange(this.groupId, this.mrT).then(() => {
+        this.$emit('updateNow')
+        this.snackbar('👍🕵️ Mässi! Dä Mr. T isch aktualisiärt wordä. Lütäd in 10 Minutä widär aa. 🏃🕑', 'Bis bald ☎️📳')
+      })
     },
     snackbar (message, button = 'OK', type = 'is-success') {
       this.$snackbar.open({ message, type, position: 'is-top', indefinite: true, actionText: button })
@@ -158,27 +165,32 @@ export default {
     }
   },
   computed: {
+    groupId () {
+      return this.$route.params.group
+    },
+    group () {
+      return this.allGroups.find(group => group.id === this.groupId)
+    },
     combinedStations () {
       return this.stations.map(station => ({ id: station.id, ...station })).concat(this.jokers.map(joker => ({ joker: true, id: joker.id, ...joker }))).sort((a, b) => a.name.localeCompare(b.name))
     },
     filteredStations () {
       return this.combinedStations.filter(station => station.name && (station.name + (station.joker ? ' (Joker)' : '')).toLocaleLowerCase().includes(this.searchterm.toLocaleLowerCase()))
     },
-    stationOwners () {
-      return stationOwners(this.stationVisits)
-    },
     visitedStations () {
-      return this.stationVisits.filter(visit => visit.group.id === this.group.id).map(visit => visit.station)
+      return this.stationVisits.filter(visit => visit.group.id === this.groupId).map(visit => visit.station)
     },
     lastMrT () {
       if (this.mrTChanges.length === 0) return this.mrT
       return this.mrTChanges[this.mrTChanges.length - 1]
     },
-    groupIsCurrentlyMrT () {
-      return this.group.id && this.lastMrT.group.id === this.group.id
-    },
     groupIsActiveCaller () {
-      return !!(this.group.id && this.loggedInOperator && this.loggedInOperator.activeCall && this.loggedInOperator.activeCall.group && this.loggedInOperator.activeCall.group.id === this.group.id)
+      return !!(this.loggedInOperator && this.loggedInOperator.activeCall && this.loggedInOperator.activeCall.group && this.loggedInOperator.activeCall.group.id === this.groupId)
+    }
+  },
+  watch: {
+    group: function () {
+      setPageTitle(this.group.name)
     }
   }
 }

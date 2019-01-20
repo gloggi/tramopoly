@@ -1,6 +1,8 @@
 
-export function renderMrTLocation (mrT, now) {
-  if (!mrT || mrT.disabled) return 'Käinä wäiss es so rächt...'
+export function renderMrTLocation (mrTChanges, now) {
+  if (!mrTChanges || !mrTChanges.length) return 'Käinä wäiss es so rächt...'
+  let mrT = mrTChanges[mrTChanges.length - 1]
+  if (mrT.disabled) return 'Käinä wäiss es so rächt...'
   let text = 'Dä Mr. T isch zletscht '
   if (mrT.time) {
     text = text + 'vor ' + renderDurationInMinutes(now - mrT.time.toDate()) + ' Minutä '
@@ -40,48 +42,92 @@ function renderDurationInMinutes (milliseconds) {
   }
 }
 
-export function groupSaldo (groupId, settings, stationVisits, jokerVisits, now = new Date()) {
-  if (!settings) return 0
-  return settings.starterCash +
-    stationExpenses(groupId, stationVisits, settings, now) +
-    jokerIncome(groupId, jokerVisits, now)
+export function calculateAllScores (groups, stationVisits, jokerVisits, mrTChanges, settings, now = new Date()) {
+  if (!settings) return { allGroups: [], stationOwners: new Map() }
+  let allGroups = groups.reduce((map, group) => map.set(group.id, { ...group, id: group.id, saldo: 0, realEstatePoints: 0, mrTPoints: 0 }), new Map())
+  addStarterCash(allGroups, settings)
+  let stationOwners = addStationExpenses(allGroups, stationVisits, settings, now)
+  addJokerIncome(allGroups, jokerVisits)
+  addMrTPoints(allGroups, mrTChanges, settings, now)
+  return {
+    allGroups: Array.from(allGroups.values()).map(group => ({ ...group, totalPoints: group.saldo + group.realEstatePoints + group.mrTPoints }))
+      .sort((a, b) => b.totalPoints - a.totalPoints),
+    stationOwners: stationOwners
+  }
 }
 
-export function stationOwners (stationVisits, now = new Date()) {
-  return filter(stationVisits, now).reduceRight((map, visit) => map.set(visit.station.id, visit.group.id), new Map())
+function addStarterCash (allGroups, settings) {
+  allGroups.forEach(group => { group.saldo += settings.starterCash })
 }
 
-function stationExpenses (groupId, stationVisits, settings, now) {
-  if (!stationVisits || !settings) return 0
-  let visits = filter(stationVisits, now)
-  let buyingVisits = firstVisitsByStation(visits).filter(visit => visit.group.id === groupId)
-  let boughtStationIds = buyingVisits.map(visit => visit.station.id)
-  let payingVisits = visits.filter(visit => visit.group.id === groupId).filter(visit => !boughtStationIds.includes(visit.station.id))
-  let payeeVisits = visits.filter(visit => visit.group.id !== groupId).filter(visit => boughtStationIds.includes(visit.station.id))
-  return -buyingCost(buyingVisits) - rentAmount(payingVisits, settings.rentRate) + rentAmount(payeeVisits, settings.rentRate) + interestAmount(buyingVisits, settings.interestPeriod, settings.interestRate, settings.gameEnd, now)
+function addStationExpenses (allGroups, stationVisits, settings, now) {
+  let stationOwners = new Map()
+  stationVisits.forEach(stationVisit => {
+    if (!stationVisit.group.id) return
+    let visitor = allGroups.get(stationVisit.group.id)
+    let existingOwner = stationOwners.get(stationVisit.station.id)
+    if (existingOwner) {
+      let rent = stationVisit.station.value * settings.rentRate
+      // Pay
+      visitor.saldo -= rent
+      // Collect
+      existingOwner.saldo += rent
+    } else {
+      stationOwners.set(stationVisit.station.id, visitor)
+      let value = stationVisit.station.value
+      // Buying cost
+      visitor.saldo -= value
+      // Real estate value
+      visitor.realEstatePoints += value * settings.realEstateValueRatio
+      // Interest
+      visitor.saldo += interestAmount(value, settings.interestPeriod, settings.interestRate,
+        stationVisit.time.toDate(), now, settings.gameEnd.toDate())
+    }
+  })
+  allGroups.forEach(group => { group.saldo = Math.round(group.saldo) })
+  return stationOwners
 }
 
-function firstVisitsByStation (stationVisits) {
-  return Array.from(stationVisits.reduceRight((map, visit) => map.set(visit.station.id, visit), new Map()).values())
+function interestAmount (value, period, rate, buyingTime, now, gameEnd) {
+  return (Math.min(now, gameEnd) - buyingTime) / 60000.0 / period * rate * value
 }
 
-function buyingCost (visits) {
-  return visits.reduce((total, visit) => total + visit.station.value, 0)
+function addJokerIncome (allGroups, jokerVisits) {
+  jokerVisits.forEach(jokerVisit => {
+    if (!jokerVisit.group.id) return
+    allGroups.get(jokerVisit.group.id).saldo += jokerVisit.station.value
+  })
 }
 
-function rentAmount (visits, rentRate) {
-  return visits.reduce((total, visit) => total + visit.station.value * rentRate, 0)
+function addMrTPoints (allGroups, mrTChanges, settings, now) {
+  let currentMrT = null
+  let currentMrTSince = null
+  const gameEnd = settings.gameEnd.toDate()
+  mrTChanges.forEach(mrTVisit => {
+    let newMrT = mrTVisit.group.id
+    let newMrTSince = mrTVisit.time.toDate()
+    if (!newMrT || newMrT === currentMrT) return
+    if (currentMrT) {
+      allGroups.get(currentMrT).mrTPoints += mrTAmount(settings.mrTRewards, currentMrTSince, newMrTSince, gameEnd)
+    }
+    currentMrT = newMrT
+    currentMrTSince = newMrTSince
+  })
+  if (currentMrT) {
+    let currentMrTGroup = allGroups.get(currentMrT)
+    currentMrTGroup.mrTPoints += mrTAmount(settings.mrTRewards, currentMrTSince, now, gameEnd)
+    currentMrTGroup.isCurrentlyMrT = true
+  }
 }
 
-function interestAmount (visits, period, rate, gameEnd, now) {
-  return Math.round(visits.map(visit => (Math.min(now, gameEnd.toDate()) - visit.time.toDate()) / 60000.0 / period * rate * visit.station.value).reduce((sum, stationInterest) => sum + stationInterest, 0.0))
-}
-
-function jokerIncome (groupId, jokerVisits, now) {
-  if (!jokerVisits) return 0
-  return filter(jokerVisits, now).filter(visit => visit.group.id === groupId).reduce((sum, visit) => sum + visit.station.value, 0)
-}
-
-function filter (visits, now) {
-  return visits.filter(visit => visit.time.toDate() <= now)
+function mrTAmount (rewards, since, now, gameEnd) {
+  let durationInMinutes = Math.max(0, Math.min(now, gameEnd) - since / 60000.0)
+  let result = 0
+  for (let i in rewards) {
+    if (rewards[i].duration > durationInMinutes) {
+      return result
+    }
+    result = rewards[i].value
+  }
+  return result
 }

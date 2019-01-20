@@ -10,20 +10,39 @@
         <a class="level-item" @click="support">Hilfe</a>
       </div>
     </div>
-    <router-view @login="refreshLoginStatus"/>
+    <router-view @login="refreshLoginStatus" @update="updateNow" :all-groups="allGroups" :station-owners="stationOwners" :mr-t-location="mrTLocation"/>
   </div>
 </template>
 
 <script>
-import { auth, bindUserById } from '@/firebaseConfig'
+import {
+  auth,
+  bindUserById,
+  groupsDB,
+  jokerVisitsDB,
+  mrTChangesDB,
+  settingsDB,
+  stationVisitsDB
+} from '@/firebaseConfig'
+import { calculateAllScores, renderMrTLocation } from '@/business'
 
 export default {
   name: 'Tramopoly',
   data () {
     return {
       firestoreUser: {},
-      user: null
+      user: null,
+      groups: [],
+      stationVisits: [],
+      jokerVisits: [],
+      mrTChanges: [],
+      settings: null,
+      now: new Date(),
+      saldoTimer: null
     }
+  },
+  firestore: {
+    groups: groupsDB
   },
   computed: {
     userIsLoggedIn () {
@@ -31,6 +50,24 @@ export default {
     },
     userIsOperator () {
       return this.userIsLoggedIn && this.user.isOperator
+    },
+    allGroupsAndStationOwners () {
+      if (!this.userIsLoggedIn ||
+        (this.groups.length && this.groups.some(group => !(group.abteilung && group.abteilung.id))) ||
+        !this.$firestoreRefs['settings'] || !this.$firestoreRefs['stationVisits'] || !this.$firestoreRefs['jokerVisits'] || !this.$firestoreRefs['mrTChanges']
+      ) {
+        return { allGroups: [], stationOwners: new Map() }
+      }
+      return calculateAllScores(this.groups, this.stationVisits, this.jokerVisits, this.mrTChanges, this.settings, this.now)
+    },
+    allGroups () {
+      return this.allGroupsAndStationOwners.allGroups
+    },
+    stationOwners () {
+      return this.allGroupsAndStationOwners.stationOwners
+    },
+    mrTLocation () {
+      return renderMrTLocation(this.mrTChanges, this.now)
     }
   },
   methods: {
@@ -39,7 +76,7 @@ export default {
         auth.onAuthStateChanged(firestoreUser => {
           if (firestoreUser) {
             this.firestoreUser = firestoreUser
-            bindUserById(this, 'user', firestoreUser.uid)
+            bindUserById(this, 'user', firestoreUser.uid).then(this.bindRestrictedCollections)
           } else {
             this.firestoreUser = {}
             bindUserById(this, 'user', null)
@@ -47,6 +84,12 @@ export default {
           resolve(firestoreUser)
         })
       })
+    },
+    bindRestrictedCollections () {
+      this.$bind('stationVisits', stationVisitsDB)
+      this.$bind('jokerVisits', jokerVisitsDB)
+      this.$bind('mrTChanges', mrTChangesDB)
+      this.$bind('settings', settingsDB)
     },
     async signout () {
       auth.signOut()
@@ -59,10 +102,15 @@ export default {
         position: 'is-top',
         indefinite: true
       })
+    },
+    updateNow () {
+      clearInterval(this.saldoTimer)
+      this.now = new Date()
+      this.saldoTimer = setInterval(this.updateNow, 1000 * 10)
     }
   },
   created () {
-    this.refreshLoginStatus()
+    this.refreshLoginStatus().then(() => this.updateNow())
   }
 }
 </script>
@@ -116,5 +164,9 @@ export default {
 
   tr.is-active-call {
     background: $green !important;
+  }
+
+  tr.has-content-vcentered td {
+    vertical-align: middle;
   }
 </style>
