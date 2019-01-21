@@ -101,7 +101,7 @@ export default {
     },
     support () {
       this.$snackbar.open({
-        message: 'Lüüt am Cosinus aa: Null Sibä Nüün, Drüü Acht Sächs, Sächs Sibä, Null Sächs',
+        message: 'Wänn öppis nöd aazäigt wird, tuän mal d Siitä neu ladä 🔄 Wänns dänn immär nonig gaht, lüüt am Cosinus aa: Null Sibä Nüün, Drüü Acht Sächs, Sächs Sibä, Null Sächs',
         position: 'is-top',
         indefinite: true
       })
