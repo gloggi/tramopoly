@@ -44,7 +44,7 @@
           </a>
         </template>
       </div>
-      <div class="card" v-if="group">
+      <div class="card" id="mr-t" v-if="group">
         <header class="card-content has-background-light">
           <b-tag v-if="group.isCurrentlyMrT" type="is-info" class="is-pulled-right is-medium">Aktuellä Mr. T!</b-tag>
           <h4 class="card-header-title title is-4">🕵️ Mr. T</h4>
