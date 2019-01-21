@@ -2,7 +2,7 @@
   <div class="columns is-multiline">
     <tram-header>{{ group && group.name || '...' }}</tram-header>
     <div class="column is-full is-one-third-desktop is-offset-one-third-desktop">
-      <group-detail v-if="group" :group-id="groupId" :all-groups="allGroups" :update-interval="5">
+      <group-detail v-if="groupId" :group-id="groupId" :all-groups="allGroups" :update-interval="5">
         <button v-if="groupIsActiveCaller" class="button is-link is-outlined is-danger is-pulled-left" @click="finishCall" style="margin-bottom: 20px;">⬅️ Färtig telefoniärt</button>
         <button v-else class="button is-link is-outlined is-info is-pulled-left" @click="redirectToZentrale" style="margin-bottom: 20px;">⬅️ Zrugg zu dä Übärsicht</button>
       </group-detail>
@@ -48,6 +48,7 @@
         <header class="card-content has-background-light">
           <b-tag v-if="group.isCurrentlyMrT" type="is-info" class="is-pulled-right is-medium">Aktuellä Mr. T!</b-tag>
           <h4 class="card-header-title title is-4">🕵️ Mr. T</h4>
+          <h6 v-if="mrTSince" class="subtitle is-6">{{ mrTSince }}</h6>
         </header>
         <div class="card-content">
           <form v-on:submit.prevent="updateMrT">
@@ -93,7 +94,8 @@ export default {
   components: { BInput, BAutocomplete, BTag, GroupDetail, BTableColumn, BTable, BField, TramHeader },
   props: {
     allGroups: { type: Array, required: true },
-    stationOwners: { type: Map, required: true }
+    stationOwners: { type: Map, required: true },
+    mrTSince: { type: String, required: true }
   },
   data () {
     return {

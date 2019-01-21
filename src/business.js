@@ -31,6 +31,17 @@ export function renderMrTLocation (mrTChanges, now) {
   return text
 }
 
+export function renderMrTSince (mrTChanges, now) {
+  if (!mrTChanges || !mrTChanges.length) return 'Bishär käin Mr. T...'
+  let mrT = mrTChanges[mrTChanges.length - 1]
+  if (mrT.disabled) return 'Dä Mr. T isch momentan nöd aktiv.'
+  for (let i = mrTChanges.length - 1; i >= 0; i--) {
+    if (mrTChanges[i].group.id !== mrT.group.id) break
+    mrT = mrTChanges[i]
+  }
+  return 'Dä Mr. T isch sit ' + renderDurationInMinutes(now - mrT.time.toDate()) + ' Minutä bi dä Gruppä ' + mrT.group.name + '.'
+}
+
 function renderDurationInMinutes (milliseconds) {
   let halfMinutes = Math.round(milliseconds / 1000.0 / 30.0)
   if (halfMinutes < 2) {
@@ -120,10 +131,11 @@ function addMrTPoints (allGroups, mrTChanges, settings, now) {
   }
 }
 
-function mrTAmount (rewards, since, now, gameEnd) {
-  let durationInMinutes = Math.max(0, Math.min(now, gameEnd) - since / 60000.0)
+function mrTAmount (rewards, since, until, gameEnd) {
+  let durationInMinutes = Math.max(0, (Math.min(until, gameEnd) - since) / 60000.0)
   let result = 0
-  for (let i in rewards) {
+  let i
+  for (i in rewards) {
     if (rewards[i].duration > durationInMinutes) {
       return result
     }

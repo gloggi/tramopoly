@@ -10,7 +10,7 @@
         <a class="level-item" @click="support">Hilfe</a>
       </div>
     </div>
-    <router-view @login="refreshLoginStatus" @update="updateNow" :all-groups="allGroups" :station-owners="stationOwners" :mr-t-location="mrTLocation"/>
+    <router-view @login="refreshLoginStatus" @update="updateNow" :all-groups="allGroups" :station-owners="stationOwners" :mr-t-location="mrTLocation" :mr-t-since="mrTSince"/>
   </div>
 </template>
 
@@ -24,7 +24,7 @@ import {
   settingsDB,
   stationVisitsDB
 } from '@/firebaseConfig'
-import { calculateAllScores, renderMrTLocation } from '@/business'
+import { calculateAllScores, renderMrTLocation, renderMrTSince } from '@/business'
 
 export default {
   name: 'Tramopoly',
@@ -68,6 +68,9 @@ export default {
     },
     mrTLocation () {
       return renderMrTLocation(this.mrTChanges, this.now)
+    },
+    mrTSince () {
+      return renderMrTSince(this.mrTChanges, this.now)
     }
   },
   methods: {
