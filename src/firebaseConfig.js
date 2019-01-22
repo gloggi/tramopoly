@@ -20,14 +20,14 @@ let auth = firebase.auth()
 let RecaptchaVerifier = firebase.auth.RecaptchaVerifier
 
 export const groupsDB = db.collection('groups')
-export const abteilungenDB = db.collection('abteilungen').where('active', '==', true)
+export const abteilungenDB = db.collection('abteilungen')
 export const stationsDB = db.collection('stations')
 export const jokersDB = db.collection('jokers')
 export const settingsDB = db.collection('settings').doc('settings')
 export const stationVisitsDB = db.collection('stationVisits').where('time', '>', new Date(0)).orderBy('time')
 export const jokerVisitsDB = db.collection('jokerVisits').where('time', '>', new Date(0)).orderBy('time')
 export const mrTChangesDB = db.collection('mrTChanges').where('time', '>', new Date(0)).orderBy('time')
-export const currentMrTDB = db.collection('mrTChanges').where('time', '>', new Date(0)).orderBy('time', 'desc').limit(1)
+export const usersDB = db.collection('users')
 export { auth, RecaptchaVerifier }
 
 export function addGroup (groupData, existingGroups) {
@@ -49,6 +49,20 @@ function createUniqueGroupId (abteilungId, existingGroups) {
 export function addUser (uid, userData) {
   if (!uid) return
   return db.collection('users').doc(uid).set(userData)
+}
+
+export function setGameEndTime (dateTime) {
+  if (!dateTime) return
+  return db.collection('settings').doc('settings').update({ 'gameEnd': dateTime })
+}
+
+export function changeGroupOperator (abteilungId, operatorId) {
+  if (!abteilungId) return
+  if (!operatorId) {
+    return db.collection('abteilungen').doc(abteilungId).update({ 'operator': null })
+  } else {
+    return db.collection('abteilungen').doc(abteilungId).update({ 'operator': db.collection('users').doc(operatorId) })
+  }
 }
 
 export function setActiveCall (operatorId, callerId) {
@@ -143,7 +157,17 @@ export function requireAuth (to, from, next) {
 export function requireOperator (to, from, next) {
   next(vm => {
     bindLoggedInUser(vm, 'loggedInOperator', null, () => {
-      if (!vm.loggedInOperator || !vm.loggedInOperator.isOperator) {
+      if (!vm.loggedInOperator || !(vm.loggedInOperator.role === 'operator' || vm.loggedInOperator.role === 'admin')) {
+        vm.$router.replace({ name: 'index' })
+      }
+    })
+  })
+}
+
+export function requireAdmin (to, from, next) {
+  next(vm => {
+    bindLoggedInUser(vm, 'loggedInAdmin', null, () => {
+      if (!vm.loggedInOperator || !vm.loggedInOperator.role === 'admin') {
         vm.$router.replace({ name: 'index' })
       }
     })

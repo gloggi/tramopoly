@@ -6,9 +6,16 @@ service cloud.firestore {
     }
 
     function isOperator() {
+      return isAdmin() ||
+          (isLoggedIn()
+          && exists(path("/databases/" + database + "/documents/users/" + request.auth.uid))
+          && get(path("/databases/" + database + "/documents/users/" + request.auth.uid)).data.role == 'operator');
+    }
+
+    function isAdmin() {
       return isLoggedIn()
           && exists(path("/databases/" + database + "/documents/users/" + request.auth.uid))
-          && get(path("/databases/" + database + "/documents/users/" + request.auth.uid)).data.isOperator == true;
+          && get(path("/databases/" + database + "/documents/users/" + request.auth.uid)).data.role == 'admin';
     }
 
     match /{collection=**} {
@@ -17,6 +24,7 @@ service cloud.firestore {
     }
     match /abteilungen/{document=**} {
       allow read: if true;
+      allow write: if isAdmin();
     }
     match /groups/{document=**} {
       allow read: if true;
@@ -35,6 +43,7 @@ service cloud.firestore {
     }
     match /settings/{document=**} {
       allow read: if isLoggedIn();
+      allow write: if isAdmin();
     }
     match /stationVisits/{document=**} {
       allow read: if isLoggedIn();

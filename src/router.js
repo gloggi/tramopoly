@@ -4,6 +4,7 @@ import Dashboard from '@/components/Dashboard'
 import Login from '@/components/Login'
 import Zentrale from '@/components/Zentrale'
 import Action from '@/components/Action'
+import Admin from '@/components/Admin'
 
 Vue.use(Router)
 
@@ -29,6 +30,11 @@ const router = new Router({
       path: '/zentrale/:group',
       name: 'action',
       component: Action
+    },
+    {
+      path: '/admin',
+      name: 'admin',
+      component: Admin
     }
   ],
   scrollBehavior (to, from, savedPosition) {

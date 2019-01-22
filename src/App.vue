@@ -6,7 +6,9 @@
         <span v-else-if="userIsLoggedIn" class="level-item">Willkommä.</span>
         <a v-if="userIsLoggedIn" class="level-item" @click="signout">Uusloggä</a>
         <router-link v-else :to="{ name: 'login' }" class="level-item">Iiloggä</router-link>
+        <router-link v-if="userIsAdmin" :to="{ name: 'index' }" class="level-item">Dashboard</router-link>
         <router-link v-if="userIsOperator" :to="{ name: 'zentrale' }" class="level-item">Zentralä</router-link>
+        <router-link v-if="userIsAdmin" :to="{ name: 'admin' }" class="level-item">Admin</router-link>
         <a class="level-item" @click="support">Hilfe</a>
       </div>
     </div>
@@ -49,7 +51,10 @@ export default {
       return this.user !== null
     },
     userIsOperator () {
-      return this.userIsLoggedIn && this.user.isOperator
+      return this.userIsLoggedIn && (this.user.role === 'operator' || this.user.role === 'admin')
+    },
+    userIsAdmin () {
+      return this.userIsLoggedIn && this.user.role === 'admin'
     },
     allGroupsAndStationOwners () {
       if (!this.userIsLoggedIn ||
@@ -171,5 +176,14 @@ export default {
 
   tr.has-content-vcentered td {
     vertical-align: middle;
+  }
+
+  tr.has-content-vcentered td span {
+    display: flex;
+  }
+
+  tr.has-content-vcentered td span span {
+    align-self: center;
+    margin-right: 0.5em;
   }
 </style>
