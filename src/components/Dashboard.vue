@@ -9,16 +9,16 @@
           <button v-else class="button is-link is-outlined" @click="callOperator">🚫 Zentralä ({{ operatorName }} bsetzt)</button>
         </div>
       </div>
-      <slot></slot>
+      <slot name="message"></slot>
       <group-detail v-if="groupId" :group-id="groupId" :all-groups="allGroups" :update-interval="5"/>
       <div v-if="!groupIsCurrentlyMrT">
-        <slot></slot>
+        <slot name="message2"></slot>
         <div class="card">
           <header class="card-header has-background-light"><h4 class="card-header-title title is-4">Wo isch dä Mr. T? 🕵️</h4></header>
           <div class="card-content"><p>{{ mrTLocation }}</p></div>
         </div>
       </div>
-      <slot></slot>
+      <slot name="message3"></slot>
     </div>
   </div>
 </template>

@@ -37,7 +37,7 @@
               </form>
             </div>
           </div>
-          <div class="columns"><div class="column is-full is-one-third-desktop is-offset-one-third-desktop"><slot></slot></div></div>
+          <div class="columns"><div class="column is-full is-one-third-desktop is-offset-one-third-desktop"><slot name="message"></slot></div></div>
         </div>
       </div>
       <div class="card" v-if="abteilungenReady">
@@ -242,7 +242,6 @@ export default {
       changeGroupOperator(abteilungId, operatorId)
     },
     changeRole (userId, role) {
-      console.log(userId, role)
       changeUserRole(userId, role)
     },
     setMessage (submitEvent) {

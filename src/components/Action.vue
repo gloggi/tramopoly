@@ -61,7 +61,7 @@
           </form>
         </div>
       </div>
-      <slot></slot>
+      <slot name="message"></slot>
     </div>
   </div>
 </template>
