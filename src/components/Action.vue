@@ -3,7 +3,7 @@
     <tram-header>{{ group && group.name || '...' }}</tram-header>
     <div class="column is-full is-one-third-desktop is-offset-one-third-desktop">
       <group-detail v-if="groupId" :group-id="groupId" :all-groups="allGroups" :update-interval="5">
-        <button v-if="groupIsActiveCaller" class="button is-link is-outlined is-danger is-pulled-left" @click="finishCall" style="margin-bottom: 20px;">⬅️ Färtig telefoniärt</button>
+        <button v-if="groupIsActiveCaller" class="button is-link is-outlined is-danger is-pulled-left" @click="finishCall" style="margin-bottom: 20px;">⬅️ Tschau {{ loggedInOperator.activeCall.scoutName }} 👋</button>
         <button v-else class="button is-link is-outlined is-info is-pulled-left" @click="redirectToZentrale" style="margin-bottom: 20px;">⬅️ Zrugg zu dä Übärsicht</button>
       </group-detail>
       <div class="panel">
