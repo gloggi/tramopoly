@@ -51,7 +51,7 @@ export default {
     }
   },
   firestore: {
-    groups: groupsDB
+    groups: groupsDB.where('active', '==', true)
   },
   computed: {
     userIsLoggedIn () {

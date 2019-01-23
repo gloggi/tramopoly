@@ -51,8 +51,8 @@ export default {
   name: 'Login',
   components: { BSelect, BAutocomplete, BInput, BField, TramHeader },
   firestore: {
-    groups: groupsDB.orderBy('name'),
-    abteilungen: abteilungenDB
+    activeAndInactiveGroups: groupsDB.orderBy('name'),
+    abteilungen: abteilungenDB.where('active', '==', true)
   },
   data () {
     return {
@@ -65,7 +65,7 @@ export default {
       confirmation: null,
       specifiedUser: null,
       selectedGroup: null,
-      groups: [],
+      activeAndInactiveGroups: [],
       abteilungen: [],
       specifiedUserData: {}
     }
@@ -84,8 +84,12 @@ export default {
     userIsAlreadyRegistered () {
       return this.specifiedUser && this.specifiedUser.hasOwnProperty('group')
     },
+    groups () {
+      return this.activeAndInactiveGroups.filter(group => group.active)
+    },
     specifiedGroup () {
-      return this.selectedGroup || this.groups.find(group => group.name === (this.userIsAlreadyRegistered ? this.specifiedUser.group.name : this.groupName))
+      if (this.userIsAlreadyRegistered) return this.specifiedUser.group
+      return this.selectedGroup || this.groups.find(group => group.name === this.groupName)
     },
     groupIsAlreadyRegistered () {
       return !!this.specifiedGroup
@@ -93,7 +97,7 @@ export default {
   },
   methods: {
     login () {
-      this.specifiedGroupData = { name: this.groupName, abteilung: this.abteilung }
+      this.specifiedGroupData = { name: this.groupName, abteilung: this.abteilung, active: true }
       this.specifiedUserData = { phone: this.normalizedPhone, scoutName: this.scoutName, group: this.groupName, role: '' }
       auth.signInWithPhoneNumber(this.specifiedUserData.phone, this.appVerifier)
         .then(result => {

@@ -56,6 +56,10 @@ export function setGameEndTime (dateTime) {
   return db.collection('settings').doc('settings').update({ 'gameEnd': dateTime })
 }
 
+export function setOperatorGroupAvailable (available) {
+  return db.collection('groups').doc('zentrale').update({ active: available })
+}
+
 export function changeGroupOperator (abteilungId, operatorId) {
   if (!abteilungId) return
   if (!operatorId) {

@@ -17,7 +17,13 @@
                 <b-field label="Start"><b-input readonly :value="gameStart" expanded /></b-field>
                 <b-field label="Ändi"><b-input readonly :value="gameEnd" expanded /></b-field>
               </b-field>
-              <p class="control"><button @click="setStartTimeToNow" class="level-left button is-danger" expanded>Spiel startä (3ähalb stund)</button></p>
+              <b-field><p class="control"><button @click="setStartTimeToNow" class="button is-danger" expanded>Spiel startä (3ähalb stund)</button></p></b-field>
+              <b-field label="Regischtriärig für Zentrale">
+                <b-switch type="is-danger" :value="operatorGroupActive" @input="value => setOperatorGroupAvailable(value)">
+                  <span v-if="operatorGroupActive" class="has-text-weight-bold">Aktiviert</span>
+                  <span v-else>Deaktiviert</span>
+                </b-switch>
+              </b-field>
             </div>
             <div class="column" v-if="message">
               <header class="title is-4">Nachricht a alli</header>
@@ -122,7 +128,7 @@ import {
   mrTChangesDB,
   requireOperator,
   setActiveCall,
-  setGameEndTime, setGlobalMessage,
+  setGameEndTime, setGlobalMessage, setOperatorGroupAvailable,
   settingsDB,
   stationVisitsDB,
   usersDB
@@ -134,10 +140,11 @@ import Placeholder from '@/components/Placeholder'
 import BInput from 'buefy/src/components/input/Input'
 import BSelect from 'buefy/src/components/select/Select'
 import BField from 'buefy/src/components/field/Field'
+import BSwitch from 'buefy/src/components/switch/Switch'
 
 export default {
   name: 'Admin',
-  components: { BField, BSelect, BInput, Placeholder, BTable, BTableColumn, TramHeader },
+  components: { BSwitch, BField, BSelect, BInput, Placeholder, BTable, BTableColumn, TramHeader },
   props: {
     allGroups: { type: Array, required: true }
   },
@@ -219,10 +226,14 @@ export default {
       return this.settings && this.settings.message
     },
     mrTGroupId () {
-      return this.allGroups.find(group => group.isCurrentlyMrT).id
+      var found = this.allGroups.find(group => group.isCurrentlyMrT)
+      return found && found.id
     },
     usersWithMrTFlag () {
-      return this.users.map(user => ({ ...user, isCurrentlyMrT: user.group.id === this.mrTGroupId }))
+      return this.users.map(user => ({ ...user, id: user.id, isCurrentlyMrT: user.group.id === this.mrTGroupId }))
+    },
+    operatorGroupActive () {
+      return this.allGroups.some(group => group.id === 'zentrale')
     }
   },
   methods: {
@@ -252,6 +263,9 @@ export default {
     },
     setMessage (submitEvent) {
       setGlobalMessage(submitEvent.target.elements.type.value, submitEvent.target.elements.title.value, submitEvent.target.elements.message.value)
+    },
+    setOperatorGroupAvailable (available) {
+      setOperatorGroupAvailable(available)
     }
   }
 }
