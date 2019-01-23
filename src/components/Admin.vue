@@ -47,7 +47,7 @@
         </div>
       </div>
       <div class="card" v-if="abteilungenReady">
-        <header class="card-header has-background-light"><span class="card-header-title title is-4">⚜️ Abteiligä</span></header>
+        <header class="card-header has-background-light"><span class="card-header-title title is-4"><span class="icon is-medium" style="margin-right: 0.5em"><img style="opacity: 0.7" :src="require('../../static/gloggi.svg')"/></span>Abteiligä</span></header>
         <b-table class="has-content-vcentered" :data="abteilungen" striped hoverable :row-class="hasContentVcentered" default-sort="totalPoints" default-sort-direction="desc">
           <template slot-scope="props">
             <b-table-column field="name" label="Abteilig" sortable>

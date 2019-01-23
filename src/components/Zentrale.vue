@@ -11,14 +11,14 @@
       <div class="card">
         <b-table class="has-content-vcentered" :data="allGroups" striped hoverable selectable @select="selectGroup" :row-class="markIfCallingGroup">
           <template slot-scope="props">
-            <b-table-column field="abteilung.name" width="32">
+            <b-table-column field="abteilung.name" label="Abt." width="32" sortable>
               <span class="icon is-medium"><img :title="props.row.abteilung.name" style="opacity: 0.7" :src="require('../../static/' + props.row.abteilung.id + '.svg')"/></span>
             </b-table-column>
-            <b-table-column field="name" label="Gruppä"><span>{{ props.row.name }}</span><b-tag v-if="props.row.isCurrentlyMrT" type="is-info" class="is-small is-pulled-right" title="🕵️">Mr. T</b-tag></b-table-column>
-            <b-table-column field="saldo" label="Saldo" numeric>{{ props.row.saldo }}.-</b-table-column>
-            <b-table-column field="realEstatePoints" label="Immobiliä" numeric>{{ props.row.realEstatePoints }}</b-table-column>
-            <b-table-column field="mrTPoints" label="Mr T." numeric>{{ props.row.mrTPoints }}</b-table-column>
-            <b-table-column field="totalPoints" label="Total" numeric>{{ props.row.totalPoints }}</b-table-column>
+            <b-table-column field="name" label="Gruppä" sortable><span>{{ props.row.name }}</span><b-tag v-if="props.row.isCurrentlyMrT" type="is-info" class="is-small is-pulled-right" title="🕵️">Mr. T</b-tag></b-table-column>
+            <b-table-column field="saldo" label="Saldo" sortable>{{ props.row.saldo }}.-</b-table-column>
+            <b-table-column field="realEstatePoints" label="Immobiliä" sortable>{{ props.row.realEstatePoints }}</b-table-column>
+            <b-table-column field="mrTPoints" label="Mr T." sortable>{{ props.row.mrTPoints }}</b-table-column>
+            <b-table-column field="totalPoints" label="Total" sortable>{{ props.row.totalPoints }}</b-table-column>
           </template>
         </b-table>
       </div>
