@@ -9,6 +9,7 @@
         </div>
       </div>
       <div class="card has-text-left">
+        <header class="card-header has-background-light"><span class="card-header-title title is-4">⚙️ Iistelligä</span></header>
         <div class="card-content">
           <div class="columns">
             <div class="column">
@@ -40,6 +41,7 @@
         </div>
       </div>
       <div class="card" v-if="abteilungenReady">
+        <header class="card-header has-background-light"><span class="card-header-title title is-4">⚜️ Abteiligä</span></header>
         <b-table class="has-content-vcentered" :data="abteilungen" striped hoverable :row-class="hasContentVcentered" default-sort="totalPoints" default-sort-direction="desc">
           <template slot-scope="props">
             <b-table-column field="name" label="Abteilig" sortable>
@@ -60,6 +62,7 @@
         </b-table>
       </div>
       <div class="card" v-if="users.length">
+        <header class="card-header has-background-light"><span class="card-header-title title is-4">🧒 Benutzär</span></header>
         <b-table class="has-content-vcentered" :data="users" striped hoverable :row-class="hasContentVcentered">
           <template slot-scope="props">
             <b-table-column field="scoutName" label="Namä" sortable><span class="has-text-weight-bold">{{ props.row.scoutName }}</span></b-table-column>
@@ -76,6 +79,7 @@
         </b-table>
       </div>
       <div class="card" v-if="allEventsCombined.length">
+        <header class="card-header has-background-light"><span class="card-header-title title is-4">🚉 Stationä, 🃏 Joker & 🕵️ Mr. T</span></header>
         <b-table class="has-content-vcentered" :data="allEventsCombined" striped hoverable :row-class="hasContentVcentered">
           <template slot-scope="props">
             <b-table-column field="abteilung.name" label="Ziit">
