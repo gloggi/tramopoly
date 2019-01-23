@@ -94,7 +94,7 @@ export default {
   methods: {
     login () {
       this.specifiedGroupData = { name: this.groupName, abteilung: this.abteilung }
-      this.specifiedUserData = { phone: this.normalizedPhone, scoutName: this.scoutName, group: this.groupName }
+      this.specifiedUserData = { phone: this.normalizedPhone, scoutName: this.scoutName, group: this.groupName, role: '' }
       auth.signInWithPhoneNumber(this.specifiedUserData.phone, this.appVerifier)
         .then(result => {
           this.confirmation = result

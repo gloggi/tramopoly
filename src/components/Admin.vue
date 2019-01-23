@@ -53,9 +53,9 @@
             <b-table-column field="mrTPoints" label="Mr. T" sortable>{{ props.row.mrTPoints }}</b-table-column>
             <b-table-column field="totalPoints" label="Total" sortable><span class="has-text-weight-bold">{{ props.row.totalPoints }}</span></b-table-column>
             <b-table-column field="operator.scoutName" label="Telefonischt">
-              <b-select @change="changeOperator(props.row.id, $event.target.value)">
+              <b-select @input="value => changeOperator(props.row.id, value)" :value="props.row.operator.id">
                   <option value=""></option>
-                  <option v-for="option in operators" :value="option.id" :key="option.id" :selected="props.row.operator.id === option.id">{{ option.scoutName }}</option>
+                  <option v-for="option in operators" :value="option.id" :key="option.id">{{ option.scoutName }}</option>
               </b-select>
             </b-table-column>
           </template>
@@ -74,7 +74,12 @@
               </span>
             </b-table-column>
             <b-table-column field="group.name" label="Gruppä" sortable>{{ props.row.group.name }}</b-table-column>
-            <b-table-column field="role" label="Rollä" sortable>{{ props.row.role }}</b-table-column>
+            <b-table-column field="role" label="Rollä" sortable>
+              <b-select @input="value => changeRole(props.row.id, value)" :value="props.row.role">
+                <option value="">Spielär</option>
+                <option value="operator">Zentrale</option>
+                <option value="admin">Admin</option>
+              </b-select></b-table-column>
           </template>
         </b-table>
       </div>
@@ -112,7 +117,7 @@
 
 <script>
 import {
-  changeGroupOperator,
+  changeGroupOperator, changeUserRole,
   jokerVisitsDB,
   mrTChangesDB,
   requireOperator,
@@ -235,6 +240,10 @@ export default {
     },
     changeOperator (abteilungId, operatorId) {
       changeGroupOperator(abteilungId, operatorId)
+    },
+    changeRole (userId, role) {
+      console.log(userId, role)
+      changeUserRole(userId, role)
     },
     setMessage (submitEvent) {
       setGlobalMessage(submitEvent.target.elements.type.value, submitEvent.target.elements.title.value, submitEvent.target.elements.message.value)

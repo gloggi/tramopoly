@@ -65,6 +65,11 @@ export function changeGroupOperator (abteilungId, operatorId) {
   }
 }
 
+export function changeUserRole (userId, role) {
+  if (!userId) return
+  return db.collection('users').doc(userId).update({ 'role': role })
+}
+
 export function setGlobalMessage (type, title, message) {
   return db.collection('settings').doc('settings').update({ 'message': { type, title, message } })
 }
