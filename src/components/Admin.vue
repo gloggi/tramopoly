@@ -63,9 +63,9 @@
       </div>
       <div class="card" v-if="users.length">
         <header class="card-header has-background-light"><span class="card-header-title title is-4">🧒 Benutzär</span></header>
-        <b-table class="has-content-vcentered" :data="users" striped hoverable :row-class="hasContentVcentered">
+        <b-table class="has-content-vcentered" :data="usersWithMrTFlag" striped hoverable :row-class="hasContentVcentered">
           <template slot-scope="props">
-            <b-table-column field="scoutName" label="Namä" sortable><span class="has-text-weight-bold">{{ props.row.scoutName }}</span></b-table-column>
+            <b-table-column field="scoutName" label="Namä" sortable><span class="has-text-weight-bold">{{ props.row.scoutName }}</span><b-tag v-if="props.row.isCurrentlyMrT" type="is-info" class="is-small is-pulled-right" title="🕵️">Mr. T</b-tag></b-table-column>
             <b-table-column field="phone" label="Telefon" sortable>{{ props.row.phone }}</b-table-column>
             <b-table-column field="group.abteilung.name" label="Abteilig" sortable>
               <span v-if="props.row.group.abteilung">
@@ -217,6 +217,12 @@ export default {
     },
     message () {
       return this.settings && this.settings.message
+    },
+    mrTGroupId () {
+      return this.allGroups.find(group => group.isCurrentlyMrT).id
+    },
+    usersWithMrTFlag () {
+      return this.users.map(user => ({ ...user, isCurrentlyMrT: user.group.id === this.mrTGroupId }))
     }
   },
   methods: {

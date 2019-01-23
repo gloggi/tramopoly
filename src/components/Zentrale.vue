@@ -14,7 +14,7 @@
             <b-table-column field="abteilung.name" width="32">
               <span class="icon is-medium"><img :title="props.row.abteilung.name" style="opacity: 0.7" :src="require('../../static/' + props.row.abteilung.id + '.svg')"/></span>
             </b-table-column>
-            <b-table-column field="name" label="Gruppä">{{ props.row.name }}<b-tag v-if="props.row.isCurrentlyMrT" type="is-info" class="is-small is-pulled-right" title="🕵️">Mr. T</b-tag></b-table-column>
+            <b-table-column field="name" label="Gruppä"><span>{{ props.row.name }}</span><b-tag v-if="props.row.isCurrentlyMrT" type="is-info" class="is-small is-pulled-right" title="🕵️">Mr. T</b-tag></b-table-column>
             <b-table-column field="saldo" label="Saldo" numeric>{{ props.row.saldo }}.-</b-table-column>
             <b-table-column field="realEstatePoints" label="Immobiliä" numeric>{{ props.row.realEstatePoints }}</b-table-column>
             <b-table-column field="mrTPoints" label="Mr T." numeric>{{ props.row.mrTPoints }}</b-table-column>
