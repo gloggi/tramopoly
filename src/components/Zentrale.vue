@@ -22,6 +22,7 @@
           </template>
         </b-table>
       </div>
+      <slot></slot>
     </div>
   </div>
 </template>

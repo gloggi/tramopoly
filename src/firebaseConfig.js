@@ -65,6 +65,10 @@ export function changeGroupOperator (abteilungId, operatorId) {
   }
 }
 
+export function setGlobalMessage (type, title, message) {
+  return db.collection('settings').doc('settings').update({ 'message': { type, title, message } })
+}
+
 export function setActiveCall (operatorId, callerId) {
   if (!operatorId) return
   return db.collection('users').doc(operatorId).update({ 'activeCall': callerId ? db.collection('users').doc(callerId) : null })

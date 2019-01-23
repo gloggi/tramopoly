@@ -10,11 +10,33 @@
       </div>
       <div class="card has-text-left">
         <div class="card-content">
-          <b-field grouped group-multiline>
-            <b-field label="Start"><b-input readonly :value="gameStart" expanded /></b-field>
-            <b-field label="Ändi"><b-input readonly :value="gameEnd" expanded /></b-field>
-          </b-field>
-          <p class="control"><button @click="setStartTimeToNow" class="level-left button is-danger" expanded>Spiel startä (3ähalb stund)</button></p>
+          <div class="columns">
+            <div class="column">
+              <b-field grouped group-multiline>
+                <b-field label="Start"><b-input readonly :value="gameStart" expanded /></b-field>
+                <b-field label="Ändi"><b-input readonly :value="gameEnd" expanded /></b-field>
+              </b-field>
+              <p class="control"><button @click="setStartTimeToNow" class="level-left button is-danger" expanded>Spiel startä (3ähalb stund)</button></p>
+            </div>
+            <div class="column" v-if="message">
+              <header class="title is-4">Nachricht a alli</header>
+              <form @submit.prevent="setMessage">
+                <b-field grouped group-multiline>
+                  <b-field><b-select name="type" v-model="selectedMessageType">
+                    <option value="is-info">blau</option>
+                    <option value="is-success">grüän</option>
+                    <option value="is-warning">gääl</option>
+                    <option value="is-danger">rot</option>
+                    <option value="">schwarz</option>
+                  </b-select></b-field>
+                  <b-field><b-input type="text" :value="message.title" name="title" placeholder="Titäl"></b-input></b-field>
+                  <b-field><button type="submit" class="button is-primary">Speichärä</button></b-field>
+                </b-field>
+                <b-field><b-input type="textarea" :value="message.message" name="message"></b-input></b-field>
+              </form>
+            </div>
+          </div>
+          <div class="columns"><div class="column is-full is-one-third-desktop is-offset-one-third-desktop"><slot></slot></div></div>
         </div>
       </div>
       <div class="card" v-if="abteilungenReady">
@@ -29,12 +51,10 @@
             <b-table-column field="mrTPoints" label="Mr. T" sortable>{{ props.row.mrTPoints }}</b-table-column>
             <b-table-column field="totalPoints" label="Total" sortable><span class="has-text-weight-bold">{{ props.row.totalPoints }}</span></b-table-column>
             <b-table-column field="operator.scoutName" label="Telefonischt">
-              <div class="select">
-                <select @change="changeOperator(props.row.id, $event.target.value)">
+              <b-select @change="changeOperator(props.row.id, $event.target.value)">
                   <option value=""></option>
                   <option v-for="option in operators" :value="option.id" :key="option.id" :selected="props.row.operator.id === option.id">{{ option.scoutName }}</option>
-                </select>
-              </div>
+              </b-select>
             </b-table-column>
           </template>
         </b-table>
@@ -92,19 +112,23 @@ import {
   jokerVisitsDB,
   mrTChangesDB,
   requireOperator,
-  setActiveCall, setGameEndTime,
+  setActiveCall,
+  setGameEndTime, setGlobalMessage,
   settingsDB,
-  stationVisitsDB, usersDB
+  stationVisitsDB,
+  usersDB
 } from '@/firebaseConfig'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
 import TramHeader from '@/components/TramHeader'
 import Placeholder from '@/components/Placeholder'
 import BInput from 'buefy/src/components/input/Input'
+import BSelect from 'buefy/src/components/select/Select'
+import BField from 'buefy/src/components/field/Field'
 
 export default {
   name: 'Admin',
-  components: { BInput, Placeholder, BTable, BTableColumn, TramHeader },
+  components: { BField, BSelect, BInput, Placeholder, BTable, BTableColumn, TramHeader },
   props: {
     allGroups: { type: Array, required: true }
   },
@@ -115,7 +139,8 @@ export default {
       jokerVisits: [],
       mrTChanges: [],
       settings: null,
-      users: []
+      users: [],
+      selectedMessageType: 'is-info'
     }
   },
   firestore: {
@@ -180,6 +205,9 @@ export default {
     operators () {
       if (!this.users) return []
       return this.users.filter(user => user.role === 'operator' || user.role === 'admin')
+    },
+    message () {
+      return this.settings && this.settings.message
     }
   },
   methods: {
@@ -203,6 +231,9 @@ export default {
     },
     changeOperator (abteilungId, operatorId) {
       changeGroupOperator(abteilungId, operatorId)
+    },
+    setMessage (submitEvent) {
+      setGlobalMessage(submitEvent.target.elements.type.value, submitEvent.target.elements.title.value, submitEvent.target.elements.message.value)
     }
   }
 }

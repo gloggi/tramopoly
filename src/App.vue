@@ -12,7 +12,9 @@
         <a class="level-item" @click="support">Hilfe</a>
       </div>
     </div>
-    <router-view @login="refreshLoginStatus" @update="updateNow" :all-groups="allGroups" :station-owners="stationOwners" :mr-t-location="mrTLocation" :mr-t-since="mrTSince"/>
+    <router-view @login="refreshLoginStatus" @update="updateNow" :all-groups="allGroups" :station-owners="stationOwners" :mr-t-location="mrTLocation" :mr-t-since="mrTSince">
+      <b-message v-if="message && message.message" :type="message.type" :title="messageTitle" :closable="false">{{ message.message }}&#xa;....... Piiiiiiiiiiiiiip.....</b-message>
+    </router-view>
   </div>
 </template>
 
@@ -27,9 +29,11 @@ import {
   stationVisitsDB
 } from '@/firebaseConfig'
 import { calculateAllScores, renderMrTLocation, renderMrTSince } from '@/business'
+import BMessage from 'buefy/src/components/message/Message'
 
 export default {
   name: 'Tramopoly',
+  components: { BMessage },
   data () {
     return {
       firestoreUser: {},
@@ -76,6 +80,14 @@ export default {
     },
     mrTSince () {
       return renderMrTSince(this.mrTChanges, this.now)
+    },
+    message () {
+      return this.settings && this.settings.message
+    },
+    messageTitle () {
+      if (!this.message) return ''
+      if (!this.message.title) return 'Information der Zürilinie'
+      return this.message.title
     }
   },
   methods: {
@@ -185,5 +197,9 @@ export default {
   tr.has-content-vcentered td span span {
     align-self: center;
     margin-right: 0.5em;
+  }
+
+  .message div {
+    white-space: pre;
   }
 </style>
