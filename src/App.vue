@@ -44,7 +44,8 @@ export default {
       mrTChanges: [],
       settings: null,
       now: new Date(),
-      saldoTimer: null
+      saldoTimer: null,
+      recalculateGroupsFlag: false
     }
   },
   firestore: {
@@ -62,6 +63,7 @@ export default {
     },
     allGroupsAndStationOwners () {
       if (!this.userIsLoggedIn ||
+        (this.recalculateGroupsFlag && !this.recalculateGroupsFlag) ||
         (this.groups.length && this.groups.some(group => !(group.abteilung && group.abteilung.id))) ||
         !this.$firestoreRefs['settings'] || !this.$firestoreRefs['stationVisits'] || !this.$firestoreRefs['jokerVisits'] || !this.$firestoreRefs['mrTChanges']
       ) {
@@ -106,10 +108,12 @@ export default {
       })
     },
     bindRestrictedCollections () {
-      this.$bind('stationVisits', stationVisitsDB)
-      this.$bind('jokerVisits', jokerVisitsDB)
-      this.$bind('mrTChanges', mrTChangesDB)
-      this.$bind('settings', settingsDB)
+      Promise.all([
+        this.$bind('stationVisits', stationVisitsDB),
+        this.$bind('jokerVisits', jokerVisitsDB),
+        this.$bind('mrTChanges', mrTChangesDB),
+        this.$bind('settings', settingsDB)
+      ]).then(() => { this.recalculateGroupsFlag = !this.recalculateGroupsFlag })
     },
     async signout () {
       auth.signOut()
