@@ -143,13 +143,13 @@ export function bindLoggedInUser (vm, member, cancelCallback, readyCallback) {
   })
 }
 
-export function requireAuth (to, from, next) {
+export function requireAuth (to, from, next, readyCallbackGenerator) {
   auth.onAuthStateChanged(user => {
     if (!user) {
       return next('/login')
     }
     next(vm => {
-      bindLoggedInUser(vm, 'loggedInUser')
+      bindLoggedInUser(vm, 'loggedInUser', null, readyCallbackGenerator(vm))
     })
   })
 }

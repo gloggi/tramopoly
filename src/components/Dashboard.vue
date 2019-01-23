@@ -39,7 +39,9 @@ export default {
     }
   },
   beforeRouteEnter (to, from, next) {
-    requireAuth(to, from, next)
+    requireAuth(to, from, next, vm => () => {
+      if (vm.loggedInUser.role === 'operator') vm.$router.replace({ name: 'zentrale' })
+    })
   },
   computed: {
     groupId () {
