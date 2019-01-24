@@ -58,7 +58,7 @@ export function calculateAllScores (groups, stationVisits, jokerVisits, mrTChang
   let allGroups = groups.reduce((map, group) => map.set(group.id, { ...group, id: group.id, saldo: 0, realEstatePoints: 0, mrTPoints: 0 }), new Map())
   addStarterCash(allGroups, settings)
   let stationOwners = addStationExpenses(allGroups, stationVisits, settings, now)
-  addJokerIncome(allGroups, jokerVisits)
+  addJokerIncome(allGroups, jokerVisits, settings)
   addMrTPoints(allGroups, mrTChanges, settings, now)
   return {
     allGroups: Array.from(allGroups.values()).map(group => ({ ...group, totalPoints: group.saldo + group.realEstatePoints + group.mrTPoints }))
@@ -73,8 +73,9 @@ function addStarterCash (allGroups, settings) {
 
 function addStationExpenses (allGroups, stationVisits, settings, now) {
   let stationOwners = new Map()
+  const gameEnd = settings.gameEnd.toDate()
   stationVisits.forEach(stationVisit => {
-    if (!stationVisit.group.id) return
+    if (!stationVisit.group.id || stationVisit.time.toDate() > gameEnd) return
     let visitor = allGroups.get(stationVisit.group.id)
     let existingOwner = stationOwners.get(stationVisit.station.id)
     if (existingOwner) {
@@ -100,12 +101,13 @@ function addStationExpenses (allGroups, stationVisits, settings, now) {
 }
 
 function interestAmount (value, period, rate, buyingTime, now, gameEnd) {
-  return (Math.min(now, gameEnd) - buyingTime) / 60000.0 / period * rate * value
+  return Math.max(0, (Math.min(now, gameEnd) - buyingTime) / 60000.0 / period * rate * value)
 }
 
-function addJokerIncome (allGroups, jokerVisits) {
+function addJokerIncome (allGroups, jokerVisits, settings) {
+  const gameEnd = settings.gameEnd.toDate()
   jokerVisits.forEach(jokerVisit => {
-    if (!jokerVisit.group.id) return
+    if (!jokerVisit.group.id || jokerVisit.time.toDate() > gameEnd) return
     allGroups.get(jokerVisit.group.id).saldo += jokerVisit.station.value
   })
 }
