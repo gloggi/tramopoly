@@ -17,7 +17,8 @@
                 <b-field label="Start"><b-input readonly :value="gameStart" expanded /></b-field>
                 <b-field label="Ändi"><b-input readonly :value="gameEnd" expanded /></b-field>
               </b-field>
-              <b-field><p class="control"><button @click="setStartTimeToNow" class="button is-danger" expanded>Spiel startä (3ähalb stund)</button></p></b-field>
+              <b-field><p class="control"><button @click="setStartTimeToNow" class="button is-danger">Spiel startä (4ähalb stund)</button></p></b-field>
+              <hr/>
               <b-field label="Regischtriärig für Zentrale">
                 <b-switch type="is-danger" :value="operatorGroupActive" @input="value => setOperatorGroupAvailable(value)">
                   <span v-if="operatorGroupActive" class="has-text-weight-bold">Aktiviert</span>

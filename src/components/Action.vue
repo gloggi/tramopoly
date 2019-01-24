@@ -11,7 +11,7 @@
         <div class="panel-block">
           <div class="field has-addons" style="width: 100%">
             <p class="control has-icons-left is-expanded">
-              <input class="input is-small" type="text" placeholder="Filtärä" v-model="searchterm">
+              <input class="input is-small" type="text" placeholder="Filtärä" v-model="searchterm" ref="searchfield">
               <span class="icon is-small is-left">🔍</span>
             </p>
             <a class="button is-small" v-if="searchterm !== ''" @click="resetSearchTerm">❌</a>
@@ -134,6 +134,7 @@ export default {
     },
     resetSearchTerm () {
       this.searchterm = ''
+      this.$refs.searchfield.focus()
     },
     visitStation (station) {
       addStationVisit(this.groupId, station.id).then(() => {
