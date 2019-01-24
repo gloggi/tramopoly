@@ -2,6 +2,7 @@
   <div class="columns is-multiline">
     <tram-header>Tramopoly</tram-header>
     <div class="column is-full is-one-third-desktop is-offset-one-third-desktop has-text-centered">
+      <slot v-if="operator" name="message"></slot>
       <div v-if="operator" class="card">
         <div class="card-content">
           <button v-if="!operatorBusy" class="button is-link is-outlined" @click="callOperator">📞 Zentralä ({{ operatorName }})</button>
@@ -10,16 +11,15 @@
           <div class="is-size-7" style="margin-top: 10px;">{{ operatorPhoneInWords }}</div>
         </div>
       </div>
-      <slot name="message"></slot>
+      <slot name="message2"></slot>
       <group-detail v-if="groupId" :group-id="groupId" :all-groups="allGroups" :update-interval="5"/>
       <div v-if="!groupIsCurrentlyMrT">
-        <slot name="message2"></slot>
+        <slot name="message3"></slot>
         <div class="card">
           <header class="card-header has-background-light"><h4 class="card-header-title title is-4">Wo isch dä Mr. T? 🕵️</h4></header>
           <div class="card-content"><p>{{ mrTLocation }}</p></div>
         </div>
       </div>
-      <slot name="message3"></slot>
     </div>
   </div>
 </template>

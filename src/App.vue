@@ -206,6 +206,6 @@ export default {
   }
 
   .message div {
-    white-space: pre;
+    white-space: pre-wrap;
   }
 </style>
