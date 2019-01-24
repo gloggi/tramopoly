@@ -96,7 +96,7 @@ export function addStationVisit (groupId, stationId) {
 export function addJokerVisit (groupId, jokerId) {
   if (!groupId || !jokerId) return
   let time = new Date()
-  return db.collection('jokerVisits').doc(groupId + ' ' + jokerId).set({
+  return db.collection('jokerVisits').doc(time.toLocaleTimeString('de-CH') + ' ' + groupId + ' ' + jokerId).set({
     group: db.collection('groups').doc(groupId),
     station: db.collection('jokers').doc(jokerId),
     time

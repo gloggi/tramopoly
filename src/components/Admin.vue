@@ -95,7 +95,7 @@
         <b-table class="has-content-vcentered" :data="allEventsCombined" striped hoverable :row-class="hasContentVcentered">
           <template slot-scope="props">
             <b-table-column field="abteilung.name" label="Ziit">
-              {{ props.row.time.toDate().toLocaleTimeString() }}
+              {{ props.row.time.toDate().toLocaleTimeString('de-CH') }}
             </b-table-column>
             <b-table-column field="name" label="Gruppä">
               <span v-if="props.row.group && props.row.group.abteilung && props.row.group.abteilung.id" class="icon is-medium"><img :title="props.row.group.abteilung.name" style="opacity: 0.7" :src="require('../../static/' + props.row.group.abteilung.id + '.svg')"/></span>
@@ -178,10 +178,10 @@ export default {
       return 4.5 * 60 * 60 * 1000
     },
     gameStart () {
-      return this.settings && new Date(this.settings.gameEnd.toDate() - this.gameDuration).toLocaleTimeString()
+      return this.settings && new Date(this.settings.gameEnd.toDate() - this.gameDuration).toLocaleTimeString('de-CH')
     },
     gameEnd () {
-      return this.settings && this.settings.gameEnd.toDate().toLocaleTimeString()
+      return this.settings && this.settings.gameEnd.toDate().toLocaleTimeString('de-CH')
     },
     allEventsCombined () {
       return [].concat(
