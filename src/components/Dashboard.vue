@@ -7,6 +7,7 @@
           <button v-if="!operatorBusy" class="button is-link is-outlined" @click="callOperator">📞 Zentralä ({{ operatorName }})</button>
           <button v-else-if="loggedInUserIsActiveCaller" class="button is-link is-outlined is-danger" @click="finishCall">🚫 Färtig telefoniärt</button>
           <button v-else class="button is-link is-outlined" @click="callOperator">🚫 Zentralä ({{ operatorName }} bsetzt)</button>
+          <div class="is-size-7" style="margin-top: 10px;">{{ operatorPhoneInWords }}</div>
         </div>
       </div>
       <slot name="message"></slot>
@@ -57,6 +58,28 @@ export default {
     },
     operatorPhone () {
       return this.operator ? this.operator.phone : null
+    },
+    operatorPhoneInWords () {
+      if (!this.operatorPhone) return null
+      let phoneFormat = this.operatorPhone.replace(/^\+41/g, '0').split('')
+      if (phoneFormat.length === 10) {
+        phoneFormat.splice(3, 0, ',')
+        phoneFormat.splice(7, 0, ',')
+        phoneFormat.splice(10, 0, ',')
+      }
+      return phoneFormat
+        .join('')
+        .replace(/0/g, ' Null')
+        .replace(/1/g, ' Äis')
+        .replace(/2/g, ' Zwäi')
+        .replace(/3/g, ' Drüü')
+        .replace(/4/g, ' Viär')
+        .replace(/5/g, ' Foif')
+        .replace(/6/g, ' Sächs')
+        .replace(/7/g, ' Sibä')
+        .replace(/8/g, ' Acht')
+        .replace(/9/g, ' Nüün')
+        .trim()
     },
     operatorId () {
       return this.operator ? this.operator.id : null
