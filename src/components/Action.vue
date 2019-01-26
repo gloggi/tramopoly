@@ -17,32 +17,34 @@
             <a class="button is-small" v-if="searchterm !== ''" @click="resetSearchTerm">❌</a>
           </div>
         </div>
-        <template v-for="station in filteredStations">
-          <div v-if="station.joker && hasVisitedJoker(station)" :key="'joker-' + station.name" class="panel-block is-owned">
-            <span class="panel-icon">🃏</span>
-            <span class="has-text-weight-bold">{{ station.name }} (Joker)</span><span>{{ station.value }}.-</span>
-          </div>
-          <a v-else-if="station.joker" :key="'joker-' + station.name" class="panel-block" @click="visitJoker(station)">
-            <span class="panel-icon"></span>
-            <span class="has-text-weight-bold">{{ station.name }} (Joker)</span><span>{{ station.value }}.-</span>
-          </a>
-          <div v-else-if="ownsStation(station)" :key="station.id" class="panel-block is-owned">
-            <span class="panel-icon">✅</span>
-            <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
-          </div>
-          <div v-else-if="visitedStations.map(visited => visited.id).includes(station.id)" :key="station.id" class="panel-block is-visited-before">
-            <span class="panel-icon">❎</span>
-            <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
-          </div>
-          <div v-else-if="!canVisitStation(station)" :key="station.id" class="panel-block is-strikethrough">
-            <span class="panel-icon"></span>
-            <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
-          </div>
-          <a v-else :key="station.id" class="panel-block" @click="visitStation(station)">
-            <span class="panel-icon"></span>
-            <span class="has-text-weight-bold">{{ station.name }}</span> <span>{{ station.value }}.-</span>
-          </a>
-        </template>
+        <div style="max-height: 400px; overflow-y: scroll">
+          <template v-for="station in filteredStations">
+            <div v-if="station.joker && hasVisitedJoker(station)" :key="'joker-' + station.name" class="panel-block is-owned">
+              <span class="panel-icon">🃏</span>
+              <span class="has-text-weight-bold">{{ station.name }} (Joker)</span><span>{{ station.value }}.-</span>
+            </div>
+            <a v-else-if="station.joker" :key="'joker-' + station.name" class="panel-block" @click="visitJoker(station)">
+              <span class="panel-icon"></span>
+              <span class="has-text-weight-bold">{{ station.name }} (Joker)</span><span>{{ station.value }}.-</span>
+            </a>
+            <div v-else-if="ownsStation(station)" :key="station.id" class="panel-block is-owned">
+              <span class="panel-icon">✅</span>
+              <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
+            </div>
+            <div v-else-if="visitedStations.map(visited => visited.id).includes(station.id)" :key="station.id" class="panel-block is-visited-before">
+              <span class="panel-icon">❎</span>
+              <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
+            </div>
+            <div v-else-if="!canVisitStation(station)" :key="station.id" class="panel-block is-strikethrough">
+              <span class="panel-icon"></span>
+              <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
+            </div>
+            <a v-else :key="station.id" class="panel-block" @click="visitStation(station)">
+              <span class="panel-icon"></span>
+              <span class="has-text-weight-bold">{{ station.name }}</span> <span>{{ station.value }}.-</span>
+            </a>
+          </template>
+        </div>
       </div>
       <div class="card" id="mr-t" v-if="group">
         <header class="card-content has-background-light">
