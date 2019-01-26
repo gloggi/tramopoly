@@ -77,7 +77,7 @@ function addStationExpenses (allGroups, stationVisits, settings, now) {
   let stationOwners = new Map()
   const gameEnd = settings.gameEnd.toDate()
   stationVisits.forEach(stationVisit => {
-    if (!stationVisit.group.id || stationVisit.time.toDate() > gameEnd) return
+    if (!stationVisit.group || !stationVisit.group.id || stationVisit.time.toDate() > gameEnd) return
     let visitor = allGroups.get(stationVisit.group.id)
     let existingOwner = stationOwners.get(stationVisit.station.id)
     if (existingOwner) {
@@ -109,7 +109,7 @@ function interestAmount (value, period, rate, buyingTime, now, gameEnd) {
 function addJokerIncome (allGroups, jokerVisits, settings) {
   const gameEnd = settings.gameEnd.toDate()
   jokerVisits.forEach(jokerVisit => {
-    if (!jokerVisit.group.id || jokerVisit.time.toDate() > gameEnd) return
+    if (!jokerVisit.group || !jokerVisit.group.id || jokerVisit.time.toDate() > gameEnd) return
     allGroups.get(jokerVisit.group.id).saldo += jokerVisit.station.value
   })
 }
@@ -119,6 +119,7 @@ function addMrTPoints (allGroups, mrTChanges, settings, now) {
   let currentMrTSince = null
   const gameEnd = settings.gameEnd.toDate()
   mrTChanges.forEach(mrTVisit => {
+    if (!mrTVisit.group) return
     let newMrT = mrTVisit.group.id
     let newMrTSince = mrTVisit.time.toDate()
     if (!newMrT || newMrT === currentMrT) return

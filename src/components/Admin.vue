@@ -75,12 +75,12 @@
             <b-table-column field="scoutName" label="Namä" sortable><span class="has-text-weight-bold">{{ props.row.scoutName }}</span><b-tag v-if="props.row.isCurrentlyMrT" type="is-info" class="is-small is-pulled-right" title="🕵️">Mr. T</b-tag></b-table-column>
             <b-table-column field="phone" label="Telefon" sortable>{{ props.row.phone }}</b-table-column>
             <b-table-column field="group.abteilung.name" label="Abteilig" sortable>
-              <span v-if="props.row.group.abteilung">
+              <span v-if="props.row.group && props.row.group.abteilung">
                 <span v-if="props.row.group.abteilung.id" class="icon is-medium"><img :title="props.row.group.abteilung.name" style="opacity: 0.7" :src="require('../../static/' + props.row.group.abteilung.id + '.svg')"/></span>
                 <span>{{ props.row.group.abteilung.name }}</span>
               </span>
             </b-table-column>
-            <b-table-column field="group.name" label="Gruppä" sortable>{{ props.row.group.name }}</b-table-column>
+            <b-table-column field="group.name" label="Gruppä" sortable><span v-if="props.row.group">{{ props.row.group.name }}</span></b-table-column>
             <b-table-column field="role" label="Rollä" sortable>
               <b-select @input="value => changeRole(props.row.id, value)" :value="props.row.role">
                 <option value="">Spielär</option>
@@ -99,7 +99,7 @@
             </b-table-column>
             <b-table-column field="name" label="Gruppä">
               <span v-if="props.row.group && props.row.group.abteilung && props.row.group.abteilung.id" class="icon is-medium"><img :title="props.row.group.abteilung.name" style="opacity: 0.7" :src="require('../../static/' + props.row.group.abteilung.id + '.svg')"/></span>
-              <span>{{ props.row.group.name }}</span>
+              <span v-if="props.row.group">{{ props.row.group.name }}</span>
             </b-table-column>
             <b-table-column field="type" label="Typ">
               <span v-if="props.row.type === 'joker'" :key="props.row.id">

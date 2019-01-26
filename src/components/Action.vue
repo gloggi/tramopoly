@@ -130,7 +130,7 @@ export default {
       return owner && owner.id === this.groupId
     },
     hasVisitedJoker (joker) {
-      return this.jokerVisits.some(visit => visit.group.id === this.groupId && visit.station.id === joker.id)
+      return this.jokerVisits.some(visit => visit.group && visit.group.id === this.groupId && visit.station && visit.station.id === joker.id)
     },
     resetSearchTerm () {
       this.searchterm = ''
@@ -182,7 +182,7 @@ export default {
       return this.combinedStations.filter(station => station.name && (station.name + (station.joker ? ' (Joker)' : '')).toLocaleLowerCase().includes(this.searchterm.toLocaleLowerCase()))
     },
     visitedStations () {
-      return this.stationVisits.filter(visit => visit.group.id === this.groupId).map(visit => visit.station)
+      return this.stationVisits.filter(visit => visit.group && visit.group.id === this.groupId).map(visit => visit.station)
     },
     lastMrT () {
       if (this.mrTChanges.length === 0) return this.mrT
