@@ -8,8 +8,10 @@ export function renderMrTLocation (mrTChanges, now) {
     text = text + 'vor ' + renderDurationInMinutes(now - mrT.time.toDate()) + ' Minutä '
   }
   if (mrT.vehicle) {
-    if (/^[a-zäöü]/i.test(mrT.vehicle.match())) {
+    if (/^[sS]/i.test(mrT.vehicle)) {
       text = text + 'i dä ' + mrT.vehicle + ' '
+    } else if (/^[a-zäöü]/i.test(mrT.vehicle)) {
+      text = text + 'im ' + mrT.vehicle + ' '
     } else if (parseInt(mrT.vehicle > 17)) {
       text = text + 'im ' + mrT.vehicle + 'er '
     } else {
