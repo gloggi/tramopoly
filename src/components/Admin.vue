@@ -48,11 +48,11 @@
         </div>
       </div>
       <div class="card" v-if="abteilungenReady">
-        <header class="card-header has-background-light"><span class="card-header-title title is-4"><span class="icon is-medium" style="margin-right: 0.5em"><img style="opacity: 0.7" :src="require('../../static/gloggi.svg')"/></span>Abteiligä</span></header>
+        <header class="card-header has-background-light"><span class="card-header-title title is-4"><span class="icon is-medium" style="margin-right: 0.5em"><img style="opacity: 0.7" :src="'/static/gloggi.svg'"/></span>Abteiligä</span></header>
         <b-table class="has-content-vcentered" :data="abteilungen" striped hoverable :row-class="hasContentVcentered" default-sort="totalPoints" default-sort-direction="desc">
           <template slot-scope="props">
             <b-table-column field="name" label="Abteilig" sortable>
-              <span v-if="props.row.id" class="icon is-medium"><img :title="props.row.name" style="opacity: 0.7" :src="require('../../static/' + props.row.id + '.svg')"/></span>
+              <span v-if="props.row.id" class="icon is-medium"><img :title="props.row.name" style="opacity: 0.7" :src="'/static/' + props.row.id + '.svg'"/></span>
               <span class="has-text-weight-bold">{{ props.row.name }}</span>
             </b-table-column>
             <b-table-column field="saldo" label="Guäthabä" sortable>{{ props.row.saldo }}</b-table-column>
@@ -76,7 +76,7 @@
             <b-table-column field="phone" label="Telefon" sortable>{{ props.row.phone }}</b-table-column>
             <b-table-column field="group.abteilung.name" label="Abteilig" sortable>
               <span v-if="props.row.group && props.row.group.abteilung">
-                <span v-if="props.row.group.abteilung.id" class="icon is-medium"><img :title="props.row.group.abteilung.name" style="opacity: 0.7" :src="require('../../static/' + props.row.group.abteilung.id + '.svg')"/></span>
+                <span v-if="props.row.group.abteilung.id" class="icon is-medium"><img :title="props.row.group.abteilung.name" style="opacity: 0.7" :src="'/static/' + props.row.group.abteilung.id + '.svg'"/></span>
                 <span>{{ props.row.group.abteilung.name }}</span>
               </span>
             </b-table-column>
@@ -98,7 +98,7 @@
               {{ props.row.time.toDate().toLocaleTimeString('de-CH') }}
             </b-table-column>
             <b-table-column field="name" label="Gruppä">
-              <span v-if="props.row.group && props.row.group.abteilung && props.row.group.abteilung.id" class="icon is-medium"><img :title="props.row.group.abteilung.name" style="opacity: 0.7" :src="require('../../static/' + props.row.group.abteilung.id + '.svg')"/></span>
+              <span v-if="props.row.group && props.row.group.abteilung && props.row.group.abteilung.id" class="icon is-medium"><img :title="props.row.group.abteilung.name" style="opacity: 0.7" :src="'/static/' + props.row.group.abteilung.id + '.svg'"/></span>
               <span v-if="props.row.group">{{ props.row.group.name }}</span>
             </b-table-column>
             <b-table-column field="type" label="Typ">
