@@ -19,7 +19,7 @@
               </b-field>
               <b-field><p class="control"><button @click="setStartTimeToNow" class="button is-danger">Spiel startä (4ähalb stund)</button></p></b-field>
               <hr/>
-              <b-field label="Regischtriärig für Zentrale">
+              <b-field label="Regischtriärig für Zentralä">
                 <b-switch type="is-danger" :value="operatorGroupActive" @input="value => setOperatorGroupAvailable(value)">
                   <span v-if="operatorGroupActive" class="has-text-weight-bold">Aktiviert</span>
                   <span v-else>Deaktiviert</span>
@@ -84,7 +84,7 @@
             <b-table-column field="role" label="Rollä" sortable>
               <b-select @input="value => changeRole(props.row.id, value)" :value="props.row.role">
                 <option value="">Spielär</option>
-                <option value="operator">Zentrale</option>
+                <option value="operator">Zentralä</option>
                 <option value="admin">Admin</option>
               </b-select></b-table-column>
           </template>
