@@ -3,9 +3,18 @@
     <tram-header>Zentralä</tram-header>
     <div class="column is-full is-one-third-desktop is-offset-one-third-desktop has-text-centered">
       <div v-if="loggedInOperatorBusy" class="card">
-        <div class="card-content">
+        <div v-if="loggedInOperator.activeCall.id !== loggedInOperator.id" class="card-content">
           <header class="card-header-title is-centered">Aktivä Aruäf: {{ loggedInOperator.activeCall.scoutName }}</header>
           <button @click="clearActiveCall" class="button is-danger">Aktivä Aruäf beändä</button>
+        </div>
+        <div v-else class="card-content">
+          <header class="card-header-title is-centered">Aktuell wird ich als bsetzt aazäigt.</header>
+          <button @click="clearActiveCall" class="button is-success is-outlined">☎️ Mich als frei aazäigä</button>
+        </div>
+      </div>
+      <div v-else class="card">
+        <div class="card-content">
+          <button @click="setActiveCallToBusy" class="button is-info is-outlined">📞 Mich als bsetzt aazäigä</button>
         </div>
       </div>
       <div class="card">
@@ -56,6 +65,9 @@ export default {
   methods: {
     clearActiveCall () {
       setActiveCall(this.loggedInOperator.id, null)
+    },
+    setActiveCallToBusy () {
+      setActiveCall(this.loggedInOperator.id, this.loggedInOperator.id)
     },
     selectGroup (group) {
       this.$router.push({ name: 'action', params: { group: group.id } })
