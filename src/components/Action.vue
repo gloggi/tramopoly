@@ -50,7 +50,7 @@
         <header class="card-content has-background-light">
           <b-tag v-if="group.isCurrentlyMrT" type="is-info" class="is-pulled-right is-medium">Aktuellä Mr. T!</b-tag>
           <h4 class="card-header-title title is-4">🕵️ Mr. T</h4>
-          <h6 v-if="mrTSince" class="subtitle is-6">{{ mrTSince }}</h6>
+          <h6 v-if="mrTSince" class="subtitle is-6">{{ mrTLocation }} ({{ mrTSince }})</h6>
         </header>
         <div class="card-content">
           <form v-on:submit.prevent="updateMrT">
@@ -98,7 +98,8 @@ export default {
   props: {
     allGroups: { type: Array, required: true },
     stationOwners: { type: Map, required: true },
-    mrTSince: { type: String, required: true }
+    mrTSince: { type: String, required: true },
+    mrTLocation: { type: String, required: true }
   },
   data () {
     return {

@@ -34,14 +34,14 @@ export function renderMrTLocation (mrTChanges, now) {
 }
 
 export function renderMrTSince (mrTChanges, now) {
-  if (!mrTChanges || !mrTChanges.length) return 'Bishär käin Mr. T...'
+  if (!mrTChanges || !mrTChanges.length) return '🔭️ bishär käin Mr. T'
   let mrT = mrTChanges[mrTChanges.length - 1]
-  if (mrT.disabled) return 'Dä Mr. T isch momentan nöd aktiv.'
+  if (mrT.disabled) return '⛔ momentan nöd aktiv'
   for (let i = mrTChanges.length - 1; i >= 0; i--) {
     if (mrTChanges[i].group.id !== mrT.group.id) break
     mrT = mrTChanges[i]
   }
-  return 'Dä Mr. T isch sit ' + renderDurationInMinutes(now - mrT.time.toDate()) + ' Minutä bi dä Gruppä ' + mrT.group.name + '.'
+  return '🕑 sit ' + renderDurationInMinutes(now - mrT.time.toDate()) + ' Minutä bi dä gliichä Gruppä'
 }
 
 function renderDurationInMinutes (milliseconds) {
