@@ -1,10 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Dashboard from '@/components/Dashboard'
-import Login from '@/components/Login'
-import Zentrale from '@/components/Zentrale'
-import Action from '@/components/Action'
-import Admin from '@/components/Admin'
 
 Vue.use(Router)
 
@@ -14,27 +9,27 @@ const router = new Router({
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: () => import('@/components/Login')
     },
     {
       path: '/',
       name: 'index',
-      component: Dashboard
+      component: () => import('@/components/Dashboard')
     },
     {
       path: '/zentrale',
       name: 'zentrale',
-      component: Zentrale
+      component: () => import('@/components/Zentrale')
     },
     {
       path: '/zentrale/:group',
       name: 'action',
-      component: Action
+      component: () => import('@/components/Action')
     },
     {
       path: '/admin',
       name: 'admin',
-      component: Admin
+      component: () => import('@/components/Admin')
     }
   ],
   scrollBehavior (to, from, savedPosition) {
