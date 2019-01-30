@@ -12,7 +12,7 @@
         <a class="level-item" @click="support">Hilfe</a>
       </div>
     </div>
-    <router-view @login="refreshLoginStatus" @update="updateNow" :all-groups="allGroups" :station-owners="stationOwners" :mr-t-location="mrTLocation" :mr-t-since="mrTSince">
+    <router-view @login="refreshLoginStatus" @update="updateNow" :all-groups="allGroups" :station-owners="stationOwners" :mr-t-location="mrTLocation" :now="now">
       <b-message slot="message" v-if="message && message.message" :type="message.type" :title="messageTitle" :closable="false">{{ message.message }}&#xa;....... Piiiiiiiiiiiiiip.....</b-message>
       <b-message slot="message2" v-if="message && message.message" :type="message.type" :title="messageTitle" :closable="false">{{ message.message }}&#xa;....... Piiiiiiiiiiiiiip.....</b-message>
       <b-message slot="message3" v-if="message && message.message" :type="message.type" :title="messageTitle" :closable="false">{{ message.message }}&#xa;....... Piiiiiiiiiiiiiip.....</b-message>
@@ -30,7 +30,7 @@ import {
   settingsDB,
   stationVisitsDB
 } from '@/firebaseConfig'
-import { calculateAllScores, renderMrTLocation, renderMrTSince } from '@/business'
+import { calculateAllScores, renderMrTLocation } from '@/business'
 import BMessage from 'buefy/src/components/message/Message'
 
 export default {
@@ -81,9 +81,6 @@ export default {
     },
     mrTLocation () {
       return renderMrTLocation(this.mrTChanges, this.now)
-    },
-    mrTSince () {
-      return renderMrTSince(this.mrTChanges, this.now)
     },
     message () {
       return this.settings && this.settings.message

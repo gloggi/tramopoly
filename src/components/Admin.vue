@@ -25,6 +25,13 @@
                   <span v-else>Deaktiviert</span>
                 </b-switch>
               </b-field>
+              <hr/>
+              <b-field v-if="currentMrTActive" :label="minutesSinceLastActiveMrTChange">
+                <button class="button is-link is-warning" @click="confiscateMrT">Mr T. beschlagnahmä</button>
+              </b-field>
+              <b-field v-else label="Beschlagnahmtä Mr. T hät sich wiedär gmäldät?">
+                <button class="button is-link is-warning" @click="releaseMrT">Mr T. freigä</button>
+              </b-field>
             </div>
             <div class="column" v-if="message">
               <header class="title is-4">Nachricht a alli</header>
@@ -124,12 +131,16 @@
 
 <script>
 import {
-  changeGroupOperator, changeUserRole,
+  addMrTChange,
+  changeGroupOperator,
+  changeUserRole,
   jokerVisitsDB,
   mrTChangesDB,
   requireOperator,
   setActiveCall,
-  setGameEndTime, setGlobalMessage, setOperatorGroupAvailable,
+  setGameEndTime,
+  setGlobalMessage,
+  setOperatorGroupAvailable,
   settingsDB,
   stationVisitsDB,
   usersDB
@@ -142,12 +153,14 @@ import BInput from 'buefy/src/components/input/Input'
 import BSelect from 'buefy/src/components/select/Select'
 import BField from 'buefy/src/components/field/Field'
 import BSwitch from 'buefy/src/components/switch/Switch'
+import { timeSinceLastActiveMrTChange } from '@/business'
 
 export default {
   name: 'Admin',
   components: { BSwitch, BField, BSelect, BInput, Placeholder, BTable, BTableColumn, TramHeader },
   props: {
-    allGroups: { type: Array, required: true }
+    allGroups: { type: Array, required: true },
+    now: { type: Date, required: true }
   },
   data () {
     return {
@@ -235,6 +248,15 @@ export default {
     },
     operatorGroupActive () {
       return this.allGroups.some(group => group.id === 'zentrale')
+    },
+    currentMrT () {
+      return [...this.mrTChanges].sort((a, b) => a.time.toDate() - b.time.toDate())[this.mrTChanges.length - 1] || {}
+    },
+    currentMrTActive () {
+      return this.currentMrT.active !== false
+    },
+    minutesSinceLastActiveMrTChange () {
+      return timeSinceLastActiveMrTChange(this.mrTChanges, this.now)
     }
   },
   methods: {
@@ -267,6 +289,14 @@ export default {
     },
     setOperatorGroupAvailable (available) {
       setOperatorGroupAvailable(available)
+    },
+    confiscateMrT () {
+      let groupId = (this.currentMrT.group && this.currentMrT.group.id) || 'zentrale'
+      addMrTChange(groupId, { ...this.currentMrT, active: false })
+    },
+    releaseMrT () {
+      let groupId = (this.currentMrT.group && this.currentMrT.group.id) || 'zentrale'
+      addMrTChange(groupId, { ...this.currentMrT, active: true })
     }
   }
 }

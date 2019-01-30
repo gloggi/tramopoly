@@ -91,6 +91,7 @@ import allStationsInZurich from '@/allStationsInZurich'
 import BAutocomplete from 'buefy/src/components/autocomplete/Autocomplete'
 import BInput from 'buefy/src/components/input/Input'
 import { setPageTitle } from '@/router'
+import { renderMrTSince } from '@/business'
 
 export default {
   name: 'Aktion',
@@ -98,8 +99,8 @@ export default {
   props: {
     allGroups: { type: Array, required: true },
     stationOwners: { type: Map, required: true },
-    mrTSince: { type: String, required: true },
-    mrTLocation: { type: String, required: true }
+    mrTLocation: { type: String, required: true },
+    now: { type: Date, required: true }
   },
   data () {
     return {
@@ -190,6 +191,9 @@ export default {
     lastMrT () {
       if (this.mrTChanges.length === 0) return this.mrT
       return this.mrTChanges[this.mrTChanges.length - 1]
+    },
+    mrTSince () {
+      return renderMrTSince(this.mrTChanges, this.now)
     },
     groupIsActiveCaller () {
       return !!(this.loggedInOperator && this.loggedInOperator.activeCall && this.loggedInOperator.activeCall.group && this.loggedInOperator.activeCall.group.id === this.groupId)

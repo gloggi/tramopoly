@@ -2,33 +2,47 @@
 export function renderMrTLocation (mrTChanges, now) {
   if (!mrTChanges || !mrTChanges.length) return 'Käinä wäiss es so rächt...'
   let mrT = mrTChanges[mrTChanges.length - 1]
-  if (mrT.disabled) return 'Käinä wäiss es so rächt...'
-  let text = 'Dä Mr. T isch zletscht '
+  let text = ''
+  let inactive = mrT.active === false
+  if (inactive) {
+    text += 'Dä Mr. T isch scho lang nümä gsee wordä. Zletscht'
+    mrT = undefined
+    for (let i = mrTChanges.length - 1; i >= 0; i--) {
+      if (mrTChanges[i].active !== false) {
+        mrT = mrTChanges[i]
+        break
+      }
+    }
+    if (!mrT) return 'Käinä wäiss es so rächt...'
+  } else {
+    text += 'Dä Mr. T isch zletscht'
+  }
   if (mrT.time) {
-    text = text + 'vor ' + renderDurationInMinutes(now - mrT.time.toDate()) + ' Minutä '
+    text += ' vor ' + renderDurationInMinutes(now - mrT.time.toDate()) + ' Minutä'
   }
   if (mrT.vehicle) {
     if (/^[sS]/i.test(mrT.vehicle)) {
-      text = text + 'i dä ' + mrT.vehicle + ' '
+      text += ' i dä ' + mrT.vehicle
     } else if (/^[a-zäöü]/i.test(mrT.vehicle)) {
-      text = text + 'im ' + mrT.vehicle + ' '
+      text += ' im ' + mrT.vehicle
     } else if (parseInt(mrT.vehicle > 17)) {
-      text = text + 'im ' + mrT.vehicle + 'er '
+      text += ' im ' + mrT.vehicle + 'er'
     } else {
-      text = text + 'im ' + mrT.vehicle + 'i '
+      text += ' im ' + mrT.vehicle + 'i'
     }
   }
   if (mrT.lastKnownStop) {
-    text = text + 'bi ' + mrT.lastKnownStop + ' '
+    text += ' bi ' + mrT.lastKnownStop
   } else {
-    text = text + 'irgendwo '
+    text += ' irgendwo'
   }
   if (mrT.direction) {
-    text = text + 'in Richtig ' + mrT.direction + ' '
+    text += ' in Richtig ' + mrT.direction
   }
-  text = text + 'gsichtät wordä.'
+  if (inactive) text += '.'
+  else text += ' gsichtät wordä.'
   if (mrT.description) {
-    text = text + ' ' + mrT.description
+    text += ' ' + mrT.description
   }
   return text
 }
@@ -42,6 +56,12 @@ export function renderMrTSince (mrTChanges, now) {
     mrT = mrTChanges[i]
   }
   return '🕑 sit ' + renderDurationInMinutes(now - mrT.time.toDate()) + ' Minutä bi dä gliichä Gruppä'
+}
+
+export function timeSinceLastActiveMrTChange (mrTChanges, now) {
+  var lastActiveMrTChange = [...mrTChanges].sort((a, b) => b.time.toDate() - a.time.toDate()).filter(mrTChange => mrTChange.time.toDate() < now).find(mrTChange => mrTChange.active !== false)
+  if (!lastActiveMrTChange) return 'Bishär käin aktivä Mr. T...'
+  return 'Dä Mr. T hät sich zletscht vor ' + renderDurationInMinutes(now - lastActiveMrTChange.time.toDate()) + ' Minutä gmäldät.'
 }
 
 function renderDurationInMinutes (milliseconds) {
@@ -115,24 +135,35 @@ function addJokerIncome (allGroups, jokerVisits, settings) {
 }
 
 function addMrTPoints (allGroups, mrTChanges, settings, now) {
-  let currentMrT = null
+  let currentMrTId = null
   let currentMrTSince = null
   const gameEnd = settings.gameEnd.toDate()
-  mrTChanges.forEach(mrTVisit => {
-    if (!mrTVisit.group) return
-    let newMrT = mrTVisit.group.id
-    let newMrTSince = mrTVisit.time.toDate()
-    if (!newMrT || newMrT === currentMrT) return
-    if (currentMrT) {
-      allGroups.get(currentMrT).mrTPoints += mrTAmount(settings.mrTRewards, currentMrTSince, newMrTSince, gameEnd)
+  mrTChanges.forEach(mrTChange => {
+    if (!mrTChange.group) return
+    let newMrT = mrTChange.group.id
+    let newMrTSince = mrTChange.time.toDate()
+    if (mrTChange.active === false) {
+      finishMrTPeriod(allGroups, currentMrTId, settings, currentMrTSince, newMrTSince, gameEnd)
+      currentMrTId = null
+      currentMrTSince = null
+      return
     }
-    currentMrT = newMrT
+    if (!newMrT || newMrT === currentMrTId) return
+    finishMrTPeriod(allGroups, currentMrTId, settings, currentMrTSince, newMrTSince, gameEnd)
+    currentMrTId = newMrT
     currentMrTSince = newMrTSince
   })
-  if (currentMrT) {
-    let currentMrTGroup = allGroups.get(currentMrT)
-    currentMrTGroup.mrTPoints += mrTAmount(settings.mrTRewards, currentMrTSince, now, gameEnd)
-    currentMrTGroup.isCurrentlyMrT = true
+  finishMrTPeriod(allGroups, currentMrTId, settings, currentMrTSince, now, gameEnd)
+  if (currentMrTId) {
+    var currentMrT = allGroups.get(currentMrTId)
+    if (currentMrT) currentMrT.isCurrentlyMrT = true
+  }
+}
+
+function finishMrTPeriod (allGroups, periodOwnerId, settings, since, until, gameEnd) {
+  if (periodOwnerId) {
+    var periodOwner = allGroups.get(periodOwnerId)
+    if (periodOwner) periodOwner.mrTPoints += mrTAmount(settings.mrTRewards, since, until, gameEnd)
   }
 }
 
