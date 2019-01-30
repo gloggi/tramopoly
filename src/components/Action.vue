@@ -55,8 +55,8 @@
         <div class="card-content">
           <form v-on:submit.prevent="updateMrT">
             <b-field label="Tram / Bus / Zug"><b-input type="text" :placeholder="lastMrT.vehicle" v-model="mrT.vehicle"/></b-field>
-            <b-field label="Letschti bekannti Station"><b-autocomplete :data="allStationsInZurich" :placeholder="lastMrT.lastKnownStop" v-model="mrT.lastKnownStop" open-on-focus /></b-field>
-            <b-field label="Richtig"><b-autocomplete :data="allStationsInZurich" :placeholder="lastMrT.direction" v-model="mrT.direction" open-on-focus /></b-field>
+            <b-field label="Letschti bekannti Station"><b-autocomplete :data="stationsFilteredByLastKnownStop" :placeholder="lastMrT.lastKnownStop" v-model="mrT.lastKnownStop" open-on-focus /></b-field>
+            <b-field label="Richtig"><b-autocomplete :data="stationsFilteredByDirection" :placeholder="lastMrT.direction" v-model="mrT.direction" open-on-focus /></b-field>
             <b-field label="Beschriibig"><b-input type="textarea" :placeholder="lastMrT.description" v-model="mrT.description"/></b-field>
             <button v-if="group.isCurrentlyMrT" class="button is-link" type="submit">Mr T. aktualisiärä</button>
             <button v-else class="button is-link" type="submit">{{ group.name }} zum Mr T. machä!</button>
@@ -197,6 +197,12 @@ export default {
     },
     groupIsActiveCaller () {
       return !!(this.loggedInOperator && this.loggedInOperator.activeCall && this.loggedInOperator.activeCall.group && this.loggedInOperator.activeCall.group.id === this.groupId)
+    },
+    stationsFilteredByLastKnownStop () {
+      return this.allStationsInZurich.filter(station => station.toLocaleLowerCase().includes(this.mrT.lastKnownStop.toLocaleLowerCase()))
+    },
+    stationsFilteredByDirection () {
+      return this.allStationsInZurich.filter(station => station.toLocaleLowerCase().includes(this.mrT.direction.toLocaleLowerCase()))
     }
   },
   watch: {
