@@ -205,4 +205,12 @@ export default {
   .message div {
     white-space: pre-wrap;
   }
+
+  input.input[disabled] {
+    color: $grey-dark;
+  }
+
+  input.input::placeholder, textarea.textarea::placeholder {
+    color: $grey;
+  }
 </style>

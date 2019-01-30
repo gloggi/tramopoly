@@ -17,7 +17,7 @@
                 <b-field label="Start"><b-input readonly :value="gameStart" expanded /></b-field>
                 <b-field label="Ändi"><b-input readonly :value="gameEnd" expanded /></b-field>
               </b-field>
-              <b-field><p class="control"><button @click="setStartTimeToNow" class="button is-danger">Spiel startä (4ähalb stund)</button></p></b-field>
+              <b-field><p class="control"><button @click="setStartTimeToNow" class="button is-danger">Spiel startä (4 3viertel stund)</button></p></b-field>
               <hr/>
               <b-field label="Regischtriärig für Zentralä">
                 <b-switch type="is-danger" :value="operatorGroupActive" @input="value => setOperatorGroupAvailable(value)">
@@ -45,7 +45,7 @@
                     <option value="">schwarz</option>
                   </b-select></b-field>
                   <b-field><b-input type="text" :value="message.title" name="title" placeholder="Titäl"></b-input></b-field>
-                  <b-field><button type="submit" class="button is-primary">Speichärä</button></b-field>
+                  <b-field><button type="submit" :class="'button ' + selectedMessageType">Speichärä</button></b-field>
                 </b-field>
                 <b-field><b-input type="textarea" :value="message.message" name="message"></b-input></b-field>
               </form>
@@ -188,7 +188,7 @@ export default {
       return !!(this.loggedInAdmin && this.loggedInAdmin.activeCall)
     },
     gameDuration () {
-      return 4.5 * 60 * 60 * 1000
+      return 4.75 * 60 * 60 * 1000
     },
     gameStart () {
       return this.settings && new Date(this.settings.gameEnd.toDate() - this.gameDuration).toLocaleTimeString('de-CH')
