@@ -59,7 +59,7 @@ export function renderMrTSince (mrTChanges, now) {
 }
 
 export function timeSinceLastActiveMrTChange (mrTChanges, now) {
-  var lastActiveMrTChange = [...mrTChanges].sort((a, b) => b.time.toDate() - a.time.toDate()).filter(mrTChange => mrTChange.time.toDate() < now).find(mrTChange => mrTChange.active !== false)
+  let lastActiveMrTChange = [...mrTChanges].sort((a, b) => b.time.toDate() - a.time.toDate()).filter(mrTChange => mrTChange.time.toDate() < now).find(mrTChange => mrTChange.active !== false)
   if (!lastActiveMrTChange) return 'Bishär käin aktivä Mr. T...'
   return 'Dä Mr. T hät sich zletscht vor ' + renderDurationInMinutes(now - lastActiveMrTChange.time.toDate()) + ' Minutä gmäldät.'
 }
@@ -155,14 +155,17 @@ function addMrTPoints (allGroups, mrTChanges, settings, now) {
   })
   finishMrTPeriod(allGroups, currentMrTId, settings, currentMrTSince, now, gameEnd)
   if (currentMrTId) {
-    var currentMrT = allGroups.get(currentMrTId)
-    if (currentMrT) currentMrT.isCurrentlyMrT = true
+    let currentMrT = allGroups.get(currentMrTId)
+    if (currentMrT) {
+      currentMrT.isCurrentlyMrT = true
+      currentMrT.shouldCallOperator = mrTChanges[mrTChanges.length - 1].shouldCallOperator
+    }
   }
 }
 
 function finishMrTPeriod (allGroups, periodOwnerId, settings, since, until, gameEnd) {
   if (periodOwnerId) {
-    var periodOwner = allGroups.get(periodOwnerId)
+    let periodOwner = allGroups.get(periodOwnerId)
     if (periodOwner) periodOwner.mrTPoints += mrTAmount(settings.mrTRewards, since, until, gameEnd)
   }
 }

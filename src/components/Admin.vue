@@ -26,11 +26,17 @@
                 </b-switch>
               </b-field>
               <hr/>
-              <b-field v-if="currentMrTActive" :label="minutesSinceLastActiveMrTChange">
-                <button class="button is-link is-warning" @click="confiscateMrT">Mr T. beschlagnahmä</button>
-              </b-field>
-              <b-field v-else label="Beschlagnahmtä Mr. T hät sich wiedär gmäldät?">
-                <button class="button is-link is-warning" @click="releaseMrT">Mr T. freigä</button>
+              <h5 class="title is-6">{{ minutesSinceLastActiveMrTChange }}</h5>
+              <b-field grouped>
+                <p class="control" v-if="!mrTShouldCallOperator">
+                  <button class="button is-link is-warning" @click="() => promptMrT(currentMrT)">Gruppä zum Aruäf uffordärä</button>
+                </p>
+                <p class="control" v-if="currentMrTActive">
+                  <button class="button is-link is-danger" @click="confiscateMrT">Mr T. beschlagnahmä</button>
+                </p>
+                <p class="control" v-else>
+                  <button class="button is-link is-warning" @click="releaseMrT">Mr T. hät sich gmäldät</button>
+                </p>
               </b-field>
             </div>
             <div class="column" v-if="message">
@@ -139,7 +145,7 @@ import {
   requireOperator,
   setActiveCall,
   setGameEndTime,
-  setGlobalMessage,
+  setGlobalMessage, setMrTShouldCallOperator,
   setOperatorGroupAvailable,
   settingsDB,
   stationVisitsDB,
@@ -240,7 +246,7 @@ export default {
       return this.settings && this.settings.message
     },
     mrTGroupId () {
-      var found = this.allGroups.find(group => group.isCurrentlyMrT)
+      let found = this.allGroups.find(group => group.isCurrentlyMrT)
       return found && found.id
     },
     usersWithMrTFlag () {
@@ -254,6 +260,9 @@ export default {
     },
     currentMrTActive () {
       return this.currentMrT.active !== false
+    },
+    mrTShouldCallOperator () {
+      return this.currentMrT.shouldCallOperator
     },
     minutesSinceLastActiveMrTChange () {
       return timeSinceLastActiveMrTChange(this.mrTChanges, this.now)
@@ -289,6 +298,10 @@ export default {
     },
     setOperatorGroupAvailable (available) {
       setOperatorGroupAvailable(available)
+    },
+    promptMrT (mrT) {
+      console.log(mrT)
+      setMrTShouldCallOperator(mrT.id)
     },
     confiscateMrT () {
       let groupId = (this.currentMrT.group && this.currentMrT.group.id) || 'zentrale'

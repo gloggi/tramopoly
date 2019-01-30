@@ -113,6 +113,12 @@ export function addMrTChange (groupId, mrTChangeData) {
   })
 }
 
+export function setMrTShouldCallOperator (mrTId) {
+  if (!mrTId) return
+  console.log(mrTId)
+  return db.collection('mrTChanges').doc(mrTId).update({ shouldCallOperator: true })
+}
+
 function findUserByPhone (phone) {
   return new Promise(resolve => {
     db.collection('users').where('phone', '==', phone).onSnapshot(snapshot => resolve(snapshot))
