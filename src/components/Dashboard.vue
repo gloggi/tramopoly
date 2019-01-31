@@ -5,7 +5,7 @@
       <slot v-if="operator" name="message"></slot>
       <div v-if="operator" class="card">
         <div class="card-content">
-          <b-message v-if="groupIsCurrentlyMrT && mrTShouldCallOperator" type="is-danger" title="Mäldäd eu!" :closable="false">Eui Gruppä isch aktuell Mr. T. Als Mr. T söttädär mindischtäns all 10 Minutä bi dä Zentralä aalütä. Bitte mäldäd eu bi euäm Telefonischt.</b-message>
+          <b-message v-if="groupIsCurrentlyMrT && mrTShouldCallOperator" type="is-danger" title="Mäldäd oi!" :closable="false">Oii Gruppä isch aktuell Mr. T. Als Mr. T söttädär mindischtäns all 10 Minutä bi dä Zentralä aalütä. Bitte mäldäd oi bi oiäm Telefonischt.</b-message>
           <button v-if="!operatorBusy" class="button is-link is-outlined" @click="callOperator">📞 Zentralä ({{ operatorName }})</button>
           <button v-else-if="loggedInUserIsActiveCaller" class="button is-link is-outlined is-danger" @click="finishCall">🚫 Färtig telefoniärt</button>
           <button v-else class="button is-link is-outlined" @click="callOperator">🚫 Zentralä ({{ operatorName }} bsetzt)</button>
