@@ -170,6 +170,12 @@ export default {
     },
     redirectToZentrale () {
       this.$router.push({ name: 'zentrale' })
+    },
+    searchArrayFor (array, searchTerm, fieldExtractor = elem => elem) {
+      let result = array.filter(elem => fieldExtractor(elem).toLocaleLowerCase().startsWith(searchTerm.toLocaleLowerCase().trim()))
+      result = result.concat(array.filter(elem => result.indexOf(elem) < 0 && fieldExtractor(elem).toLocaleLowerCase().includes(' ' + searchTerm.toLocaleLowerCase().trim())))
+      result = result.concat(array.filter(elem => result.indexOf(elem) < 0 && fieldExtractor(elem).toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase().trim())))
+      return result
     }
   },
   computed: {
@@ -183,7 +189,7 @@ export default {
       return this.stations.map(station => ({ id: station.id, ...station })).concat(this.jokers.map(joker => ({ joker: true, id: joker.id, ...joker }))).sort((a, b) => a.name.localeCompare(b.name))
     },
     filteredStations () {
-      return this.combinedStations.filter(station => station.name && (station.name + (station.joker ? ' (Joker)' : '')).toLocaleLowerCase().includes(this.searchterm.toLocaleLowerCase()))
+      return this.searchArrayFor(this.combinedStations.map(station => ({ ...station, name: station.name + (station.joker ? ' (Joker)' : '') })), this.searchterm, station => station.name)
     },
     visitedStations () {
       return this.stationVisits.filter(visit => visit.group && visit.group.id === this.groupId).map(visit => visit.station)
@@ -199,10 +205,10 @@ export default {
       return !!(this.loggedInOperator && this.loggedInOperator.activeCall && this.loggedInOperator.activeCall.group && this.loggedInOperator.activeCall.group.id === this.groupId)
     },
     stationsFilteredByLastKnownStop () {
-      return this.allStationsInZurich.filter(station => station.toLocaleLowerCase().includes(this.mrT.lastKnownStop.toLocaleLowerCase()))
+      return this.searchArrayFor(this.allStationsInZurich, this.mrT.lastKnownStop)
     },
     stationsFilteredByDirection () {
-      return this.allStationsInZurich.filter(station => station.toLocaleLowerCase().includes(this.mrT.direction.toLocaleLowerCase()))
+      return this.searchArrayFor(this.allStationsInZurich, this.mrT.direction)
     }
   },
   watch: {
