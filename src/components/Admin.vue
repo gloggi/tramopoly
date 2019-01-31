@@ -17,7 +17,7 @@
                 <b-field label="Start"><b-input readonly :value="gameStart" expanded /></b-field>
                 <b-field label="Ändi"><b-input readonly :value="gameEnd" expanded /></b-field>
               </b-field>
-              <b-field><p class="control"><button @click="setStartTimeToNow" class="button is-danger">Spiel startä (4 3viertel stund)</button></p></b-field>
+              <b-field><p class="control"><button @click="setStartTimeToNow" class="button is-info is-outlined">Spiel startä (4 ¾ stund)</button></p></b-field>
               <hr/>
               <b-field label="Regischtriärig für Zentralä">
                 <b-switch type="is-danger" :value="operatorGroupActive" @input="value => setOperatorGroupAvailable(value)">
@@ -28,14 +28,14 @@
               <hr/>
               <h5 class="title is-6">{{ minutesSinceLastActiveMrTChange }}</h5>
               <b-field grouped>
-                <p class="control" v-if="!mrTShouldCallOperator">
+                <p class="control" v-if="mrTChanges && mrTChanges.length && !mrTShouldCallOperator">
                   <button class="button is-link is-warning" @click="() => promptMrT(currentMrT)">Gruppä zum Aruäf uffordärä</button>
                 </p>
                 <p class="control" v-if="currentMrTActive">
                   <button class="button is-link is-danger" @click="confiscateMrT">Mr T. beschlagnahmä</button>
                 </p>
                 <p class="control" v-else>
-                  <button class="button is-link is-warning" @click="releaseMrT">Mr T. hät sich gmäldät</button>
+                  <button class="button is-link is-warning is-outlined" @click="releaseMrT">Mr T. hät sich gmäldät</button>
                 </p>
               </b-field>
             </div>
@@ -300,7 +300,6 @@ export default {
       setOperatorGroupAvailable(available)
     },
     promptMrT (mrT) {
-      console.log(mrT)
       setMrTShouldCallOperator(mrT.id)
     },
     confiscateMrT () {
