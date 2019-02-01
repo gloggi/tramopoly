@@ -11,13 +11,13 @@
         <div class="panel-block">
           <div class="field has-addons" style="width: 100%">
             <p class="control has-icons-left is-expanded">
-              <input class="input is-small" type="text" placeholder="Filtärä" v-model="searchterm" ref="searchfield">
+              <input class="input is-small" type="text" placeholder="Filtärä" v-model="searchterm" ref="searchfield" @input="scrollStationsToTop">
               <span class="icon is-small is-left">🔍</span>
             </p>
             <a class="button is-small" v-if="searchterm !== ''" @click="resetSearchTerm">❌</a>
           </div>
         </div>
-        <div style="max-height: 400px; overflow-y: scroll">
+        <div style="max-height: 400px; overflow-y: scroll" ref="stationList">
           <template v-for="station in filteredStations">
             <div v-if="station.joker && hasVisitedJoker(station)" :key="'joker-' + station.name" class="panel-block is-owned">
               <span class="panel-icon">🃏</span>
@@ -139,6 +139,12 @@ export default {
     resetSearchTerm () {
       this.searchterm = ''
       this.$refs.searchfield.focus()
+      this.scrollStationsToTop()
+    },
+    scrollStationsToTop () {
+      this.$nextTick(() => {
+        this.$refs.stationList.scrollTop = 0
+      })
     },
     visitStation (station) {
       addStationVisit(this.groupId, station.id).then(() => {
