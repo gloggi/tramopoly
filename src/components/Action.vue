@@ -21,11 +21,11 @@
           <template v-for="station in filteredStations">
             <div v-if="station.joker && hasVisitedJoker(station)" :key="'joker-' + station.name" class="panel-block is-owned">
               <span class="panel-icon">🃏</span>
-              <span class="has-text-weight-bold">{{ station.name }} (Joker)</span><span>{{ station.value }}.-</span>
+              <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
             </div>
             <a v-else-if="station.joker" :key="'joker-' + station.name" class="panel-block" @click="visitJoker(station)">
               <span class="panel-icon"></span>
-              <span class="has-text-weight-bold">{{ station.name }} (Joker)</span><span>{{ station.value }}.-</span>
+              <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
             </a>
             <div v-else-if="ownsStation(station)" :key="station.id" class="panel-block is-owned">
               <span class="panel-icon">✅</span>
