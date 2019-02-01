@@ -105,16 +105,16 @@
       </div>
       <div class="card" v-if="allEventsCombined.length">
         <header class="card-header has-background-light"><span class="card-header-title title is-4">🚉 Stationä, 🃏 Joker & 🕵️ Mr. T</span></header>
-        <b-table class="has-content-vcentered" :data="allEventsCombined" striped hoverable :row-class="hasContentVcentered">
+        <b-table class="has-content-vcentered" :data="allEventsCombined" striped hoverable :row-class="hasContentVcentered" backend-sorting @sort="onSort">
           <template slot-scope="props">
-            <b-table-column field="abteilung.name" label="Ziit">
+            <b-table-column field="time" label="Ziit" sortable>
               {{ props.row.time.toDate().toLocaleTimeString('de-CH') }}
             </b-table-column>
-            <b-table-column field="name" label="Gruppä">
+            <b-table-column field="group.name" label="Gruppä" sortable>
               <span v-if="props.row.group && props.row.group.abteilung && props.row.group.abteilung.id" class="icon is-medium"><img :title="props.row.group.abteilung.name" style="opacity: 0.7" :src="'/static/' + props.row.group.abteilung.id + '.svg'"/></span>
               <span v-if="props.row.group">{{ props.row.group.name }}</span>
             </b-table-column>
-            <b-table-column field="type" label="Typ">
+            <b-table-column field="type" label="Aktion" sortable>
               <span v-if="props.row.type === 'joker'" :key="props.row.id">
                 <span class="icon">🃏</span>
                 <span>{{ props.row.station.name }} (Joker)</span>
@@ -176,7 +176,8 @@ export default {
       mrTChanges: [],
       settings: null,
       users: [],
-      selectedMessageType: 'is-info'
+      selectedMessageType: 'is-info',
+      eventSorter: (a, b) => b.time.toDate() - a.time.toDate()
     }
   },
   firestore: {
@@ -207,7 +208,7 @@ export default {
         this.stationVisits.map(visit => ({ ...visit, id: visit.id, type: 'station' })),
         this.jokerVisits.map(visit => ({ ...visit, id: visit.id, type: 'joker' })),
         this.mrTChanges.map(change => ({ ...change, id: change.id, type: 'mrT' }))
-      ).sort((a, b) => b.time.toDate() - a.time.toDate())
+      ).sort(this.eventSorter)
     },
     abteilungen () {
       let map = new Map()
@@ -309,6 +310,24 @@ export default {
     releaseMrT () {
       let groupId = (this.currentMrT.group && this.currentMrT.group.id) || 'zentrale'
       addMrTChange(groupId, { ...this.currentMrT, active: true })
+    },
+    onSort (field, order) {
+      let dir = (order !== 'desc' ? 1 : -1)
+      if (field === 'time') {
+        this.eventSorter = (a, b) => dir * (a.time.toDate() - b.time.toDate())
+      } else if (field === 'group.name') {
+        this.eventSorter = (a, b) => dir * this.compareStrings(a.group.name, b.group.name)
+      } else if (field === 'type') {
+        this.eventSorter = (a, b) => dir * this.compareStrings(this.makeEventComparable(a), this.makeEventComparable(b))
+      }
+    },
+    compareStrings (a, b) {
+      if (a < b) return -1
+      if (b < a) return 1
+      return 0
+    },
+    makeEventComparable (event) {
+      return (event.type === 'station' ? '0_' + event.station.name : (event.type === 'joker' ? '1_' + event.station.name : '2')) + event.time.toDate().getTime()
     }
   }
 }
