@@ -103,34 +103,6 @@
           </template>
         </b-table>
       </div>
-      <div class="card" v-if="allEventsCombined.length">
-        <header class="card-header has-background-light"><span class="card-header-title title is-4">🚉 Stationä, 🃏 Joker & 🕵️ Mr. T</span></header>
-        <b-table class="has-content-vcentered" :data="allEventsCombined" striped hoverable :row-class="hasContentVcentered" backend-sorting @sort="onSort">
-          <template slot-scope="props">
-            <b-table-column field="time" label="Ziit" sortable>
-              {{ props.row.time.toDate().toLocaleTimeString('de-CH') }}
-            </b-table-column>
-            <b-table-column field="group.name" label="Gruppä" sortable>
-              <span v-if="props.row.group && props.row.group.abteilung && props.row.group.abteilung.id" class="icon is-medium"><img :title="props.row.group.abteilung.name" style="opacity: 0.7" :src="'/static/' + props.row.group.abteilung.id + '.svg'"/></span>
-              <span v-if="props.row.group">{{ props.row.group.name }}</span>
-            </b-table-column>
-            <b-table-column field="type" label="Aktion" sortable>
-              <span v-if="props.row.type === 'joker'" :key="props.row.id">
-                <span class="icon">🃏</span>
-                <span>{{ props.row.station.name }} (Joker)</span>
-              </span>
-              <span v-else-if="props.row.type === 'station'" :key="props.row.id">
-                <span class="icon">🚉</span>
-                <span>{{ props.row.station.name }}</span>
-              </span>
-              <span v-else-if="props.row.type === 'mrT'" :key="props.row.id">
-                <span class="icon">🕵️</span>
-                <span>Mr. T '{{ props.row.vehicle }}' in '{{ props.row.lastKnownStop}}' richtung '{{ props.row.direction }}'; '{{ props.row.description }}'</span>
-              </span>
-            </b-table-column>
-          </template>
-        </b-table>
-      </div>
     </div>
   </div>
 </template>
@@ -140,15 +112,14 @@ import {
   addMrTChange,
   changeGroupOperator,
   changeUserRole,
-  jokerVisitsDB,
   mrTChangesDB,
   requireOperator,
   setActiveCall,
   setGameEndTime,
-  setGlobalMessage, setMrTShouldCallOperator,
+  setGlobalMessage,
+  setMrTShouldCallOperator,
   setOperatorGroupAvailable,
   settingsDB,
-  stationVisitsDB,
   usersDB
 } from '@/firebaseConfig'
 import BTable from 'buefy/src/components/table/Table'
@@ -171,8 +142,6 @@ export default {
   data () {
     return {
       loggedInAdmin: null,
-      stationVisits: [],
-      jokerVisits: [],
       mrTChanges: [],
       settings: null,
       users: [],
@@ -181,8 +150,6 @@ export default {
     }
   },
   firestore: {
-    stationVisits: stationVisitsDB,
-    jokerVisits: jokerVisitsDB,
     mrTChanges: mrTChangesDB,
     settings: settingsDB,
     users: usersDB
@@ -202,13 +169,6 @@ export default {
     },
     gameEnd () {
       return this.settings && this.settings.gameEnd.toDate().toLocaleTimeString('de-CH')
-    },
-    allEventsCombined () {
-      return [].concat(
-        this.stationVisits.map(visit => ({ ...visit, id: visit.id, type: 'station' })),
-        this.jokerVisits.map(visit => ({ ...visit, id: visit.id, type: 'joker' })),
-        this.mrTChanges.map(change => ({ ...change, id: change.id, type: 'mrT' }))
-      ).sort(this.eventSorter)
     },
     abteilungen () {
       let map = new Map()

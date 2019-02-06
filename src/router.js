@@ -30,6 +30,11 @@ const router = new Router({
       path: '/admin',
       name: 'admin',
       component: () => import('@/components/Admin')
+    },
+    {
+      path: '/admin/report',
+      name: 'report',
+      component: () => import('@/components/Report')
     }
   ],
   scrollBehavior (to, from, savedPosition) {
