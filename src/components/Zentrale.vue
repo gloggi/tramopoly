@@ -41,11 +41,10 @@ import { requireOperator, setActiveCall } from '@/firebaseConfig'
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
 import TramHeader from '@/components/TramHeader'
-import Placeholder from '@/components/Placeholder'
 
 export default {
   name: 'Zentrale',
-  components: { Placeholder, BTable, BTableColumn, TramHeader },
+  components: { BTable, BTableColumn, TramHeader },
   props: {
     allGroups: { type: Array, required: true }
   },

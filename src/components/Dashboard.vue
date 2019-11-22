@@ -27,15 +27,12 @@
 
 <script>
 import { bindUserById, requireAuth, setActiveCall } from '@/firebaseConfig'
-import BTable from 'buefy/src/components/table/Table'
-import BTableColumn from 'buefy/src/components/table/TableColumn'
-import Placeholder from '@/components/Placeholder'
 import TramHeader from '@/components/TramHeader'
 import GroupDetail from '@/components/GroupDetail'
 import BMessage from 'buefy/src/components/message/Message'
 
 export default {
-  components: { BMessage, GroupDetail, Placeholder, BTable, BTableColumn, TramHeader },
+  components: { BMessage, GroupDetail, TramHeader },
   props: {
     allGroups: { type: Array, required: true },
     mrTLocation: { type: String, required: true }

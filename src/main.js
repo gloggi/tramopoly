@@ -2,10 +2,10 @@ import Vue from 'vue'
 import App from './App'
 import router from './router.js'
 import Buefy from 'buefy'
-import VueFire from 'vuefire'
+import { firestorePlugin } from 'vuefire'
 
 Vue.use(Buefy)
-Vue.use(VueFire)
+Vue.use(firestorePlugin)
 
 Vue.config.productionTip = false
 

@@ -125,7 +125,6 @@ import {
 import BTable from 'buefy/src/components/table/Table'
 import BTableColumn from 'buefy/src/components/table/TableColumn'
 import TramHeader from '@/components/TramHeader'
-import Placeholder from '@/components/Placeholder'
 import BInput from 'buefy/src/components/input/Input'
 import BSelect from 'buefy/src/components/select/Select'
 import BField from 'buefy/src/components/field/Field'
@@ -134,7 +133,7 @@ import { timeSinceLastActiveMrTChange } from '@/business'
 
 export default {
   name: 'Admin',
-  components: { BSwitch, BField, BSelect, BInput, Placeholder, BTable, BTableColumn, TramHeader },
+  components: { BSwitch, BField, BSelect, BInput, BTable, BTableColumn, TramHeader },
   props: {
     allGroups: { type: Array, required: true },
     now: { type: Date, required: true }

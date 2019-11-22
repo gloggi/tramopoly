@@ -83,8 +83,6 @@ import {
 } from '@/firebaseConfig'
 import TramHeader from '@/components/TramHeader'
 import BField from 'buefy/src/components/field/Field'
-import BTable from 'buefy/src/components/table/Table'
-import BTableColumn from 'buefy/src/components/table/TableColumn'
 import GroupDetail from '@/components/GroupDetail'
 import BTag from 'buefy/src/components/tag/Tag'
 import allStationsInZurich from '@/allStationsInZurich'
@@ -95,7 +93,7 @@ import { renderMrTSince } from '@/business'
 
 export default {
   name: 'Aktion',
-  components: { BInput, BAutocomplete, BTag, GroupDetail, BTableColumn, BTable, BField, TramHeader },
+  components: { BInput, BAutocomplete, BTag, GroupDetail, BField, TramHeader },
   props: {
     allGroups: { type: Array, required: true },
     stationOwners: { type: Map, required: true },

@@ -14,7 +14,6 @@ let config = {
 
 firebase.initializeApp(config)
 const db = firebase.firestore()
-db.settings({ timestampsInSnapshots: true })
 
 let auth = firebase.auth()
 let RecaptchaVerifier = firebase.auth.RecaptchaVerifier
