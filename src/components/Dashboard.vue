@@ -60,7 +60,7 @@ export default {
     },
     operatorPhoneInWords () {
       if (!this.operatorPhone) return null
-      let phoneFormat = this.operatorPhone.replace(/^\+41/g, '0').split('')
+      const phoneFormat = this.operatorPhone.replace(/^\+41/g, '0').split('')
       if (phoneFormat.length === 10) {
         phoneFormat.splice(3, 0, ',')
         phoneFormat.splice(7, 0, ',')

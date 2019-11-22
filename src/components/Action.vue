@@ -128,7 +128,7 @@ export default {
       return this.group && station.value <= this.group.saldo
     },
     ownsStation (station) {
-      let owner = this.stationOwners.get(station.id)
+      const owner = this.stationOwners.get(station.id)
       return owner && owner.id === this.groupId
     },
     hasVisitedJoker (joker) {

@@ -3,7 +3,7 @@ import 'firebase/firestore'
 import 'firebase/auth'
 import 'firebase/database'
 
-let config = {
+const config = {
   apiKey: 'AIzaSyAayb2jkXiBRdyqVlaAWuOTTQNA9waqtmA',
   authDomain: 'tramopoly-92c49.firebaseapp.com',
   databaseURL: 'https://tramopoly-92c49.firebaseio.com',
@@ -15,8 +15,8 @@ let config = {
 firebase.initializeApp(config)
 const db = firebase.firestore()
 
-let auth = firebase.auth()
-let RecaptchaVerifier = firebase.auth.RecaptchaVerifier
+const auth = firebase.auth()
+const RecaptchaVerifier = firebase.auth.RecaptchaVerifier
 
 export const groupsDB = db.collection('groups')
 export const abteilungenDB = db.collection('abteilungen')
@@ -30,16 +30,16 @@ export const usersDB = db.collection('users')
 export { auth, RecaptchaVerifier }
 
 export function addGroup (groupData, existingGroups) {
-  let abteilungId = groupData.abteilung.id
+  const abteilungId = groupData.abteilung.id
   groupData.abteilung = abteilungenDB.doc(abteilungId)
-  let groupId = createUniqueGroupId(abteilungId, existingGroups)
-  let groupRef = db.collection('groups').doc(groupId)
+  const groupId = createUniqueGroupId(abteilungId, existingGroups)
+  const groupRef = db.collection('groups').doc(groupId)
   groupRef.set(groupData)
   return groupRef
 }
 
 function createUniqueGroupId (abteilungId, existingGroups) {
-  let existingGroupIds = existingGroups.map(group => group.id)
+  const existingGroupIds = existingGroups.map(group => group.id)
   let index = 0
   while (existingGroupIds.includes(abteilungId + index)) index++
   return abteilungId + index
@@ -52,7 +52,7 @@ export function addUser (uid, userData) {
 
 export function setGameEndTime (dateTime) {
   if (!dateTime) return
-  return db.collection('settings').doc('settings').update({ 'gameEnd': dateTime })
+  return db.collection('settings').doc('settings').update({ gameEnd: dateTime })
 }
 
 export function setOperatorGroupAvailable (available) {
@@ -62,29 +62,29 @@ export function setOperatorGroupAvailable (available) {
 export function changeGroupOperator (abteilungId, operatorId) {
   if (!abteilungId) return
   if (!operatorId) {
-    return db.collection('abteilungen').doc(abteilungId).update({ 'operator': null })
+    return db.collection('abteilungen').doc(abteilungId).update({ operator: null })
   } else {
-    return db.collection('abteilungen').doc(abteilungId).update({ 'operator': db.collection('users').doc(operatorId) })
+    return db.collection('abteilungen').doc(abteilungId).update({ operator: db.collection('users').doc(operatorId) })
   }
 }
 
 export function changeUserRole (userId, role) {
   if (!userId) return
-  return db.collection('users').doc(userId).update({ 'role': role })
+  return db.collection('users').doc(userId).update({ role: role })
 }
 
 export function setGlobalMessage (type, title, message) {
-  return db.collection('settings').doc('settings').update({ 'message': { type, title, message } })
+  return db.collection('settings').doc('settings').update({ message: { type, title, message } })
 }
 
 export function setActiveCall (operatorId, callerId) {
   if (!operatorId) return
-  return db.collection('users').doc(operatorId).update({ 'activeCall': callerId ? db.collection('users').doc(callerId) : null })
+  return db.collection('users').doc(operatorId).update({ activeCall: callerId ? db.collection('users').doc(callerId) : null })
 }
 
 export function addStationVisit (groupId, stationId) {
   if (!groupId || !stationId) return
-  let time = new Date()
+  const time = new Date()
   return db.collection('stationVisits').doc(time.toLocaleTimeString('de-CH') + ' ' + groupId + ' ' + stationId).set({
     group: db.collection('groups').doc(groupId),
     station: db.collection('stations').doc(stationId),
@@ -94,7 +94,7 @@ export function addStationVisit (groupId, stationId) {
 
 export function addJokerVisit (groupId, jokerId) {
   if (!groupId || !jokerId) return
-  let time = new Date()
+  const time = new Date()
   return db.collection('jokerVisits').doc(time.toLocaleTimeString('de-CH') + ' ' + groupId + ' ' + jokerId).set({
     group: db.collection('groups').doc(groupId),
     station: db.collection('jokers').doc(jokerId),
@@ -104,7 +104,7 @@ export function addJokerVisit (groupId, jokerId) {
 
 export function addMrTChange (groupId, mrTChangeData) {
   if (!groupId) return
-  let time = new Date()
+  const time = new Date()
   return db.collection('mrTChanges').doc(time.toLocaleTimeString('de-CH') + ' ' + groupId).set({
     ...mrTChangeData,
     group: db.collection('groups').doc(groupId),
@@ -127,9 +127,9 @@ function findUserByPhone (phone) {
 let latestBindUserByPhonePromise
 
 export async function bindUserByPhone (vm, member, phone) {
-  let promise = findUserByPhone(phone)
+  const promise = findUserByPhone(phone)
   latestBindUserByPhonePromise = promise
-  let snapshot = await promise
+  const snapshot = await promise
   if (latestBindUserByPhonePromise === promise) {
     if (!snapshot.empty) {
       vm.$bind(member, db.collection('users').doc(snapshot.docs[0].id))

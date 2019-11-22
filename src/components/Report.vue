@@ -80,7 +80,7 @@ export default {
       return [].concat(
         this.stationVisits.map(visit => ({ ...visit, id: visit.id, type: 'station' }))
           .filter(visit => {
-            let owner = this.stationOwners.get(visit.station.id)
+            const owner = this.stationOwners.get(visit.station.id)
             return owner && visit.group.id === owner.id
           }),
         this.jokerVisits.map(visit => ({ ...visit, id: visit.id, type: 'joker' }))
@@ -92,7 +92,7 @@ export default {
       return 'has-content-vcentered'
     },
     onSort (field, order) {
-      let dir = (order !== 'desc' ? 1 : -1)
+      const dir = (order !== 'desc' ? 1 : -1)
       if (field === 'time') {
         this.eventSorter = (a, b) => dir * (a.time.toDate() - b.time.toDate())
       } else if (field === 'group.name') {
@@ -102,7 +102,7 @@ export default {
       }
     },
     compareGroupsAndTime (a, b) {
-      let groupComp = this.compareStrings(a.group.name, b.group.name)
+      const groupComp = this.compareStrings(a.group.name, b.group.name)
       if (groupComp !== 0) return groupComp
       return a.time.toDate() - b.time.toDate()
     },

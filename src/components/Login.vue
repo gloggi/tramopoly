@@ -72,7 +72,7 @@ export default {
   },
   computed: {
     normalizedPhone () {
-      let cleaned = this.phone.trim().replace(/[^0-9+]/gi, '')
+      const cleaned = this.phone.trim().replace(/[^0-9+]/gi, '')
       // handle most swiss mobile phone numbers
       if (cleaned.startsWith('07')) {
         return '+41' + cleaned.substr(1)
@@ -82,7 +82,7 @@ export default {
       return cleaned
     },
     userIsAlreadyRegistered () {
-      return this.specifiedUser && this.specifiedUser.hasOwnProperty('group')
+      return this.specifiedUser && Object.prototype.hasOwnProperty.call(this.specifiedUser, 'group')
     },
     groups () {
       return this.activeAndInactiveGroups.filter(group => group.active)
@@ -110,10 +110,10 @@ export default {
     },
     async verifyOtp () {
       if (this.confirmation === null) return
-      let result = await this.confirmation.confirm(this.otp)
+      const result = await this.confirmation.confirm(this.otp)
       console.log('login success ', result)
       if (!this.groupIsAlreadyRegistered) {
-        let groupRef = await addGroup(this.specifiedGroupData, this.groups)
+        const groupRef = await addGroup(this.specifiedGroupData, this.groups)
         console.log('group created', groupRef)
         this.specifiedUserData.group = groupRef
       } else {
@@ -128,8 +128,8 @@ export default {
     },
     initRecaptcha () {
       this.appVerifier = new RecaptchaVerifier('recaptcha-container', {
-        'size': 'invisible',
-        'callback': function () {
+        size: 'invisible',
+        callback: function () {
           console.log('ReCaptcha success')
         },
         'expired-callback': function () {

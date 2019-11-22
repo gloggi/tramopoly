@@ -170,9 +170,9 @@ export default {
       return this.settings && this.settings.gameEnd.toDate().toLocaleTimeString('de-CH')
     },
     abteilungen () {
-      let map = new Map()
+      const map = new Map()
       this.allGroups.forEach(group => {
-        let id = group.abteilung.id
+        const id = group.abteilung.id
         if (!map.has(id)) {
           let operator = { name: 'Unbekannt', id: '' }
           if (group.abteilung && group.abteilung.operator && group.abteilung.operator.id) {
@@ -180,7 +180,7 @@ export default {
           }
           map.set(id, { id, name: group.abteilung.name, operator, saldo: 0, realEstatePoints: 0, mrTPoints: 0, totalPoints: 0, numGroups: 0 })
         }
-        let abteilung = map.get(id)
+        const abteilung = map.get(id)
         abteilung.saldo += group.saldo
         abteilung.realEstatePoints += group.realEstatePoints
         abteilung.mrTPoints += group.mrTPoints
@@ -206,7 +206,7 @@ export default {
       return this.settings && this.settings.message
     },
     mrTGroupId () {
-      let found = this.allGroups.find(group => group.isCurrentlyMrT)
+      const found = this.allGroups.find(group => group.isCurrentlyMrT)
       return found && found.id
     },
     usersWithMrTFlag () {
@@ -263,15 +263,15 @@ export default {
       setMrTShouldCallOperator(mrT.id)
     },
     confiscateMrT () {
-      let groupId = (this.currentMrT.group && this.currentMrT.group.id) || 'zentrale'
+      const groupId = (this.currentMrT.group && this.currentMrT.group.id) || 'zentrale'
       addMrTChange(groupId, { ...this.currentMrT, active: false })
     },
     releaseMrT () {
-      let groupId = (this.currentMrT.group && this.currentMrT.group.id) || 'zentrale'
+      const groupId = (this.currentMrT.group && this.currentMrT.group.id) || 'zentrale'
       addMrTChange(groupId, { ...this.currentMrT, active: true })
     },
     onSort (field, order) {
-      let dir = (order !== 'desc' ? 1 : -1)
+      const dir = (order !== 'desc' ? 1 : -1)
       if (field === 'time') {
         this.eventSorter = (a, b) => dir * (a.time.toDate() - b.time.toDate())
       } else if (field === 'group.name') {
