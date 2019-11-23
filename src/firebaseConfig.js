@@ -4,12 +4,12 @@ import 'firebase/auth'
 import 'firebase/database'
 
 const config = {
-  apiKey: 'AIzaSyAayb2jkXiBRdyqVlaAWuOTTQNA9waqtmA',
-  authDomain: 'tramopoly-92c49.firebaseapp.com',
-  databaseURL: 'https://tramopoly-92c49.firebaseio.com',
-  projectId: 'tramopoly-92c49',
+  apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
+  authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.VUE_APP_FIREBASE_DATABASE_URL,
+  projectId: process.env.VUE_APP_FIREBASE_PROJECT_ID,
   storageBucket: '',
-  messagingSenderId: '414240119625'
+  messagingSenderId: process.env.VUE_APP_FIREBASE_MESSAGING_SENDER_ID
 }
 
 firebase.initializeApp(config)

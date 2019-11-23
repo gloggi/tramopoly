@@ -1,6 +1,8 @@
 {
   "name": "tramopoly",
-  "version": "0.1.0",
+  "version": "1.1.0",
+  "description": "Tramopoly Web App",
+  "author": "Cosinus",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
