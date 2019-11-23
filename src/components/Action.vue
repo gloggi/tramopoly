@@ -82,20 +82,14 @@ import {
   stationVisitsDB
 } from '@/firebaseConfig'
 import TramHeader from '@/components/TramHeader'
-import BField from 'buefy/src/components/field/Field'
-import BTable from 'buefy/src/components/table/Table'
-import BTableColumn from 'buefy/src/components/table/TableColumn'
 import GroupDetail from '@/components/GroupDetail'
-import BTag from 'buefy/src/components/tag/Tag'
 import allStationsInZurich from '@/allStationsInZurich'
-import BAutocomplete from 'buefy/src/components/autocomplete/Autocomplete'
-import BInput from 'buefy/src/components/input/Input'
 import { setPageTitle } from '@/router'
 import { renderMrTSince } from '@/business'
 
 export default {
   name: 'Aktion',
-  components: { BInput, BAutocomplete, BTag, GroupDetail, BTableColumn, BTable, BField, TramHeader },
+  components: { GroupDetail, TramHeader },
   props: {
     allGroups: { type: Array, required: true },
     stationOwners: { type: Map, required: true },
@@ -130,7 +124,7 @@ export default {
       return this.group && station.value <= this.group.saldo
     },
     ownsStation (station) {
-      let owner = this.stationOwners.get(station.id)
+      const owner = this.stationOwners.get(station.id)
       return owner && owner.id === this.groupId
     },
     hasVisitedJoker (joker) {
@@ -169,7 +163,7 @@ export default {
       })
     },
     snackbar (message, button = 'OK', type = 'is-success') {
-      this.$snackbar.open({ message, type, position: 'is-top', indefinite: true, actionText: button })
+      this.$buefy.snackbar.open({ message, type, position: 'is-top', indefinite: true, actionText: button })
     },
     finishCall () {
       setActiveCall(this.loggedInOperator.id, null).then(this.redirectToZentrale)

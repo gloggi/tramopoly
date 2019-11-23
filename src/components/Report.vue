@@ -41,18 +41,11 @@ import {
   stationVisitsDB,
   usersDB
 } from '@/firebaseConfig'
-import BTable from 'buefy/src/components/table/Table'
-import BTableColumn from 'buefy/src/components/table/TableColumn'
 import TramHeader from '@/components/TramHeader'
-import Placeholder from '@/components/Placeholder'
-import BInput from 'buefy/src/components/input/Input'
-import BSelect from 'buefy/src/components/select/Select'
-import BField from 'buefy/src/components/field/Field'
-import BSwitch from 'buefy/src/components/switch/Switch'
 
 export default {
   name: 'Report',
-  components: { BSwitch, BField, BSelect, BInput, Placeholder, BTable, BTableColumn, TramHeader },
+  components: { TramHeader },
   props: {
     allGroups: { type: Array, required: true },
     stationOwners: { type: Map, required: true },
@@ -85,7 +78,7 @@ export default {
       return [].concat(
         this.stationVisits.map(visit => ({ ...visit, id: visit.id, type: 'station' }))
           .filter(visit => {
-            let owner = this.stationOwners.get(visit.station.id)
+            const owner = this.stationOwners.get(visit.station.id)
             return owner && visit.group.id === owner.id
           }),
         this.jokerVisits.map(visit => ({ ...visit, id: visit.id, type: 'joker' }))
@@ -97,7 +90,7 @@ export default {
       return 'has-content-vcentered'
     },
     onSort (field, order) {
-      let dir = (order !== 'desc' ? 1 : -1)
+      const dir = (order !== 'desc' ? 1 : -1)
       if (field === 'time') {
         this.eventSorter = (a, b) => dir * (a.time.toDate() - b.time.toDate())
       } else if (field === 'group.name') {
@@ -107,7 +100,7 @@ export default {
       }
     },
     compareGroupsAndTime (a, b) {
-      let groupComp = this.compareStrings(a.group.name, b.group.name)
+      const groupComp = this.compareStrings(a.group.name, b.group.name)
       if (groupComp !== 0) return groupComp
       return a.time.toDate() - b.time.toDate()
     },

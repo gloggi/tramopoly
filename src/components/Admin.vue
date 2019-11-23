@@ -61,11 +61,11 @@
         </div>
       </div>
       <div class="card" v-if="abteilungenReady">
-        <header class="card-header has-background-light"><span class="card-header-title title is-4"><span class="icon is-medium" style="margin-right: 0.5em"><img style="opacity: 0.7" :src="'/static/gloggi.svg'"/></span>Abteiligä</span></header>
+        <header class="card-header has-background-light"><span class="card-header-title title is-4"><span class="icon is-medium" style="margin-right: 0.5em"><img style="opacity: 0.7" :src="'/gloggi.svg'"/></span>Abteiligä</span></header>
         <b-table class="has-content-vcentered" :data="abteilungen" striped hoverable :row-class="hasContentVcentered" default-sort="totalPoints" default-sort-direction="desc">
           <template slot-scope="props">
             <b-table-column field="name" label="Abteilig" sortable>
-              <span v-if="props.row.id" class="icon is-medium"><img :title="props.row.name" style="opacity: 0.7" :src="'/static/' + props.row.id + '.svg'"/></span>
+              <span v-if="props.row.id" class="icon is-medium"><img :title="props.row.name" style="opacity: 0.7" :src="'/' + props.row.id + '.svg'"/></span>
               <span class="has-text-weight-bold">{{ props.row.name }}</span>
             </b-table-column>
             <b-table-column field="saldo" label="Guäthabä" sortable>{{ props.row.saldo }}</b-table-column>
@@ -73,10 +73,12 @@
             <b-table-column field="mrTPoints" label="Mr. T" sortable>{{ props.row.mrTPoints }}</b-table-column>
             <b-table-column field="totalPoints" label="Total" sortable><span class="has-text-weight-bold">{{ props.row.totalPoints }}</span></b-table-column>
             <b-table-column field="operator.scoutName" label="Telefonischt">
-              <b-select @input="value => changeOperator(props.row.id, value)" :value="props.row.operator.id">
-                  <option value=""></option>
-                  <option v-for="option in operators" :value="option.id" :key="option.id">{{ option.scoutName }}</option>
-              </b-select>
+              <span>
+                <b-select @input="value => changeOperator(props.row.id, value)" :value="props.row.operator.id">
+                    <option value=""></option>
+                    <option v-for="option in operators" :value="option.id" :key="option.id">{{ option.scoutName }}</option>
+                </b-select>
+              </span>
             </b-table-column>
           </template>
         </b-table>
@@ -85,21 +87,24 @@
         <header class="card-header has-background-light"><span class="card-header-title title is-4">🧒 Benutzär</span></header>
         <b-table class="has-content-vcentered" :data="usersWithMrTFlag" striped hoverable :row-class="hasContentVcentered">
           <template slot-scope="props">
-            <b-table-column field="scoutName" label="Namä" sortable><span class="has-text-weight-bold">{{ props.row.scoutName }}</span><b-tag v-if="props.row.isCurrentlyMrT" type="is-info" class="is-small is-pulled-right" title="🕵️">Mr. T</b-tag></b-table-column>
+            <b-table-column field="scoutName" label="Namä" sortable><span><span class="has-text-weight-bold">{{ props.row.scoutName }}</span><b-tag v-if="props.row.isCurrentlyMrT" type="is-info" class="is-small is-pulled-right" title="🕵️">Mr. T</b-tag></span></b-table-column>
             <b-table-column field="phone" label="Telefon" sortable>{{ props.row.phone }}</b-table-column>
             <b-table-column field="group.abteilung.name" label="Abteilig" sortable>
               <span v-if="props.row.group && props.row.group.abteilung">
-                <span v-if="props.row.group.abteilung.id" class="icon is-medium"><img :title="props.row.group.abteilung.name" style="opacity: 0.7" :src="'/static/' + props.row.group.abteilung.id + '.svg'"/></span>
+                <span v-if="props.row.group.abteilung.id" class="icon is-medium"><img :title="props.row.group.abteilung.name" style="opacity: 0.7" :src="'/' + props.row.group.abteilung.id + '.svg'"/></span>
                 <span>{{ props.row.group.abteilung.name }}</span>
               </span>
             </b-table-column>
             <b-table-column field="group.name" label="Gruppä" sortable><span v-if="props.row.group">{{ props.row.group.name }}</span></b-table-column>
             <b-table-column field="role" label="Rollä" sortable>
-              <b-select @input="value => changeRole(props.row.id, value)" :value="props.row.role">
-                <option value="">Spielär</option>
-                <option value="operator">Zentralä</option>
-                <option value="admin">Admin</option>
-              </b-select></b-table-column>
+              <span>
+                <b-select @input="value => changeRole(props.row.id, value)" :value="props.row.role">
+                  <option value="">Spielär</option>
+                  <option value="operator">Zentralä</option>
+                  <option value="admin">Admin</option>
+                </b-select>
+              </span>
+            </b-table-column>
           </template>
         </b-table>
       </div>
@@ -122,19 +127,12 @@ import {
   settingsDB,
   usersDB
 } from '@/firebaseConfig'
-import BTable from 'buefy/src/components/table/Table'
-import BTableColumn from 'buefy/src/components/table/TableColumn'
 import TramHeader from '@/components/TramHeader'
-import Placeholder from '@/components/Placeholder'
-import BInput from 'buefy/src/components/input/Input'
-import BSelect from 'buefy/src/components/select/Select'
-import BField from 'buefy/src/components/field/Field'
-import BSwitch from 'buefy/src/components/switch/Switch'
 import { timeSinceLastActiveMrTChange } from '@/business'
 
 export default {
   name: 'Admin',
-  components: { BSwitch, BField, BSelect, BInput, Placeholder, BTable, BTableColumn, TramHeader },
+  components: { TramHeader },
   props: {
     allGroups: { type: Array, required: true },
     now: { type: Date, required: true }
@@ -171,9 +169,9 @@ export default {
       return this.settings && this.settings.gameEnd.toDate().toLocaleTimeString('de-CH')
     },
     abteilungen () {
-      let map = new Map()
+      const map = new Map()
       this.allGroups.forEach(group => {
-        let id = group.abteilung.id
+        const id = group.abteilung.id
         if (!map.has(id)) {
           let operator = { name: 'Unbekannt', id: '' }
           if (group.abteilung && group.abteilung.operator && group.abteilung.operator.id) {
@@ -181,7 +179,7 @@ export default {
           }
           map.set(id, { id, name: group.abteilung.name, operator, saldo: 0, realEstatePoints: 0, mrTPoints: 0, totalPoints: 0, numGroups: 0 })
         }
-        let abteilung = map.get(id)
+        const abteilung = map.get(id)
         abteilung.saldo += group.saldo
         abteilung.realEstatePoints += group.realEstatePoints
         abteilung.mrTPoints += group.mrTPoints
@@ -207,7 +205,7 @@ export default {
       return this.settings && this.settings.message
     },
     mrTGroupId () {
-      let found = this.allGroups.find(group => group.isCurrentlyMrT)
+      const found = this.allGroups.find(group => group.isCurrentlyMrT)
       return found && found.id
     },
     usersWithMrTFlag () {
@@ -264,15 +262,15 @@ export default {
       setMrTShouldCallOperator(mrT.id)
     },
     confiscateMrT () {
-      let groupId = (this.currentMrT.group && this.currentMrT.group.id) || 'zentrale'
+      const groupId = (this.currentMrT.group && this.currentMrT.group.id) || 'zentrale'
       addMrTChange(groupId, { ...this.currentMrT, active: false })
     },
     releaseMrT () {
-      let groupId = (this.currentMrT.group && this.currentMrT.group.id) || 'zentrale'
+      const groupId = (this.currentMrT.group && this.currentMrT.group.id) || 'zentrale'
       addMrTChange(groupId, { ...this.currentMrT, active: true })
     },
     onSort (field, order) {
-      let dir = (order !== 'desc' ? 1 : -1)
+      const dir = (order !== 'desc' ? 1 : -1)
       if (field === 'time') {
         this.eventSorter = (a, b) => dir * (a.time.toDate() - b.time.toDate())
       } else if (field === 'group.name') {

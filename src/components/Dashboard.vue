@@ -27,15 +27,11 @@
 
 <script>
 import { bindUserById, requireAuth, setActiveCall } from '@/firebaseConfig'
-import BTable from 'buefy/src/components/table/Table'
-import BTableColumn from 'buefy/src/components/table/TableColumn'
-import Placeholder from '@/components/Placeholder'
 import TramHeader from '@/components/TramHeader'
 import GroupDetail from '@/components/GroupDetail'
-import BMessage from 'buefy/src/components/message/Message'
 
 export default {
-  components: { BMessage, GroupDetail, Placeholder, BTable, BTableColumn, TramHeader },
+  components: { GroupDetail, TramHeader },
   props: {
     allGroups: { type: Array, required: true },
     mrTLocation: { type: String, required: true }
@@ -63,7 +59,7 @@ export default {
     },
     operatorPhoneInWords () {
       if (!this.operatorPhone) return null
-      let phoneFormat = this.operatorPhone.replace(/^\+41/g, '0').split('')
+      const phoneFormat = this.operatorPhone.replace(/^\+41/g, '0').split('')
       if (phoneFormat.length === 10) {
         phoneFormat.splice(3, 0, ',')
         phoneFormat.splice(7, 0, ',')

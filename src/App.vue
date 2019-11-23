@@ -32,11 +32,9 @@ import {
   stationVisitsDB
 } from '@/firebaseConfig'
 import { calculateAllScores, renderMrTLocation } from '@/business'
-import BMessage from 'buefy/src/components/message/Message'
 
 export default {
   name: 'Tramopoly',
-  components: { BMessage },
   data () {
     return {
       firestoreUser: {},
@@ -68,7 +66,7 @@ export default {
       if (!this.userIsLoggedIn ||
         (this.recalculateGroupsFlag && !this.recalculateGroupsFlag) ||
         (this.groups.length && this.groups.some(group => !(group.abteilung && group.abteilung.id))) ||
-        !this.$firestoreRefs['settings'] || !this.$firestoreRefs['stationVisits'] || !this.$firestoreRefs['jokerVisits'] || !this.$firestoreRefs['mrTChanges']
+        !this.$firestoreRefs.settings || !this.$firestoreRefs.stationVisits || !this.$firestoreRefs.jokerVisits || !this.$firestoreRefs.mrTChanges
       ) {
         return { allGroups: [], stationOwners: new Map() }
       }
@@ -121,7 +119,7 @@ export default {
       this.$router.push({ name: 'login' })
     },
     support () {
-      this.$snackbar.open({
+      this.$buefy.snackbar.open({
         message: 'Wänn öppis nöd aazäigt wird, tuän mal d Siitä noi ladä 🔄 Wänns dänn immär nonig gaht, lüüt am Cosinus aa: Null Sibä Nüün, Drüü Acht Sächs, Sächs Sibä, Null Sächs',
         position: 'is-top',
         indefinite: true
@@ -190,15 +188,15 @@ export default {
     background: $green !important;
   }
 
-  tr.has-content-vcentered td {
+  tr.has-content-vcentered > td {
     vertical-align: middle;
   }
 
-  tr.has-content-vcentered td span {
+  tr.has-content-vcentered > td > span {
     display: flex;
   }
 
-  tr.has-content-vcentered td span span {
+  tr.has-content-vcentered > td > span > span {
     align-self: center;
     margin-right: 0.5em;
   }

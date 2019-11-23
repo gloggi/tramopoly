@@ -3,7 +3,7 @@ export function renderMrTLocation (mrTChanges, now) {
   if (!mrTChanges || !mrTChanges.length) return 'Käinä wäiss es so rächt...'
   let mrT = mrTChanges[mrTChanges.length - 1]
   let text = ''
-  let inactive = mrT.active === false
+  const inactive = mrT.active === false
   if (inactive) {
     text += 'Dä Mr. T isch scho lang nümä gsee wordä. Zletscht'
     mrT = undefined
@@ -59,13 +59,13 @@ export function renderMrTSince (mrTChanges, now) {
 }
 
 export function timeSinceLastActiveMrTChange (mrTChanges, now) {
-  let lastActiveMrTChange = [...mrTChanges].sort((a, b) => b.time.toDate() - a.time.toDate()).filter(mrTChange => mrTChange.time.toDate() < now).find(mrTChange => mrTChange.active !== false)
+  const lastActiveMrTChange = [...mrTChanges].sort((a, b) => b.time.toDate() - a.time.toDate()).filter(mrTChange => mrTChange.time.toDate() < now).find(mrTChange => mrTChange.active !== false)
   if (!lastActiveMrTChange) return 'Bishär käin aktivä Mr. T...'
   return 'Dä Mr. T hät sich zletscht vor ' + renderDurationInMinutes(now - lastActiveMrTChange.time.toDate()) + ' Minutä gmäldät.'
 }
 
 function renderDurationInMinutes (milliseconds) {
-  let halfMinutes = Math.round(milliseconds / 1000.0 / 30.0)
+  const halfMinutes = Math.round(milliseconds / 1000.0 / 30.0)
   if (halfMinutes < 2) {
     return 'wenigär als 1'
   } else if (halfMinutes % 2 === 0) {
@@ -77,9 +77,9 @@ function renderDurationInMinutes (milliseconds) {
 
 export function calculateAllScores (groups, stationVisits, jokerVisits, mrTChanges, settings, now = new Date()) {
   if (!settings) return { allGroups: [], stationOwners: new Map() }
-  let allGroups = groups.reduce((map, group) => map.set(group.id, { ...group, id: group.id, saldo: 0, realEstatePoints: 0, mrTPoints: 0 }), new Map())
+  const allGroups = groups.reduce((map, group) => map.set(group.id, { ...group, id: group.id, saldo: 0, realEstatePoints: 0, mrTPoints: 0 }), new Map())
   addStarterCash(allGroups, settings)
-  let stationOwners = addStationExpenses(allGroups, stationVisits, settings, now)
+  const stationOwners = addStationExpenses(allGroups, stationVisits, settings, now)
   addJokerIncome(allGroups, jokerVisits, settings)
   addMrTPoints(allGroups, mrTChanges, settings, now)
   return {
@@ -94,21 +94,21 @@ function addStarterCash (allGroups, settings) {
 }
 
 function addStationExpenses (allGroups, stationVisits, settings, now) {
-  let stationOwners = new Map()
+  const stationOwners = new Map()
   const gameEnd = settings.gameEnd.toDate()
   stationVisits.forEach(stationVisit => {
     if (!stationVisit.group || !stationVisit.group.id || stationVisit.time.toDate() > gameEnd) return
-    let visitor = allGroups.get(stationVisit.group.id)
-    let existingOwner = stationOwners.get(stationVisit.station.id)
+    const visitor = allGroups.get(stationVisit.group.id)
+    const existingOwner = stationOwners.get(stationVisit.station.id)
     if (existingOwner) {
-      let rent = stationVisit.station.value * settings.rentRate
+      const rent = stationVisit.station.value * settings.rentRate
       // Pay
       visitor.saldo -= rent
       // Collect
       existingOwner.saldo += rent
     } else {
       stationOwners.set(stationVisit.station.id, visitor)
-      let value = stationVisit.station.value
+      const value = stationVisit.station.value
       // Buying cost
       visitor.saldo -= value
       // Real estate value
@@ -140,8 +140,8 @@ function addMrTPoints (allGroups, mrTChanges, settings, now) {
   const gameEnd = settings.gameEnd.toDate()
   mrTChanges.forEach(mrTChange => {
     if (!mrTChange.group) return
-    let newMrT = mrTChange.group.id
-    let newMrTSince = mrTChange.time.toDate()
+    const newMrT = mrTChange.group.id
+    const newMrTSince = mrTChange.time.toDate()
     if (mrTChange.active === false) {
       finishMrTPeriod(allGroups, currentMrTId, settings, currentMrTSince, newMrTSince, gameEnd)
       currentMrTId = null
@@ -155,7 +155,7 @@ function addMrTPoints (allGroups, mrTChanges, settings, now) {
   })
   finishMrTPeriod(allGroups, currentMrTId, settings, currentMrTSince, now, gameEnd)
   if (currentMrTId) {
-    let currentMrT = allGroups.get(currentMrTId)
+    const currentMrT = allGroups.get(currentMrTId)
     if (currentMrT) {
       currentMrT.isCurrentlyMrT = true
       currentMrT.shouldCallOperator = mrTChanges[mrTChanges.length - 1].shouldCallOperator
@@ -165,13 +165,13 @@ function addMrTPoints (allGroups, mrTChanges, settings, now) {
 
 function finishMrTPeriod (allGroups, periodOwnerId, settings, since, until, gameEnd) {
   if (periodOwnerId) {
-    let periodOwner = allGroups.get(periodOwnerId)
+    const periodOwner = allGroups.get(periodOwnerId)
     if (periodOwner) periodOwner.mrTPoints += mrTAmount(settings.mrTRewards, since, until, gameEnd)
   }
 }
 
 function mrTAmount (rewards, since, until, gameEnd) {
-  let durationInMinutes = Math.max(0, (Math.min(until, gameEnd) - since) / 60000.0)
+  const durationInMinutes = Math.max(0, (Math.min(until, gameEnd) - since) / 60000.0)
   let result = 0
   let i
   for (i in rewards) {
