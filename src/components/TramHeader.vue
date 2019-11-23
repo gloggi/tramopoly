@@ -16,7 +16,7 @@ export default {
 .tram {
   color: #fff;
   display: inline;
-  border-image-source: url(../../static/border-tram.min.svg);
+  border-image-source: url(../../public/border-tram.min.svg);
   border-image-slice: 0% 49% fill;
   -webkit-border-image-slice: 0% 49% fill;
   border-image-width: 0 2.8em;

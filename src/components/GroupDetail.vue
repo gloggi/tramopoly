@@ -6,7 +6,7 @@
       <div v-if="group.name" style="clear: both">
         <div class="columns is-vcentered is-gapless has-text-left">
           <div v-if="group.abteilung.id" class="column is-narrow is-flex">
-            <span class="icon is-large is-left" style="margin-right: 10px"><img :title="group.abteilung.name" style="opacity: 0.7" :src="'/static/' + group.abteilung.id + '.svg'"/></span>
+            <span class="icon is-large is-left" style="margin-right: 10px"><img :title="group.abteilung.name" style="opacity: 0.7" :src="'/' + group.abteilung.id + '.svg'"/></span>
           </div>
           <div class="column">
             <div class="columns is-gapless is-mobile">
@@ -45,7 +45,7 @@
           <div class="title is-6">Die Nächscht&shy;bessärä</div>
           <div v-if="betterGroup" class="columns is-vcentered is-gapless">
             <div class="column is-narrow is-flex">
-              <span class="icon is-large is-left" style="margin-right: 10px"><img :title="betterGroup.abteilung.name" style="opacity: 0.7" :src="'/static/' + betterGroup.abteilung.id + '.svg'"/></span>
+              <span class="icon is-large is-left" style="margin-right: 10px"><img :title="betterGroup.abteilung.name" style="opacity: 0.7" :src="'/' + betterGroup.abteilung.id + '.svg'"/></span>
             </div>
             <div class="column">
               <h4 class="title is-4" style="clear: left">{{ betterGroup.name }}</h4>
@@ -60,7 +60,7 @@
           <div class="title is-6">Die Nächscht&shy;schlächtärä</div>
           <div class="columns is-vcentered is-gapless">
             <div class="column is-narrow is-flex">
-              <span class="icon is-large is-left" style="margin-right: 10px"><img :title="worseGroup.abteilung.name" style="opacity: 0.7" :src="'/static/' + worseGroup.abteilung.id + '.svg'"/></span>
+              <span class="icon is-large is-left" style="margin-right: 10px"><img :title="worseGroup.abteilung.name" style="opacity: 0.7" :src="'/' + worseGroup.abteilung.id + '.svg'"/></span>
             </div>
             <div class="column">
               <h4 class="title is-4" style="clear: left">{{ worseGroup.name }}</h4>
