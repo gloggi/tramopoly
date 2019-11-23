@@ -119,7 +119,7 @@ export default {
       this.$router.push({ name: 'login' })
     },
     support () {
-      this.$snackbar.open({
+      this.$buefy.snackbar.open({
         message: 'Wänn öppis nöd aazäigt wird, tuän mal d Siitä noi ladä 🔄 Wänns dänn immär nonig gaht, lüüt am Cosinus aa: Null Sibä Nüün, Drüü Acht Sächs, Sächs Sibä, Null Sächs',
         position: 'is-top',
         indefinite: true

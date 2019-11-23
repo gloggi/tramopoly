@@ -163,7 +163,7 @@ export default {
       })
     },
     snackbar (message, button = 'OK', type = 'is-success') {
-      this.$snackbar.open({ message, type, position: 'is-top', indefinite: true, actionText: button })
+      this.$buefy.snackbar.open({ message, type, position: 'is-top', indefinite: true, actionText: button })
     },
     finishCall () {
       setActiveCall(this.loggedInOperator.id, null).then(this.redirectToZentrale)
