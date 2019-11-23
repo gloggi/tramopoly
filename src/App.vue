@@ -188,15 +188,15 @@ export default {
     background: $green !important;
   }
 
-  tr.has-content-vcentered td {
+  tr.has-content-vcentered > td {
     vertical-align: middle;
   }
 
-  tr.has-content-vcentered td span {
+  tr.has-content-vcentered > td > span {
     display: flex;
   }
 
-  tr.has-content-vcentered td span span {
+  tr.has-content-vcentered > td > span > span {
     align-self: center;
     margin-right: 0.5em;
   }

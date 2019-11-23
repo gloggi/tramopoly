@@ -73,10 +73,12 @@
             <b-table-column field="mrTPoints" label="Mr. T" sortable>{{ props.row.mrTPoints }}</b-table-column>
             <b-table-column field="totalPoints" label="Total" sortable><span class="has-text-weight-bold">{{ props.row.totalPoints }}</span></b-table-column>
             <b-table-column field="operator.scoutName" label="Telefonischt">
-              <b-select @input="value => changeOperator(props.row.id, value)" :value="props.row.operator.id">
-                  <option value=""></option>
-                  <option v-for="option in operators" :value="option.id" :key="option.id">{{ option.scoutName }}</option>
-              </b-select>
+              <span>
+                <b-select @input="value => changeOperator(props.row.id, value)" :value="props.row.operator.id">
+                    <option value=""></option>
+                    <option v-for="option in operators" :value="option.id" :key="option.id">{{ option.scoutName }}</option>
+                </b-select>
+              </span>
             </b-table-column>
           </template>
         </b-table>
@@ -85,7 +87,7 @@
         <header class="card-header has-background-light"><span class="card-header-title title is-4">🧒 Benutzär</span></header>
         <b-table class="has-content-vcentered" :data="usersWithMrTFlag" striped hoverable :row-class="hasContentVcentered">
           <template slot-scope="props">
-            <b-table-column field="scoutName" label="Namä" sortable><span class="has-text-weight-bold">{{ props.row.scoutName }}</span><b-tag v-if="props.row.isCurrentlyMrT" type="is-info" class="is-small is-pulled-right" title="🕵️">Mr. T</b-tag></b-table-column>
+            <b-table-column field="scoutName" label="Namä" sortable><span><span class="has-text-weight-bold">{{ props.row.scoutName }}</span><b-tag v-if="props.row.isCurrentlyMrT" type="is-info" class="is-small is-pulled-right" title="🕵️">Mr. T</b-tag></span></b-table-column>
             <b-table-column field="phone" label="Telefon" sortable>{{ props.row.phone }}</b-table-column>
             <b-table-column field="group.abteilung.name" label="Abteilig" sortable>
               <span v-if="props.row.group && props.row.group.abteilung">
@@ -95,11 +97,14 @@
             </b-table-column>
             <b-table-column field="group.name" label="Gruppä" sortable><span v-if="props.row.group">{{ props.row.group.name }}</span></b-table-column>
             <b-table-column field="role" label="Rollä" sortable>
-              <b-select @input="value => changeRole(props.row.id, value)" :value="props.row.role">
-                <option value="">Spielär</option>
-                <option value="operator">Zentralä</option>
-                <option value="admin">Admin</option>
-              </b-select></b-table-column>
+              <span>
+                <b-select @input="value => changeRole(props.row.id, value)" :value="props.row.role">
+                  <option value="">Spielär</option>
+                  <option value="operator">Zentralä</option>
+                  <option value="admin">Admin</option>
+                </b-select>
+              </span>
+            </b-table-column>
           </template>
         </b-table>
       </div>
