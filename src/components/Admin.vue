@@ -122,18 +122,12 @@ import {
   settingsDB,
   usersDB
 } from '@/firebaseConfig'
-import BTable from 'buefy/src/components/table/Table'
-import BTableColumn from 'buefy/src/components/table/TableColumn'
 import TramHeader from '@/components/TramHeader'
-import BInput from 'buefy/src/components/input/Input'
-import BSelect from 'buefy/src/components/select/Select'
-import BField from 'buefy/src/components/field/Field'
-import BSwitch from 'buefy/src/components/switch/Switch'
 import { timeSinceLastActiveMrTChange } from '@/business'
 
 export default {
   name: 'Admin',
-  components: { BSwitch, BField, BSelect, BInput, BTable, BTableColumn, TramHeader },
+  components: { TramHeader },
   props: {
     allGroups: { type: Array, required: true },
     now: { type: Date, required: true }

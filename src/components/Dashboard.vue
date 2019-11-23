@@ -29,10 +29,9 @@
 import { bindUserById, requireAuth, setActiveCall } from '@/firebaseConfig'
 import TramHeader from '@/components/TramHeader'
 import GroupDetail from '@/components/GroupDetail'
-import BMessage from 'buefy/src/components/message/Message'
 
 export default {
-  components: { BMessage, GroupDetail, TramHeader },
+  components: { GroupDetail, TramHeader },
   props: {
     allGroups: { type: Array, required: true },
     mrTLocation: { type: String, required: true }

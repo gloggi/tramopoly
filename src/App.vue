@@ -32,11 +32,9 @@ import {
   stationVisitsDB
 } from '@/firebaseConfig'
 import { calculateAllScores, renderMrTLocation } from '@/business'
-import BMessage from 'buefy/src/components/message/Message'
 
 export default {
   name: 'Tramopoly',
-  components: { BMessage },
   data () {
     return {
       firestoreUser: {},

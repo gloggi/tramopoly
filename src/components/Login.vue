@@ -41,15 +41,11 @@ import {
   groupsDB,
   RecaptchaVerifier
 } from '@/firebaseConfig'
-import BField from 'buefy/src/components/field/Field'
-import BInput from 'buefy/src/components/input/Input'
-import BAutocomplete from 'buefy/src/components/autocomplete/Autocomplete'
-import BSelect from 'buefy/src/components/select/Select'
 import TramHeader from '@/components/TramHeader'
 
 export default {
   name: 'Login',
-  components: { BSelect, BAutocomplete, BInput, BField, TramHeader },
+  components: { TramHeader },
   firestore: {
     activeAndInactiveGroups: groupsDB.orderBy('name'),
     abteilungen: abteilungenDB.where('active', '==', true)

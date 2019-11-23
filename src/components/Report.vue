@@ -41,13 +41,11 @@ import {
   stationVisitsDB,
   usersDB
 } from '@/firebaseConfig'
-import BTable from 'buefy/src/components/table/Table'
-import BTableColumn from 'buefy/src/components/table/TableColumn'
 import TramHeader from '@/components/TramHeader'
 
 export default {
   name: 'Report',
-  components: { BTable, BTableColumn, TramHeader },
+  components: { TramHeader },
   props: {
     allGroups: { type: Array, required: true },
     stationOwners: { type: Map, required: true },

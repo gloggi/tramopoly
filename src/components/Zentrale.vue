@@ -38,13 +38,11 @@
 
 <script>
 import { requireOperator, setActiveCall } from '@/firebaseConfig'
-import BTable from 'buefy/src/components/table/Table'
-import BTableColumn from 'buefy/src/components/table/TableColumn'
 import TramHeader from '@/components/TramHeader'
 
 export default {
   name: 'Zentrale',
-  components: { BTable, BTableColumn, TramHeader },
+  components: { TramHeader },
   props: {
     allGroups: { type: Array, required: true }
   },

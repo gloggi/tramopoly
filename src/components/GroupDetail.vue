@@ -73,11 +73,8 @@
   </div>
 </template>
 <script>
-import BTag from 'buefy/src/components/tag/Tag'
-
 export default {
   name: 'group-detail',
-  components: { BTag },
   props: {
     groupId: { type: String },
     allGroups: { type: Array, required: true },
