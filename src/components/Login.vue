@@ -16,7 +16,8 @@
           <b-select v-if="!groupIsAlreadyRegistered" v-model="abteilung" expanded required>
             <option v-for="abteilung in abteilungen" :value="abteilung" :key="abteilung.name">{{ abteilung.name }}</option>
           </b-select>
-          <b-input v-else v-model="specifiedGroup.abteilung.name" disabled />
+          <b-input v-else-if="specifiedGroup.abteilung" v-model="specifiedGroup.abteilung.name" disabled />
+          <b-input v-else disabled />
         </b-field>
         <b-field label="Ich telefoniär liäbär mit...">
           <b-select v-model="preferWhatsApp" expanded required>
