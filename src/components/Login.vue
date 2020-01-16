@@ -18,6 +18,12 @@
           </b-select>
           <b-input v-else v-model="specifiedGroup.abteilung.name" disabled />
         </b-field>
+        <b-field label="Ich telefoniär liäbär mit...">
+          <b-select v-model="preferWhatsApp" expanded required>
+            <option :value="false">Telefon</option>
+            <option :value="true">WhatsApp Aarüäf</option>
+          </b-select>
+        </b-field>
         <button class="button is-link" type="submit">Iiloggä</button>
       </form>
     </div>
@@ -39,7 +45,8 @@ import {
   auth,
   bindUserByPhone,
   groupsDB,
-  RecaptchaVerifier
+  RecaptchaVerifier,
+  setWhatsAppPreference
 } from '@/firebaseConfig'
 import TramHeader from '@/components/TramHeader'
 
@@ -56,6 +63,7 @@ export default {
       scoutName: '',
       groupName: '',
       abteilung: '',
+      preferWhatsApp: false,
       otp: '',
       appVerifier: null,
       confirmation: null,
@@ -94,7 +102,7 @@ export default {
   methods: {
     login () {
       this.specifiedGroupData = { name: this.groupName, abteilung: this.abteilung, active: true }
-      this.specifiedUserData = { phone: this.normalizedPhone, scoutName: this.scoutName, group: this.groupName, role: '' }
+      this.specifiedUserData = { phone: this.normalizedPhone, scoutName: this.scoutName, group: this.groupName, preferWhatsApp: this.preferWhatsApp, role: '' }
       auth.signInWithPhoneNumber(this.specifiedUserData.phone, this.appVerifier)
         .then(result => {
           this.confirmation = result
@@ -118,6 +126,8 @@ export default {
       if (!this.userIsAlreadyRegistered) {
         await addUser(result.user.uid, this.specifiedUserData)
         console.log('user created')
+      } else {
+        await setWhatsAppPreference(result.user.uid, this.specifiedUserData.preferWhatsApp)
       }
       this.$emit('login')
       this.$router.push({ name: 'index' })
@@ -140,6 +150,11 @@ export default {
   watch: {
     normalizedPhone: function (changedPhone) {
       bindUserByPhone(this, 'specifiedUser', changedPhone)
+    },
+    specifiedUser: function (changedUser) {
+      if (changedUser) {
+        this.preferWhatsApp = changedUser.preferWhatsApp
+      }
     }
   }
 }

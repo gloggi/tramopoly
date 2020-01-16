@@ -50,6 +50,11 @@ export function addUser (uid, userData) {
   return db.collection('users').doc(uid).set(userData)
 }
 
+export function setWhatsAppPreference (uid, preference) {
+  if (!uid) return
+  return db.collection('users').doc(uid).update({ preferWhatsApp: preference })
+}
+
 export function setGameEndTime (dateTime) {
   if (!dateTime) return
   return db.collection('settings').doc('settings').update({ gameEnd: dateTime })

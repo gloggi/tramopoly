@@ -101,7 +101,11 @@ export default {
   methods: {
     callOperator () {
       setActiveCall(this.operatorId, this.loggedInUser.id).then(() => {
-        window.location = 'tel:' + this.operatorPhone
+        if (this.loggedInUser.preferWhatsApp) {
+          window.location = 'https://api.whatsapp.com/send?phone=' + this.operatorPhone
+        } else {
+          window.location = 'tel:' + this.operatorPhone
+        }
       })
     },
     finishCall () {
