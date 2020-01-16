@@ -113,8 +113,15 @@ export default {
         this.$bind('settings', settingsDB)
       ]).then(() => { this.recalculateGroupsFlag = !this.recalculateGroupsFlag })
     },
+    unbindRestrictedCollections () {
+      this.$unbind('stationVisits')
+      this.$unbind('jokerVisits')
+      this.$unbind('mrTChanges')
+      this.$unbind('settings')
+    },
     async signout () {
       auth.signOut()
+      this.unbindRestrictedCollections()
       await this.refreshLoginStatus()
       this.$router.push({ name: 'login' })
     },
