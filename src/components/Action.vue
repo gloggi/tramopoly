@@ -80,12 +80,12 @@ import {
   setActiveCall,
   stationsDB,
   stationVisitsDB
-} from '@/firebaseConfig'
-import TramHeader from '@/components/TramHeader'
-import GroupDetail from '@/components/GroupDetail'
-import allStationsInZurich from '@/allStationsInZurich'
-import { setPageTitle } from '@/router'
-import { renderMrTSince } from '@/business'
+} from '../firebaseConfig'
+import TramHeader from '../components/TramHeader'
+import GroupDetail from '../components/GroupDetail'
+import allStationsInZurich from '../allStationsInZurich'
+import { setPageTitle } from '../router'
+import { renderMrTSince } from '../business'
 
 export default {
   name: 'Aktion',

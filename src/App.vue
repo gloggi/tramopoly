@@ -30,8 +30,8 @@ import {
   mrTChangesDB,
   settingsDB,
   stationVisitsDB
-} from '@/firebaseConfig'
-import { calculateAllScores, renderMrTLocation } from '@/business'
+} from './firebaseConfig'
+import { calculateAllScores, renderMrTLocation } from './business'
 
 export default {
   name: 'Tramopoly',

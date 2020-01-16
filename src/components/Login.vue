@@ -47,8 +47,8 @@ import {
   groupsDB,
   RecaptchaVerifier,
   setWhatsAppPreference
-} from '@/firebaseConfig'
-import TramHeader from '@/components/TramHeader'
+} from '../firebaseConfig'
+import TramHeader from '../components/TramHeader'
 
 export default {
   name: 'Login',

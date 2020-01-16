@@ -9,32 +9,32 @@ const router = new Router({
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/components/Login')
+      component: () => import('./components/Login')
     },
     {
       path: '/',
       name: 'index',
-      component: () => import('@/components/Dashboard')
+      component: () => import('./components/Dashboard')
     },
     {
       path: '/zentrale',
       name: 'zentrale',
-      component: () => import('@/components/Zentrale')
+      component: () => import('./components/Zentrale')
     },
     {
       path: '/zentrale/:group',
       name: 'action',
-      component: () => import('@/components/Action')
+      component: () => import('./components/Action')
     },
     {
       path: '/admin',
       name: 'admin',
-      component: () => import('@/components/Admin')
+      component: () => import('./components/Admin')
     },
     {
       path: '/admin/report',
       name: 'report',
-      component: () => import('@/components/Report')
+      component: () => import('./components/Report')
     }
   ],
   scrollBehavior (to, from, savedPosition) {

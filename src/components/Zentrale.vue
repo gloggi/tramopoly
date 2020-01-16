@@ -37,8 +37,8 @@
 </template>
 
 <script>
-import { requireOperator, setActiveCall } from '@/firebaseConfig'
-import TramHeader from '@/components/TramHeader'
+import { requireOperator, setActiveCall } from '../firebaseConfig'
+import TramHeader from '../components/TramHeader'
 
 export default {
   name: 'Zentrale',

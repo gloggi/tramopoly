@@ -26,9 +26,9 @@
 </template>
 
 <script>
-import { bindUserById, requireAuth, setActiveCall } from '@/firebaseConfig'
-import TramHeader from '@/components/TramHeader'
-import GroupDetail from '@/components/GroupDetail'
+import { bindUserById, requireAuth, setActiveCall } from '../firebaseConfig'
+import TramHeader from '../components/TramHeader'
+import GroupDetail from '../components/GroupDetail'
 
 export default {
   components: { GroupDetail, TramHeader },

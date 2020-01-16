@@ -126,9 +126,9 @@ import {
   setOperatorGroupAvailable,
   settingsDB,
   usersDB
-} from '@/firebaseConfig'
-import TramHeader from '@/components/TramHeader'
-import { timeSinceLastActiveMrTChange } from '@/business'
+} from '../firebaseConfig'
+import TramHeader from '../components/TramHeader'
+import { timeSinceLastActiveMrTChange } from '../business'
 
 export default {
   name: 'Admin',

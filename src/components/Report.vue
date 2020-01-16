@@ -40,8 +40,8 @@ import {
   settingsDB,
   stationVisitsDB,
   usersDB
-} from '@/firebaseConfig'
-import TramHeader from '@/components/TramHeader'
+} from '../firebaseConfig'
+import TramHeader from '../components/TramHeader'
 
 export default {
   name: 'Report',
