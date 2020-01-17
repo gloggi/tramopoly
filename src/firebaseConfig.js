@@ -2,6 +2,7 @@ import firebase from 'firebase/app'
 import 'firebase/firestore'
 import 'firebase/auth'
 import 'firebase/database'
+import { calculateCheckpoint } from './business'
 
 const config = {
   apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
@@ -18,6 +19,7 @@ const db = firebase.firestore()
 const auth = firebase.auth()
 const RecaptchaVerifier = firebase.auth.RecaptchaVerifier
 
+export const checkpointDB = db.collection('checkpoints').where('time', '>', new Date(0)).orderBy('time', 'desc').limit(1)
 export const groupsDB = db.collection('groups')
 export const abteilungenDB = db.collection('abteilungen')
 export const stationsDB = db.collection('stations')
@@ -121,6 +123,12 @@ export function setMrTShouldCallOperator (mrTId) {
   if (!mrTId) return
   console.log(mrTId)
   return db.collection('mrTChanges').doc(mrTId).update({ shouldCallOperator: true })
+}
+
+export function createCheckpoint (time, allDBs) {
+  calculateCheckpoint(time, allDBs).then(checkpoint => {
+    return db.collection('checkpoints').doc(time.toLocaleTimeString('de-CH')).set(checkpoint)
+  })
 }
 
 function findUserByPhone (phone) {

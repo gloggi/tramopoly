@@ -75,13 +75,13 @@ function renderDurationInMinutes (milliseconds) {
   }
 }
 
-export function calculateAllScores (groups, stationVisits, jokerVisits, mrTChanges, settings, now = new Date()) {
+export function calculateAllScores (checkpoint, groups, stationVisits, jokerVisits, mrTChanges, settings, now = new Date()) {
   if (!settings) return { allGroups: [], stationOwners: new Map() }
-  const allGroups = groups.reduce((map, group) => map.set(group.id, { ...group, id: group.id, saldo: 0, realEstatePoints: 0, mrTPoints: 0 }), new Map())
-  addStarterCash(allGroups, settings)
-  const stationOwners = addStationExpenses(allGroups, stationVisits, settings, now)
+  const allGroups = checkpoint ? checkpoint.allGroups : groups.reduce((map, group) => map.set(group.id, { ...group, id: group.id, saldo: 0, realEstatePoints: 0, mrTPoints: 0 }), new Map())
+  if (!checkpoint) addStarterCash(allGroups, settings)
+  const stationOwners = addStationExpenses(checkpoint, allGroups, stationVisits, settings, now)
   addJokerIncome(allGroups, jokerVisits, settings)
-  addMrTPoints(allGroups, mrTChanges, settings, now)
+  addMrTPoints(checkpoint, allGroups, mrTChanges, settings, now)
   return {
     allGroups: Array.from(allGroups.values()).map(group => ({ ...group, totalPoints: group.saldo + group.realEstatePoints + group.mrTPoints }))
       .sort((a, b) => b.totalPoints - a.totalPoints),
@@ -93,8 +93,8 @@ function addStarterCash (allGroups, settings) {
   allGroups.forEach(group => { group.saldo += settings.starterCash })
 }
 
-function addStationExpenses (allGroups, stationVisits, settings, now) {
-  const stationOwners = new Map()
+function addStationExpenses (checkpoint, allGroups, stationVisits, settings, now) {
+  const stationOwners = checkpoint ? checkpoint.stationOwners : new Map()
   const gameEnd = settings.gameEnd.toDate()
   stationVisits.forEach(stationVisit => {
     if (!stationVisit.group || !stationVisit.group.id || stationVisit.time.toDate() > gameEnd) return
@@ -134,7 +134,8 @@ function addJokerIncome (allGroups, jokerVisits, settings) {
   })
 }
 
-function addMrTPoints (allGroups, mrTChanges, settings, now) {
+function addMrTPoints (checkpoint, allGroups, mrTChanges, settings, now) {
+  // TODO continue counting Mr. T time from the last mrTChange before the checkpoint (if any)
   let currentMrTId = null
   let currentMrTSince = null
   const gameEnd = settings.gameEnd.toDate()
@@ -181,4 +182,13 @@ function mrTAmount (rewards, since, until, gameEnd) {
     result = rewards[i].value
   }
   return result
+}
+
+export function calculateCheckpoint (time, { checkpoint, groups, stationVisits, jokerVisits, mrTChanges, settings }) {
+  // TODO get a snapshot of all data ignoring old checkpoints, and stop relying on the outside to provide the data
+  const { allGroups, stationOwners } = calculateAllScores(checkpoint, groups, stationVisits, jokerVisits, mrTChanges, settings, time)
+  return Promise.resolve({
+    allGroups,
+    stationOwners
+  })
 }

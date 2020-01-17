@@ -27,6 +27,7 @@
 import {
   auth,
   bindUserById,
+  checkpointDB,
   groupsDB,
   jokerVisitsDB,
   mrTChangesDB,
@@ -42,6 +43,7 @@ export default {
       firestoreUser: {},
       user: null,
       groups: [],
+      checkpoints: [],
       stationVisits: [],
       jokerVisits: [],
       mrTChanges: [],
@@ -64,6 +66,9 @@ export default {
     userIsAdmin () {
       return this.userIsLoggedIn && this.user.role === 'admin'
     },
+    checkpoint () {
+      return this.checkpoints.length ? this.checkpoints[0] : null
+    },
     allGroupsAndStationOwners () {
       if (!this.userIsLoggedIn ||
         (this.recalculateGroupsFlag && !this.recalculateGroupsFlag) ||
@@ -72,7 +77,7 @@ export default {
       ) {
         return { allGroups: [], stationOwners: new Map() }
       }
-      return calculateAllScores(this.groups, this.stationVisits, this.jokerVisits, this.mrTChanges, this.settings, this.now)
+      return calculateAllScores(this.checkpoint, this.groups, this.stationVisits, this.jokerVisits, this.mrTChanges, this.settings, this.now)
     },
     allGroups () {
       return this.allGroupsAndStationOwners.allGroups
@@ -108,12 +113,16 @@ export default {
       })
     },
     bindRestrictedCollections () {
-      Promise.all([
-        this.$bind('stationVisits', stationVisitsDB),
-        this.$bind('jokerVisits', jokerVisitsDB),
-        this.$bind('mrTChanges', mrTChangesDB),
-        this.$bind('settings', settingsDB)
-      ]).then(() => { this.recalculateGroupsFlag = !this.recalculateGroupsFlag })
+      this.$bind('checkpoints', checkpointDB)
+        .then(() => Promise.all([
+          this.$bind('stationVisits', stationVisitsDB),
+          this.$bind('jokerVisits', jokerVisitsDB),
+          this.$bind('mrTChanges', mrTChangesDB),
+          this.$bind('settings', settingsDB)
+        ]))
+        .then(() => {
+          this.recalculateGroupsFlag = !this.recalculateGroupsFlag
+        })
     },
     unbindRestrictedCollections () {
       this.$unbind('stationVisits')
