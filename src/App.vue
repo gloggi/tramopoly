@@ -15,7 +15,7 @@
         <a class="level-item" @click="support">Hilfe</a>
       </div>
     </div>
-    <router-view @login="refreshLoginStatus" @update="updateNow" :all-groups="allGroups" :station-owners="stationOwners" :mr-t-location="mrTLocation" :now="now">
+    <router-view @login="refreshLoginStatus" @update="updateNow" :checkpoint="checkpoint" :all-groups="allGroups" :station-owners="stationOwners" :mr-t-location="mrTLocation" :now="now">
       <b-message slot="message" v-if="message && message.message" :type="message.type" :title="messageTitle" :closable="false">{{ message.message }}&#xa;....... Piiiiiiiiiiiiiip.....</b-message>
       <b-message slot="message2" v-if="message && message.message" :type="message.type" :title="messageTitle" :closable="false">{{ message.message }}&#xa;....... Piiiiiiiiiiiiiip.....</b-message>
       <b-message slot="message3" v-if="message && message.message" :type="message.type" :title="messageTitle" :closable="false">{{ message.message }}&#xa;....... Piiiiiiiiiiiiiip.....</b-message>
@@ -54,7 +54,7 @@ export default {
     }
   },
   firestore: {
-    groups: groupsDB.where('active', '==', true)
+    groups: groupsDB().where('active', '==', true)
   },
   computed: {
     userIsLoggedIn () {
@@ -67,7 +67,7 @@ export default {
       return this.userIsLoggedIn && this.user.role === 'admin'
     },
     checkpoint () {
-      return this.checkpoints.length ? this.checkpoints[0] : null
+      return this.checkpoints.length ? this.checkpoints.find(cp => cp.time) : null
     },
     allGroupsAndStationOwners () {
       if (!this.userIsLoggedIn ||
@@ -103,7 +103,13 @@ export default {
         auth.onAuthStateChanged(firestoreUser => {
           if (firestoreUser) {
             this.firestoreUser = firestoreUser
-            bindUserById(this, 'user', firestoreUser.uid).then(this.bindRestrictedCollections)
+            bindUserById(this, 'user', firestoreUser.uid)
+              .then(async () => {
+                await this.$bind('checkpoints', checkpointDB())
+                if (!this.checkpoint) {
+                  this.bindRestrictedCollections()
+                }
+              })
           } else {
             this.firestoreUser = {}
             bindUserById(this, 'user', null)
@@ -113,16 +119,15 @@ export default {
       })
     },
     bindRestrictedCollections () {
-      this.$bind('checkpoints', checkpointDB)
-        .then(() => Promise.all([
-          this.$bind('stationVisits', stationVisitsDB),
-          this.$bind('jokerVisits', jokerVisitsDB),
-          this.$bind('mrTChanges', mrTChangesDB),
-          this.$bind('settings', settingsDB)
-        ]))
-        .then(() => {
-          this.recalculateGroupsFlag = !this.recalculateGroupsFlag
-        })
+      const checkpointDate = this.checkpoint ? this.checkpoint.time.toDate() : new Date(0)
+      return Promise.all([
+        this.$bind('stationVisits', stationVisitsDB(checkpointDate)),
+        this.$bind('jokerVisits', jokerVisitsDB(checkpointDate)),
+        this.$bind('mrTChanges', mrTChangesDB(checkpointDate)),
+        this.$bind('settings', settingsDB())
+      ]).then(() => {
+        this.recalculateGroupsFlag = !this.recalculateGroupsFlag
+      })
     },
     unbindRestrictedCollections () {
       this.$unbind('stationVisits')
@@ -151,6 +156,11 @@ export default {
   },
   created () {
     this.refreshLoginStatus().then(() => this.updateNow())
+  },
+  watch: {
+    checkpoint () {
+      this.bindRestrictedCollections()
+    }
   }
 }
 </script>

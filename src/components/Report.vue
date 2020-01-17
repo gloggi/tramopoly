@@ -64,11 +64,11 @@ export default {
     }
   },
   firestore: {
-    stationVisits: stationVisitsDB,
-    jokerVisits: jokerVisitsDB,
-    mrTChanges: mrTChangesDB,
-    settings: settingsDB,
-    users: usersDB
+    stationVisits: stationVisitsDB(),
+    jokerVisits: jokerVisitsDB(),
+    mrTChanges: mrTChangesDB(),
+    settings: settingsDB(),
+    users: usersDB()
   },
   beforeRouteEnter (to, from, next) {
     requireOperator(to, from, next)

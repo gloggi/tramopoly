@@ -73,6 +73,7 @@ import {
   addJokerVisit,
   addMrTChange,
   addStationVisit,
+  groupsDB,
   jokersDB,
   jokerVisitsDB,
   mrTChangesDB,
@@ -101,7 +102,7 @@ export default {
       loggedInOperator: null,
       stations: [],
       jokers: [],
-      stationVisits: [],
+      stationVisitsOfGroup: [],
       jokerVisits: [],
       mrTChanges: [],
       searchterm: '',
@@ -110,11 +111,11 @@ export default {
     }
   },
   firestore: {
-    stations: stationsDB,
-    jokers: jokersDB,
-    stationVisits: stationVisitsDB,
-    jokerVisits: jokerVisitsDB,
-    mrTChanges: mrTChangesDB
+    stations: stationsDB(),
+    jokers: jokersDB(),
+    stationVisitsOfGroup: stationVisitsDB().where('group', '==', groupsDB().doc(this.groupId)),
+    jokerVisits: jokerVisitsDB(),
+    mrTChanges: mrTChangesDB()
   },
   beforeRouteEnter (to, from, next) {
     requireOperator(to, from, next)
@@ -192,7 +193,7 @@ export default {
       return this.searchArrayFor(this.combinedStations.map(station => ({ ...station, name: station.name + (station.joker ? ' (Joker)' : '') })), this.searchterm, station => station.name)
     },
     visitedStations () {
-      return this.stationVisits.filter(visit => visit.group && visit.group.id === this.groupId).map(visit => visit.station)
+      return this.stationVisitsOfGroup.map(visit => visit.station)
     },
     lastMrT () {
       if (this.mrTChanges.length === 0) return this.mrT

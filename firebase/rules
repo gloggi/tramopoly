@@ -26,6 +26,10 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+    match /checkpoints/{document=**} {
+      allow read: if isLoggedIn();
+      allow write: if isAdmin();
+    }
     match /groups/{document=**} {
       allow read: if true;
       allow write: if isLoggedIn();

@@ -1,4 +1,3 @@
-
 export function renderMrTLocation (mrTChanges, now) {
   if (!mrTChanges || !mrTChanges.length) return 'Käinä wäiss es so rächt...'
   let mrT = mrTChanges[mrTChanges.length - 1]
@@ -75,26 +74,55 @@ function renderDurationInMinutes (milliseconds) {
   }
 }
 
+export function renderTime (minutesInFuture) {
+  return new Date(Date.now() + minutesInFuture * 60000).toLocaleTimeString('de-CH')
+}
+
 export function calculateAllScores (checkpoint, groups, stationVisits, jokerVisits, mrTChanges, settings, now = new Date()) {
   if (!settings) return { allGroups: [], stationOwners: new Map() }
-  const allGroups = checkpoint ? checkpoint.allGroups : groups.reduce((map, group) => map.set(group.id, { ...group, id: group.id, saldo: 0, realEstatePoints: 0, mrTPoints: 0 }), new Map())
-  if (!checkpoint) addStarterCash(allGroups, settings)
+  const allGroups = checkpoint ? allGroupsFromCheckpoint(checkpoint, groups) : allGroupsWithStarterCash(settings, groups)
   const stationOwners = addStationExpenses(checkpoint, allGroups, stationVisits, settings, now)
   addJokerIncome(allGroups, jokerVisits, settings)
   addMrTPoints(checkpoint, allGroups, mrTChanges, settings, now)
   return {
     allGroups: Array.from(allGroups.values()).map(group => ({ ...group, totalPoints: group.saldo + group.realEstatePoints + group.mrTPoints }))
       .sort((a, b) => b.totalPoints - a.totalPoints),
-    stationOwners: stationOwners
+    stationOwners
   }
 }
 
-function addStarterCash (allGroups, settings) {
-  allGroups.forEach(group => { group.saldo += settings.starterCash })
+function allGroupsFromCheckpoint (checkpoint, groups) {
+  return groups.reduce((map, group) => {
+    return map.set(group.id, { ...group, id: group.id, ...checkpoint.groupData[group.id] })
+  }, new Map())
+}
+
+function allGroupsWithStarterCash (settings, groups) {
+  return groups.reduce((map, group) => {
+    return map.set(group.id, { ...group, id: group.id, saldo: settings.starterCash, realEstatePoints: 0, mrTPoints: 0 })
+  }, new Map())
+}
+
+function stationOwnersFromCheckpoint (checkpoint, allGroups) {
+  return Object.entries(checkpoint.stationOwners).reduce((map, [stationId, ownerId]) => {
+    return map.set(stationId, allGroups.get(ownerId))
+  }, new Map())
+}
+
+export function calculateCheckpointData (groups, stationVisits, jokerVisits, mrTChanges, settings, checkpointDate) {
+  const { allGroups, stationOwners } = calculateAllScores(null, groups, stationVisits, jokerVisits, mrTChanges, settings, checkpointDate)
+  return {
+    groupData: Object.fromEntries(allGroups.reduce((map, group) => {
+      return map.set(group.id, { saldo: group.saldo, realEstatePoints: group.realEstatePoints, mrTPoints: group.mrTPoints })
+    }, new Map())),
+    stationOwners: Object.fromEntries(Array.from(stationOwners.entries()).map(([stationId, owner]) => [stationId, owner.id]))
+    // TODO keep track of the already visited stations
+    // TODO keep track of the already visited jokers
+  }
 }
 
 function addStationExpenses (checkpoint, allGroups, stationVisits, settings, now) {
-  const stationOwners = checkpoint ? checkpoint.stationOwners : new Map()
+  const stationOwners = checkpoint ? stationOwnersFromCheckpoint(checkpoint, allGroups) : new Map()
   const gameEnd = settings.gameEnd.toDate()
   stationVisits.forEach(stationVisit => {
     if (!stationVisit.group || !stationVisit.group.id || stationVisit.time.toDate() > gameEnd) return
@@ -118,6 +146,7 @@ function addStationExpenses (checkpoint, allGroups, stationVisits, settings, now
         stationVisit.time.toDate(), now, settings.gameEnd.toDate())
     }
   })
+  // TODO add interest of estate ownerships from checkpoint
   allGroups.forEach(group => { group.saldo = Math.round(group.saldo) })
   return stationOwners
 }
@@ -182,13 +211,4 @@ function mrTAmount (rewards, since, until, gameEnd) {
     result = rewards[i].value
   }
   return result
-}
-
-export function calculateCheckpoint (time, { checkpoint, groups, stationVisits, jokerVisits, mrTChanges, settings }) {
-  // TODO get a snapshot of all data ignoring old checkpoints, and stop relying on the outside to provide the data
-  const { allGroups, stationOwners } = calculateAllScores(checkpoint, groups, stationVisits, jokerVisits, mrTChanges, settings, time)
-  return Promise.resolve({
-    allGroups,
-    stationOwners
-  })
 }
