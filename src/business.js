@@ -124,6 +124,15 @@ export function calculateCheckpointData (groups, stationVisits, jokerVisits, mrT
 function addStationExpenses (checkpoint, allGroups, stationVisits, settings, now) {
   const stationOwners = checkpoint ? stationOwnersFromCheckpoint(checkpoint, allGroups) : new Map()
   const gameEnd = settings.gameEnd.toDate()
+  if (checkpoint) {
+    allGroups.forEach(group => {
+      // Add interest for the time period since the checkpoint for all stations that
+      // the group already owned before the checkpoint
+      const checkpointRealEstateValue = checkpoint.groupData[group.id].realEstatePoints / settings.realEstateValueRatio
+      group.saldo += interestAmount(checkpointRealEstateValue, settings.interestPeriod, settings.interestRate,
+        checkpoint.time.toDate(), now, settings.gameEnd.toDate())
+    })
+  }
   stationVisits.forEach(stationVisit => {
     if (!stationVisit.group || !stationVisit.group.id || stationVisit.time.toDate() > gameEnd) return
     const visitor = allGroups.get(stationVisit.group.id)
@@ -146,7 +155,6 @@ function addStationExpenses (checkpoint, allGroups, stationVisits, settings, now
         stationVisit.time.toDate(), now, settings.gameEnd.toDate())
     }
   })
-  // TODO add interest of estate ownerships from checkpoint
   allGroups.forEach(group => { group.saldo = Math.round(group.saldo) })
   return stationOwners
 }
