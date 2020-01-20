@@ -73,7 +73,7 @@ export default {
       if (!this.userIsLoggedIn ||
         (this.recalculateGroupsFlag && !this.recalculateGroupsFlag) ||
         (this.groups.length && this.groups.some(group => !(group.abteilung && group.abteilung.id))) ||
-        !this.$firestoreRefs.settings || !this.$firestoreRefs.stationVisits || !this.$firestoreRefs.jokerVisits || !this.$firestoreRefs.mrTChanges
+        !this.$firestoreRefs.checkpoints || !this.$firestoreRefs.settings || !this.$firestoreRefs.stationVisits || !this.$firestoreRefs.jokerVisits || !this.$firestoreRefs.mrTChanges
       ) {
         return { allGroups: [], stationOwners: new Map() }
       }

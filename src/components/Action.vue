@@ -144,7 +144,7 @@ export default {
     visitStation (station) {
       addStationVisit(this.groupId, station.id).then(() => {
         this.$emit('updateNow')
-        if (this.stationOwners.get(station.id).id === this.groupId) {
+        if (this.stationOwners.has(station.id) && this.stationOwners.get(station.id).id === this.groupId) {
           this.snackbar('🎉🙌 Perf! Ier händ d Station gchauft! Schtämplä nöd vergässä ️🎫‼️', 'Gschtämplät 👍🏼')
         } else {
           this.snackbar('😓😣 Ja nääi! Die Station ghört scho anärä andärä Gruppä... Iär händ müäsä Miäti zahle 📉🆘', 'Okei... 😢', 'is-danger')
