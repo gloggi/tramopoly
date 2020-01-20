@@ -236,7 +236,7 @@ export default {
       return this.currentMrT.shouldCallOperator
     },
     minutesSinceLastActiveMrTChange () {
-      return timeSinceLastActiveMrTChange(this.mrTChanges, this.now)
+      return timeSinceLastActiveMrTChange(this.checkpoint, this.mrTChanges, this.now)
     },
     checkpointLabel () {
       if (!this.checkpoint) return 'Bishär käin Checkpoint erstellt.'

@@ -113,8 +113,7 @@ export default {
   },
   firestore: {
     stations: stationsDB(),
-    jokers: jokersDB(),
-    mrTChanges: mrTChangesDB()
+    jokers: jokersDB()
   },
   beforeRouteEnter (to, from, next) {
     requireOperator(to, from, next)
@@ -199,7 +198,7 @@ export default {
       return this.mrTChanges[this.mrTChanges.length - 1]
     },
     mrTSince () {
-      return renderMrTSince(this.mrTChanges, this.now)
+      return renderMrTSince(this.checkpoint, this.mrTChanges, this.now)
     },
     groupIsActiveCaller () {
       return !!(this.loggedInOperator && this.loggedInOperator.activeCall && this.loggedInOperator.activeCall.group && this.loggedInOperator.activeCall.group.id === this.groupId)
@@ -209,16 +208,21 @@ export default {
     },
     stationsFilteredByDirection () {
       return this.searchArrayFor(this.allStationsInZurich, this.mrT.direction)
+    },
+    checkpointDate () {
+      return this.checkpoint ? this.checkpoint.time.toDate() : new Date(0)
     }
   },
   watch: {
     group: function () {
       if (this.group) {
         setPageTitle(this.group.name)
-        const checkpointDate = this.checkpoint ? this.checkpoint.time.toDate() : new Date(0)
-        this.$bind('stationVisitsOfGroup', stationVisitsDB(checkpointDate).where('group', '==', groupsDB().doc(this.groupId)))
-        this.$bind('jokerVisitsOfGroup', jokerVisitsDB(checkpointDate).where('group', '==', groupsDB().doc(this.groupId)))
+        this.$bind('stationVisitsOfGroup', stationVisitsDB(this.checkpointDate).where('group', '==', groupsDB().doc(this.groupId)))
+        this.$bind('jokerVisitsOfGroup', jokerVisitsDB(this.checkpointDate).where('group', '==', groupsDB().doc(this.groupId)))
       }
+    },
+    checkpoint: function () {
+      this.$bind('mrTChanges', mrTChangesDB(this.checkpointDate))
     }
   }
 }

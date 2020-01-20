@@ -86,7 +86,7 @@ export default {
       return this.allGroupsAndStationOwners.stationOwners
     },
     mrTLocation () {
-      return renderMrTLocation(this.mrTChanges, this.now)
+      return renderMrTLocation(this.checkpoint, this.mrTChanges, this.now)
     },
     message () {
       return this.settings && this.settings.message
