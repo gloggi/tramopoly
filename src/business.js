@@ -115,9 +115,9 @@ export function calculateCheckpointData (groups, stationVisits, jokerVisits, mrT
     groupData: Object.fromEntries(allGroups.reduce((map, group) => {
       return map.set(group.id, { saldo: group.saldo, realEstatePoints: group.realEstatePoints, mrTPoints: group.mrTPoints })
     }, new Map())),
-    stationOwners: Object.fromEntries(Array.from(stationOwners.entries()).map(([stationId, owner]) => [stationId, owner.id]))
-    // TODO keep track of the already visited stations
-    // TODO keep track of the already visited jokers
+    stationOwners: Object.fromEntries(Array.from(stationOwners.entries()).map(([stationId, owner]) => [stationId, owner.id])),
+    visitedStations: Object.fromEntries(stationVisits.reduce((map, visit) => map.set(visit.group.id, [...(map.get(visit.group.id) || []), visit.station.id]), new Map())),
+    visitedJokers: Object.fromEntries(jokerVisits.reduce((map, visit) => map.set(visit.group.id, [...(map.get(visit.group.id) || []), visit.station.id]), new Map()))
   }
 }
 

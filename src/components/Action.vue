@@ -19,7 +19,7 @@
         </div>
         <div style="max-height: 400px; overflow-y: scroll" ref="stationList">
           <template v-for="station in filteredStations">
-            <div v-if="station.joker && hasVisitedJoker(station)" :key="'joker-' + station.name" class="panel-block is-owned">
+            <div v-if="station.joker && visitedJokers.includes(station.id)" :key="'joker-' + station.name" class="panel-block is-owned">
               <span class="panel-icon">🃏</span>
               <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
             </div>
@@ -31,7 +31,7 @@
               <span class="panel-icon">✅</span>
               <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
             </div>
-            <div v-else-if="visitedStations.map(visited => visited.id).includes(station.id)" :key="station.id" class="panel-block is-visited-before">
+            <div v-else-if="visitedStations.includes(station.id)" :key="station.id" class="panel-block is-visited-before">
               <span class="panel-icon">❎</span>
               <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
             </div>
@@ -95,7 +95,8 @@ export default {
     allGroups: { type: Array, required: true },
     stationOwners: { type: Map, required: true },
     mrTLocation: { type: String, required: true },
-    now: { type: Date, required: true }
+    now: { type: Date, required: true },
+    checkpoint: {}
   },
   data () {
     return {
@@ -103,7 +104,7 @@ export default {
       stations: [],
       jokers: [],
       stationVisitsOfGroup: [],
-      jokerVisits: [],
+      jokerVisitsOfGroup: [],
       mrTChanges: [],
       searchterm: '',
       mrT: { vehicle: '', direction: '', lastKnownStop: '', description: '', group: {} },
@@ -113,8 +114,6 @@ export default {
   firestore: {
     stations: stationsDB(),
     jokers: jokersDB(),
-    stationVisitsOfGroup: stationVisitsDB().where('group', '==', groupsDB().doc(this.groupId)),
-    jokerVisits: jokerVisitsDB(),
     mrTChanges: mrTChangesDB()
   },
   beforeRouteEnter (to, from, next) {
@@ -127,9 +126,6 @@ export default {
     ownsStation (station) {
       const owner = this.stationOwners.get(station.id)
       return owner && owner.id === this.groupId
-    },
-    hasVisitedJoker (joker) {
-      return this.jokerVisits.some(visit => visit.group && visit.group.id === this.groupId && visit.station && visit.station.id === joker.id)
     },
     resetSearchTerm () {
       this.searchterm = ''
@@ -192,8 +188,11 @@ export default {
     filteredStations () {
       return this.searchArrayFor(this.combinedStations.map(station => ({ ...station, name: station.name + (station.joker ? ' (Joker)' : '') })), this.searchterm, station => station.name)
     },
+    visitedJokers () {
+      return [...(this.checkpoint ? this.checkpoint.visitedJokers[this.groupId] : []), ...this.jokerVisitsOfGroup.map(visit => visit.station.id)]
+    },
     visitedStations () {
-      return this.stationVisitsOfGroup.map(visit => visit.station)
+      return [...(this.checkpoint ? this.checkpoint.visitedStations[this.groupId] : []), ...this.stationVisitsOfGroup.map(visit => visit.station.id)]
     },
     lastMrT () {
       if (this.mrTChanges.length === 0) return this.mrT
@@ -214,7 +213,12 @@ export default {
   },
   watch: {
     group: function () {
-      setPageTitle(this.group.name)
+      if (this.group) {
+        setPageTitle(this.group.name)
+        const checkpointDate = this.checkpoint ? this.checkpoint.time.toDate() : new Date(0)
+        this.$bind('stationVisitsOfGroup', stationVisitsDB(checkpointDate).where('group', '==', groupsDB().doc(this.groupId)))
+        this.$bind('jokerVisitsOfGroup', jokerVisitsDB(checkpointDate).where('group', '==', groupsDB().doc(this.groupId)))
+      }
     }
   }
 }
