@@ -7,7 +7,9 @@
         <a v-if="userIsLoggedIn" class="level-item" @click="signout">Uusloggä</a>
         <router-link v-else :to="{ name: 'login' }" class="level-item">Iiloggä</router-link>
         <router-link v-if="userIsAdmin" :to="{ name: 'index' }" class="level-item">Dashboard</router-link>
+        <router-link v-else-if="userIsLoggedIn && !userIsOperator" :to="{ name: 'index' }" class="level-item">{{user.group.name}}</router-link>
         <router-link v-if="userIsOperator" :to="{ name: 'zentrale' }" class="level-item">Zentralä</router-link>
+        <router-link :to="{ name: 'map' }" class="level-item">Jokers</router-link>
         <router-link v-if="userIsAdmin" :to="{ name: 'admin' }" class="level-item">Admin</router-link>
         <router-link v-if="userIsAdmin" :to="{ name: 'report' }" class="level-item">Billet-Kontrollä</router-link>
         <a class="level-item" @click="support">Hilfe</a>

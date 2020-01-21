@@ -17,6 +17,11 @@ const router = new Router({
       component: () => import('./components/Dashboard')
     },
     {
+      path: '/map',
+      name: 'map',
+      component: () => import('./components/Map')
+    },
+    {
       path: '/zentrale',
       name: 'zentrale',
       component: () => import('./components/Zentrale')
