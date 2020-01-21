@@ -55,8 +55,8 @@ export default {
   name: 'Login',
   components: { TramHeader },
   firestore: {
-    activeAndInactiveGroups: groupsDB.orderBy('name'),
-    abteilungen: abteilungenDB.where('active', '==', true)
+    activeAndInactiveGroups: groupsDB().orderBy('name'),
+    abteilungen: abteilungenDB().where('active', '==', true)
   },
   data () {
     return {
@@ -122,7 +122,7 @@ export default {
         console.log('group created', groupRef)
         this.specifiedUserData.group = groupRef
       } else {
-        this.specifiedUserData.group = groupsDB.doc(this.specifiedGroup.id)
+        this.specifiedUserData.group = groupsDB().doc(this.specifiedGroup.id)
       }
       if (!this.userIsAlreadyRegistered) {
         await addUser(result.user.uid, this.specifiedUserData)

@@ -2,6 +2,7 @@ import firebase from 'firebase/app'
 import 'firebase/firestore'
 import 'firebase/auth'
 import 'firebase/database'
+import { calculateCheckpointData } from './business'
 
 const config = {
   apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
@@ -18,20 +19,36 @@ const db = firebase.firestore()
 const auth = firebase.auth()
 const RecaptchaVerifier = firebase.auth.RecaptchaVerifier
 
-export const groupsDB = db.collection('groups')
-export const abteilungenDB = db.collection('abteilungen')
-export const stationsDB = db.collection('stations')
-export const jokersDB = db.collection('jokers')
-export const settingsDB = db.collection('settings').doc('settings')
-export const stationVisitsDB = db.collection('stationVisits').where('time', '>', new Date(0)).orderBy('time')
-export const jokerVisitsDB = db.collection('jokerVisits').where('time', '>', new Date(0)).orderBy('time')
-export const mrTChangesDB = db.collection('mrTChanges').where('time', '>', new Date(0)).orderBy('time')
-export const usersDB = db.collection('users')
+/**
+ * Configure how far into the future stationVisits, jokerVisits and mrTChanges are read by default.
+ * This should be longer than the duration of the game, currently 12 hours.
+ * When the user first loads the page and his device connects to firebase, he will be getting updates for all events
+ * until 12 hours later, assuming he keeps his device awake and listening for so long.
+ * @type {number} duration in milliseconds
+ */
+const READ_AHEAD = 24 * 60 * 60000
+
+export const checkpointDB = () => db.collection('checkpoints').where('time', '>', new Date(0)).orderBy('time', 'desc').limit(1)
+export const groupsDB = () => db.collection('groups')
+export const abteilungenDB = () => db.collection('abteilungen')
+export const stationsDB = () => db.collection('stations')
+export const jokersDB = () => db.collection('jokers')
+export const settingsDB = () => db.collection('settings').doc('settings')
+export const stationVisitsDB = (start = new Date(0), end = new Date(new Date().getTime() + READ_AHEAD)) => {
+  return db.collection('stationVisits').where('time', '>', start).where('time', '<=', end).orderBy('time')
+}
+export const jokerVisitsDB = (start = new Date(0), end = new Date(new Date().getTime() + READ_AHEAD)) => {
+  return db.collection('jokerVisits').where('time', '>', start).where('time', '<=', end).orderBy('time')
+}
+export const mrTChangesDB = (start = new Date(0), end = new Date(new Date().getTime() + READ_AHEAD)) => {
+  return db.collection('mrTChanges').where('time', '>', start).where('time', '<=', end).orderBy('time')
+}
+export const usersDB = () => db.collection('users')
 export { auth, RecaptchaVerifier }
 
 export function addGroup (groupData, existingGroups) {
   const abteilungId = groupData.abteilung.id
-  groupData.abteilung = abteilungenDB.doc(abteilungId)
+  groupData.abteilung = abteilungenDB().doc(abteilungId)
   const groupId = createUniqueGroupId(abteilungId, existingGroups)
   const groupRef = db.collection('groups').doc(groupId)
   groupRef.set(groupData)
@@ -121,6 +138,45 @@ export function setMrTShouldCallOperator (mrTId) {
   if (!mrTId) return
   console.log(mrTId)
   return db.collection('mrTChanges').doc(mrTId).update({ shouldCallOperator: true })
+}
+
+export async function createCheckpoint (date) {
+  const checkpoint = { ...(await calculateCheckpoint(date)), time: date }
+  return db.collection('checkpoints').doc(date.toLocaleTimeString('de-CH')).set(checkpoint)
+}
+
+async function calculateCheckpoint (checkpointDate) {
+  // Fetch all data up until the checkpoint time
+  const groups = await getValueOnce(groupsDB().where('active', '==', true))
+  const groupsMap = groups.reduce((map, group) => map.set(group.id, group), new Map())
+  const stations = await getValueOnce(stationsDB())
+  const stationsMap = stations.reduce((map, station) => map.set(station.id, station), new Map())
+  const jokers = await getValueOnce(jokersDB())
+  const jokersMap = jokers.reduce((map, joker) => map.set(joker.id, joker), new Map())
+  const stationVisits = (await getValueOnce(stationVisitsDB(new Date(0), checkpointDate)))
+    .map(stationVisit => ({
+      ...stationVisit,
+      station: stationsMap.get(stationVisit.station.id),
+      group: groupsMap.get(stationVisit.group.id)
+    }))
+  const jokerVisits = (await getValueOnce(jokerVisitsDB(new Date(0), checkpointDate)))
+    .map(jokerVisit => ({
+      ...jokerVisit,
+      station: jokersMap.get(jokerVisit.station.id),
+      group: groupsMap.get(jokerVisit.group.id)
+    }))
+  const mrTChanges = await getValueOnce(mrTChangesDB(new Date(0), checkpointDate))
+  const settings = await getValueOnce(settingsDB())
+  // Calculate all scores and ownership at the checkpoint time and return it in a storable format
+  return calculateCheckpointData(groups, stationVisits, jokerVisits, mrTChanges, settings, checkpointDate)
+}
+
+function getValueOnce (db) {
+  return db.get().then(snapshot => {
+    if (snapshot.docs) return snapshot.docs.map(entry => ({ id: entry.id, ...entry.data() }))
+    if (snapshot.exists) return { id: snapshot.id, ...snapshot.data() }
+    return undefined
+  })
 }
 
 function findUserByPhone (phone) {

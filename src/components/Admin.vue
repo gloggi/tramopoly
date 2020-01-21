@@ -19,13 +19,21 @@
               </b-field>
               <b-field><p class="control"><button @click="setStartTimeToNow" class="button is-info is-outlined">Spiel startä (4 ¾ stund)</button></p></b-field>
               <hr/>
+              <b-field :label="checkpointLabel">
+                <b-field>
+                  <b-input v-model="checkpointTime" />
+                  <p class="control"><button @click="createCheckpointToday" class="button is-info is-outlined">Checkpoint erstellä</button></p>
+                </b-field>
+              </b-field>
+              <hr/>
               <b-field label="Regischtriärig für Zentralä">
                 <b-switch type="is-danger" :value="operatorGroupActive" @input="value => setOperatorGroupAvailable(value)">
                   <span v-if="operatorGroupActive" class="has-text-weight-bold">Aktiviert</span>
                   <span v-else>Deaktiviert</span>
                 </b-switch>
               </b-field>
-              <hr/>
+            </div>
+            <div class="column">
               <h5 class="title is-6">{{ minutesSinceLastActiveMrTChange }}</h5>
               <b-field grouped>
                 <p class="control" v-if="mrTChanges && mrTChanges.length && !mrTShouldCallOperator">
@@ -38,23 +46,24 @@
                   <button class="button is-link is-warning is-outlined" @click="releaseMrT">Mr T. hät sich gmäldät</button>
                 </p>
               </b-field>
-            </div>
-            <div class="column" v-if="message">
-              <header class="title is-4">Nachricht a alli</header>
-              <form @submit.prevent="setMessage">
-                <b-field grouped group-multiline>
-                  <b-field><b-select name="type" v-model="selectedMessageType">
-                    <option value="is-info">blau</option>
-                    <option value="is-success">grüän</option>
-                    <option value="is-warning">gääl</option>
-                    <option value="is-danger">rot</option>
-                    <option value="">schwarz</option>
-                  </b-select></b-field>
-                  <b-field><b-input type="text" :value="message.title" name="title" placeholder="Titäl"></b-input></b-field>
-                  <b-field><button type="submit" :class="'button ' + selectedMessageType">Speichärä</button></b-field>
-                </b-field>
-                <b-field><b-input type="textarea" :value="message.message" name="message"></b-input></b-field>
-              </form>
+              <template v-if="message">
+                <hr/>
+                <header class="title is-4">Nachricht a alli</header>
+                <form @submit.prevent="setMessage">
+                  <b-field grouped group-multiline>
+                    <b-field><b-select name="type" v-model="selectedMessageType">
+                      <option value="is-info">blau</option>
+                      <option value="is-success">grüän</option>
+                      <option value="is-warning">gääl</option>
+                      <option value="is-danger">rot</option>
+                      <option value="">schwarz</option>
+                    </b-select></b-field>
+                    <b-field><b-input type="text" :value="message.title" name="title" placeholder="Titäl"></b-input></b-field>
+                    <b-field><button type="submit" :class="'button ' + selectedMessageType">Speichärä</button></b-field>
+                  </b-field>
+                  <b-field><b-input type="textarea" :value="message.message" name="message"></b-input></b-field>
+                </form>
+              </template>
             </div>
           </div>
           <div class="columns"><div class="column is-full is-one-third-desktop is-offset-one-third-desktop"><slot name="message"></slot></div></div>
@@ -117,6 +126,7 @@ import {
   addMrTChange,
   changeGroupOperator,
   changeUserRole,
+  createCheckpoint,
   mrTChangesDB,
   requireOperator,
   setActiveCall,
@@ -128,13 +138,14 @@ import {
   usersDB
 } from '../firebaseConfig'
 import TramHeader from '../components/TramHeader'
-import { timeSinceLastActiveMrTChange } from '../business'
+import { renderTime, timeSinceLastActiveMrTChange } from '../business'
 
 export default {
   name: 'Admin',
   components: { TramHeader },
   props: {
     allGroups: { type: Array, required: true },
+    checkpoint: {},
     now: { type: Date, required: true }
   },
   data () {
@@ -144,13 +155,14 @@ export default {
       settings: null,
       users: [],
       selectedMessageType: 'is-info',
-      eventSorter: (a, b) => b.time.toDate() - a.time.toDate()
+      eventSorter: (a, b) => b.time.toDate() - a.time.toDate(),
+      checkpointTime: renderTime(-30)
     }
   },
   firestore: {
-    mrTChanges: mrTChangesDB,
-    settings: settingsDB,
-    users: usersDB
+    mrTChanges: mrTChangesDB(),
+    settings: settingsDB(),
+    users: usersDB()
   },
   beforeRouteEnter (to, from, next) {
     requireOperator(to, from, next)
@@ -224,7 +236,13 @@ export default {
       return this.currentMrT.shouldCallOperator
     },
     minutesSinceLastActiveMrTChange () {
-      return timeSinceLastActiveMrTChange(this.mrTChanges, this.now)
+      return timeSinceLastActiveMrTChange(this.checkpoint, this.mrTChanges, this.now)
+    },
+    checkpointLabel () {
+      if (!this.checkpoint) return 'Bishär käin Checkpoint erstellt.'
+      const latest = this.checkpoint.time.toDate().toLocaleTimeString('de-CH')
+      const checkmark = (this.checkpointTime === latest) ? ' ✅' : ''
+      return 'Letschtä Checkpoint: ' + latest + checkmark
     }
   },
   methods: {
@@ -286,6 +304,11 @@ export default {
     },
     makeEventComparable (event) {
       return (event.type === 'station' ? '0_' + event.station.name : (event.type === 'joker' ? '1_' + event.station.name : '2')) + event.time.toDate().getTime()
+    },
+    createCheckpointToday () {
+      const today = new Date()
+      const checkpointDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), ...this.checkpointTime.match(/\d+/g).slice(0, 3), 0)
+      createCheckpoint(checkpointDate)
     }
   }
 }

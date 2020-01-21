@@ -19,7 +19,7 @@
         </div>
         <div style="max-height: 400px; overflow-y: scroll" ref="stationList">
           <template v-for="station in filteredStations">
-            <div v-if="station.joker && hasVisitedJoker(station)" :key="'joker-' + station.name" class="panel-block is-owned">
+            <div v-if="station.joker && visitedJokers.includes(station.id)" :key="'joker-' + station.name" class="panel-block is-owned">
               <span class="panel-icon">🃏</span>
               <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
             </div>
@@ -31,7 +31,7 @@
               <span class="panel-icon">✅</span>
               <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
             </div>
-            <div v-else-if="visitedStations.map(visited => visited.id).includes(station.id)" :key="station.id" class="panel-block is-visited-before">
+            <div v-else-if="visitedStations.includes(station.id)" :key="station.id" class="panel-block is-visited-before">
               <span class="panel-icon">❎</span>
               <span class="has-text-weight-bold">{{ station.name }}</span><span>{{ station.value }}.-</span>
             </div>
@@ -73,6 +73,7 @@ import {
   addJokerVisit,
   addMrTChange,
   addStationVisit,
+  groupsDB,
   jokersDB,
   jokerVisitsDB,
   mrTChangesDB,
@@ -94,15 +95,16 @@ export default {
     allGroups: { type: Array, required: true },
     stationOwners: { type: Map, required: true },
     mrTLocation: { type: String, required: true },
-    now: { type: Date, required: true }
+    now: { type: Date, required: true },
+    checkpoint: {}
   },
   data () {
     return {
       loggedInOperator: null,
       stations: [],
       jokers: [],
-      stationVisits: [],
-      jokerVisits: [],
+      stationVisitsOfGroup: [],
+      jokerVisitsOfGroup: [],
       mrTChanges: [],
       searchterm: '',
       mrT: { vehicle: '', direction: '', lastKnownStop: '', description: '', group: {} },
@@ -110,11 +112,8 @@ export default {
     }
   },
   firestore: {
-    stations: stationsDB,
-    jokers: jokersDB,
-    stationVisits: stationVisitsDB,
-    jokerVisits: jokerVisitsDB,
-    mrTChanges: mrTChangesDB
+    stations: stationsDB(),
+    jokers: jokersDB()
   },
   beforeRouteEnter (to, from, next) {
     requireOperator(to, from, next)
@@ -126,9 +125,6 @@ export default {
     ownsStation (station) {
       const owner = this.stationOwners.get(station.id)
       return owner && owner.id === this.groupId
-    },
-    hasVisitedJoker (joker) {
-      return this.jokerVisits.some(visit => visit.group && visit.group.id === this.groupId && visit.station && visit.station.id === joker.id)
     },
     resetSearchTerm () {
       this.searchterm = ''
@@ -143,7 +139,7 @@ export default {
     visitStation (station) {
       addStationVisit(this.groupId, station.id).then(() => {
         this.$emit('updateNow')
-        if (this.stationOwners.get(station.id).id === this.groupId) {
+        if (this.stationOwners.has(station.id) && this.stationOwners.get(station.id).id === this.groupId) {
           this.snackbar('🎉🙌 Perf! Ier händ d Station gchauft! Schtämplä nöd vergässä ️🎫‼️', 'Gschtämplät 👍🏼')
         } else {
           this.snackbar('😓😣 Ja nääi! Die Station ghört scho anärä andärä Gruppä... Iär händ müäsä Miäti zahle 📉🆘', 'Okei... 😢', 'is-danger')
@@ -191,15 +187,18 @@ export default {
     filteredStations () {
       return this.searchArrayFor(this.combinedStations.map(station => ({ ...station, name: station.name + (station.joker ? ' (Joker)' : '') })), this.searchterm, station => station.name)
     },
+    visitedJokers () {
+      return [...(this.checkpoint ? this.checkpoint.visitedJokers[this.groupId] : []), ...this.jokerVisitsOfGroup.map(visit => visit.station.id)]
+    },
     visitedStations () {
-      return this.stationVisits.filter(visit => visit.group && visit.group.id === this.groupId).map(visit => visit.station)
+      return [...(this.checkpoint ? this.checkpoint.visitedStations[this.groupId] : []), ...this.stationVisitsOfGroup.map(visit => visit.station.id)]
     },
     lastMrT () {
       if (this.mrTChanges.length === 0) return this.mrT
       return this.mrTChanges[this.mrTChanges.length - 1]
     },
     mrTSince () {
-      return renderMrTSince(this.mrTChanges, this.now)
+      return renderMrTSince(this.checkpoint, this.mrTChanges, this.now)
     },
     groupIsActiveCaller () {
       return !!(this.loggedInOperator && this.loggedInOperator.activeCall && this.loggedInOperator.activeCall.group && this.loggedInOperator.activeCall.group.id === this.groupId)
@@ -209,11 +208,21 @@ export default {
     },
     stationsFilteredByDirection () {
       return this.searchArrayFor(this.allStationsInZurich, this.mrT.direction)
+    },
+    checkpointDate () {
+      return this.checkpoint ? this.checkpoint.time.toDate() : new Date(0)
     }
   },
   watch: {
     group: function () {
-      setPageTitle(this.group.name)
+      if (this.group) {
+        setPageTitle(this.group.name)
+        this.$bind('stationVisitsOfGroup', stationVisitsDB(this.checkpointDate).where('group', '==', groupsDB().doc(this.groupId)))
+        this.$bind('jokerVisitsOfGroup', jokerVisitsDB(this.checkpointDate).where('group', '==', groupsDB().doc(this.groupId)))
+      }
+    },
+    checkpoint: function () {
+      this.$bind('mrTChanges', mrTChangesDB(this.checkpointDate))
     }
   }
 }

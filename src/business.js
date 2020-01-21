@@ -1,15 +1,18 @@
-
-export function renderMrTLocation (mrTChanges, now) {
-  if (!mrTChanges || !mrTChanges.length) return 'Käinä wäiss es so rächt...'
-  let mrT = mrTChanges[mrTChanges.length - 1]
+export function renderMrTLocation (checkpoint, mrTChanges, now) {
+  const newMrTChanges = [...mrTChanges]
+  if (checkpoint && checkpoint.lastMrT) {
+    newMrTChanges.unshift(checkpoint.lastMrT.change)
+  }
+  if (!newMrTChanges || !newMrTChanges.length) return 'Käinä wäiss es so rächt...'
+  let mrT = newMrTChanges[newMrTChanges.length - 1]
   let text = ''
   const inactive = mrT.active === false
   if (inactive) {
     text += 'Dä Mr. T isch scho lang nümä gsee wordä. Zletscht'
     mrT = undefined
-    for (let i = mrTChanges.length - 1; i >= 0; i--) {
-      if (mrTChanges[i].active !== false) {
-        mrT = mrTChanges[i]
+    for (let i = newMrTChanges.length - 1; i >= 0; i--) {
+      if (newMrTChanges[i].active !== false) {
+        mrT = newMrTChanges[i]
         break
       }
     }
@@ -47,19 +50,27 @@ export function renderMrTLocation (mrTChanges, now) {
   return text
 }
 
-export function renderMrTSince (mrTChanges, now) {
-  if (!mrTChanges || !mrTChanges.length) return '🔭️ bishär käin Mr. T'
-  let mrT = mrTChanges[mrTChanges.length - 1]
+export function renderMrTSince (checkpoint, mrTChanges, now) {
+  const newMrTChanges = [...mrTChanges]
+  if (checkpoint && checkpoint.lastMrT) {
+    newMrTChanges.unshift(checkpoint.lastMrT.since)
+  }
+  if (!newMrTChanges || !newMrTChanges.length) return '🔭️ bishär käin Mr. T'
+  let mrT = newMrTChanges[newMrTChanges.length - 1]
   if (mrT.disabled) return '⛔ momentan nöd aktiv'
-  for (let i = mrTChanges.length - 1; i >= 0; i--) {
-    if (mrTChanges[i].group.id !== mrT.group.id) break
-    mrT = mrTChanges[i]
+  for (let i = newMrTChanges.length - 1; i >= 0; i--) {
+    if (newMrTChanges[i].group.id !== mrT.group.id) break
+    mrT = newMrTChanges[i]
   }
   return '🕑 sit ' + renderDurationInMinutes(now - mrT.time.toDate()) + ' Minutä bi dä gliichä Gruppä'
 }
 
-export function timeSinceLastActiveMrTChange (mrTChanges, now) {
-  const lastActiveMrTChange = [...mrTChanges].sort((a, b) => b.time.toDate() - a.time.toDate()).filter(mrTChange => mrTChange.time.toDate() < now).find(mrTChange => mrTChange.active !== false)
+export function timeSinceLastActiveMrTChange (checkpoint, mrTChanges, now) {
+  const newMrTChanges = [...mrTChanges]
+  if (checkpoint && checkpoint.lastMrT) {
+    newMrTChanges.unshift(checkpoint.lastMrT.change)
+  }
+  const lastActiveMrTChange = [...newMrTChanges].sort((a, b) => b.time.toDate() - a.time.toDate()).filter(mrTChange => mrTChange.time.toDate() < now).find(mrTChange => mrTChange.active !== false)
   if (!lastActiveMrTChange) return 'Bishär käin aktivä Mr. T...'
   return 'Dä Mr. T hät sich zletscht vor ' + renderDurationInMinutes(now - lastActiveMrTChange.time.toDate()) + ' Minutä gmäldät.'
 }
@@ -75,27 +86,82 @@ function renderDurationInMinutes (milliseconds) {
   }
 }
 
-export function calculateAllScores (groups, stationVisits, jokerVisits, mrTChanges, settings, now = new Date()) {
+export function renderTime (minutesInFuture) {
+  return new Date(Date.now() + minutesInFuture * 60000).toLocaleTimeString('de-CH')
+}
+
+export function calculateAllScores (checkpoint, groups, stationVisits, jokerVisits, mrTChanges, settings, now = new Date()) {
   if (!settings) return { allGroups: [], stationOwners: new Map() }
-  const allGroups = groups.reduce((map, group) => map.set(group.id, { ...group, id: group.id, saldo: 0, realEstatePoints: 0, mrTPoints: 0 }), new Map())
-  addStarterCash(allGroups, settings)
-  const stationOwners = addStationExpenses(allGroups, stationVisits, settings, now)
+  const allGroups = checkpoint ? allGroupsFromCheckpoint(checkpoint, groups) : allGroupsWithStarterCash(settings, groups)
+  const stationOwners = addStationExpenses(checkpoint, allGroups, stationVisits, settings, now)
   addJokerIncome(allGroups, jokerVisits, settings)
-  addMrTPoints(allGroups, mrTChanges, settings, now)
+  addMrTPoints(checkpoint, allGroups, mrTChanges, settings, now)
   return {
     allGroups: Array.from(allGroups.values()).map(group => ({ ...group, totalPoints: group.saldo + group.realEstatePoints + group.mrTPoints }))
       .sort((a, b) => b.totalPoints - a.totalPoints),
-    stationOwners: stationOwners
+    stationOwners
   }
 }
 
-function addStarterCash (allGroups, settings) {
-  allGroups.forEach(group => { group.saldo += settings.starterCash })
+function allGroupsFromCheckpoint (checkpoint, groups) {
+  return groups.reduce((map, group) => {
+    return map.set(group.id, { ...group, id: group.id, ...checkpoint.groupData[group.id] })
+  }, new Map())
 }
 
-function addStationExpenses (allGroups, stationVisits, settings, now) {
-  const stationOwners = new Map()
+function allGroupsWithStarterCash (settings, groups) {
+  return groups.reduce((map, group) => {
+    return map.set(group.id, { ...group, id: group.id, saldo: settings.starterCash, realEstatePoints: 0, mrTPoints: 0 })
+  }, new Map())
+}
+
+function stationOwnersFromCheckpoint (checkpoint, allGroups) {
+  return Object.entries(checkpoint.stationOwners).reduce((map, [stationId, ownerId]) => {
+    return map.set(stationId, allGroups.get(ownerId))
+  }, new Map())
+}
+
+export function calculateCheckpointData (groups, stationVisits, jokerVisits, mrTChanges, settings, checkpointDate) {
+  const { allGroups, stationOwners } = calculateAllScores(null, groups, stationVisits, jokerVisits, mrTChanges, settings, checkpointDate)
+  const { lastMrTSince, lastMrTChange, lastMrTAmount } = calculateLastMrTChange(mrTChanges, settings, checkpointDate)
+  return {
+    groupData: Object.fromEntries(allGroups.reduce((map, group) => {
+      return map.set(group.id, { saldo: group.saldo, realEstatePoints: group.realEstatePoints, mrTPoints: group.mrTPoints })
+    }, new Map())),
+    stationOwners: Object.fromEntries(Array.from(stationOwners.entries()).map(([stationId, owner]) => [stationId, owner.id])),
+    visitedStations: Object.fromEntries(stationVisits.reduce((map, visit) => map.set(visit.group.id, [...(map.get(visit.group.id) || []), visit.station.id]), new Map())),
+    visitedJokers: Object.fromEntries(jokerVisits.reduce((map, visit) => map.set(visit.group.id, [...(map.get(visit.group.id) || []), visit.station.id]), new Map())),
+    lastMrT: lastMrTChange ? { id: lastMrTChange.group.id, since: lastMrTSince, change: lastMrTChange, amount: lastMrTAmount } : null
+  }
+}
+
+function calculateLastMrTChange (mrTChanges, settings, checkpointDate) {
+  if (!mrTChanges.length) return { lastMrTChange: null, lastMrTAmount: 0 }
+  const finalMrT = mrTChanges[mrTChanges.length - 1].group.id
+  let lastMrTSince = null
+  let lastMrTAmount = 0
+  const mrTHasEverChanged = mrTChanges.slice().reverse().some(mrTChange => {
+    if (mrTChange.group.id !== finalMrT) return true
+    lastMrTSince = mrTChange
+    lastMrTAmount = mrTAmount(settings.mrTRewards, mrTChange.time.toDate(), checkpointDate, settings.gameEnd.toDate())
+    return false
+  })
+  if (!mrTHasEverChanged) return { lastMrTChange: null, lastMrTAmount: 0 }
+  return { lastMrTSince: lastMrTSince, lastMrTChange: mrTChanges[mrTChanges.length - 1], lastMrTAmount }
+}
+
+function addStationExpenses (checkpoint, allGroups, stationVisits, settings, now) {
+  const stationOwners = checkpoint ? stationOwnersFromCheckpoint(checkpoint, allGroups) : new Map()
   const gameEnd = settings.gameEnd.toDate()
+  if (checkpoint) {
+    allGroups.forEach(group => {
+      // Add interest for the time period since the checkpoint for all stations that
+      // the group already owned before the checkpoint
+      const checkpointRealEstateValue = checkpoint.groupData[group.id].realEstatePoints / settings.realEstateValueRatio
+      group.saldo += interestAmount(checkpointRealEstateValue, settings.interestPeriod, settings.interestRate,
+        checkpoint.time.toDate(), now, settings.gameEnd.toDate())
+    })
+  }
   stationVisits.forEach(stationVisit => {
     if (!stationVisit.group || !stationVisit.group.id || stationVisit.time.toDate() > gameEnd) return
     const visitor = allGroups.get(stationVisit.group.id)
@@ -134,11 +200,18 @@ function addJokerIncome (allGroups, jokerVisits, settings) {
   })
 }
 
-function addMrTPoints (allGroups, mrTChanges, settings, now) {
+function addMrTPoints (checkpoint, allGroups, mrTChanges, settings, now) {
+  const newMrTChanges = [...mrTChanges]
+  if (checkpoint && checkpoint.lastMrT) {
+    newMrTChanges.unshift(checkpoint.lastMrT.change)
+    if (mrTChanges.length && mrTChanges[0].group.id === checkpoint.lastMrT.id) {
+      allGroups.get(checkpoint.lastMrT.id).mrTPoints -= checkpoint.lastMrT.amount
+    }
+  }
   let currentMrTId = null
   let currentMrTSince = null
   const gameEnd = settings.gameEnd.toDate()
-  mrTChanges.forEach(mrTChange => {
+  newMrTChanges.forEach(mrTChange => {
     if (!mrTChange.group) return
     const newMrT = mrTChange.group.id
     const newMrTSince = mrTChange.time.toDate()
@@ -158,7 +231,7 @@ function addMrTPoints (allGroups, mrTChanges, settings, now) {
     const currentMrT = allGroups.get(currentMrTId)
     if (currentMrT) {
       currentMrT.isCurrentlyMrT = true
-      currentMrT.shouldCallOperator = mrTChanges[mrTChanges.length - 1].shouldCallOperator
+      currentMrT.shouldCallOperator = newMrTChanges[newMrTChanges.length - 1].shouldCallOperator
     }
   }
 }
