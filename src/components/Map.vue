@@ -10,7 +10,6 @@
 </template>
 
 <script>
-import { requireAuth } from '../firebaseConfig'
 import TramHeader from '../components/TramHeader'
 
 export default {
@@ -19,9 +18,6 @@ export default {
     return {
       loggedInUser: null
     }
-  },
-  beforeRouteEnter (to, from, next) {
-    requireAuth(to, from, next, () => {})
   }
 }
 </script>
