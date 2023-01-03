@@ -1,64 +1,80 @@
 <template>
-  <header>
-    <div v-if="!signedInUser">Hello world!</div>
-    <div v-else>Hello {{ signedInUser.user_metadata.full_name }}</div>
-    <input name="title" v-model="title" />
-    <input name="content" v-model="content" />
-    <button @click="createPost">Save</button>
-
-    <div>
-      <button v-if="!signedInUser" @click="signInWithKeycloak">Sign in</button>
-      <button v-else @click="signOut">Sign out</button>
+  <div class="level">
+    <div class="level-left">
+      <span v-if="signedInUser && userScoutName" class="level-item"
+        >Willkommä, {{ userScoutName }}.</span
+      >
+      <span v-else-if="signedInUser" class="level-item">Willkommä.</span>
+      <a v-if="signedInUser" class="level-item" @click="signOut"> Uusloggä </a>
+      <a v-else @click="signInWithKeycloak" class="level-item"> Iiloggä </a>
+      <a class="level-item" @click="support">Hilfe</a>
     </div>
-
-    <div v-for="(post, index) in posts" :key="index">
-      <h3>{{ post.title }}</h3>
-      <article>{{ post.content }}</article>
-    </div>
-  </header>
-
-  <RouterView />
+  </div>
+  <router-view @login="signInWithKeycloak">
+    <template #message="{ message, type, title }">
+      <o-notification
+        v-if="message"
+        :variant="type"
+        :closable="false"
+        aria-close-label="Close notification"
+      >
+        <h5 class="title is-5">{{ title }}</h5>
+        <p>{{ message }}&#xa;....... Piiiiiiiiiiiiiip.....</p>
+      </o-notification>
+    </template>
+    <template #message2="{ message, type, title }">
+      <o-notification
+        v-if="message"
+        :variant="type"
+        :closable="false"
+        aria-close-label="Close notification"
+      >
+        <h5 class="title is-5">{{ title }}</h5>
+        <p>{{ message }}&#xa;....... Piiiiiiiiiiiiiip.....</p>
+      </o-notification>
+    </template>
+    <template #message3="{ message, type, title }">
+      <o-notification
+        v-if="message"
+        :variant="type"
+        :closable="false"
+        aria-close-label="Close notification"
+      >
+        <h5 class="title is-5">{{ title }}</h5>
+        <p>{{ message }}&#xa;....... Piiiiiiiiiiiiiip.....</p>
+      </o-notification>
+    </template>
+  </router-view>
 </template>
 
 <script>
 import { RouterView } from 'vue-router'
 import { supabase } from '@/client'
+import { useProgrammatic } from '@oruga-ui/oruga-next'
 
 export default {
   name: 'App',
   components: { RouterView },
-  data: () => ({
-    posts: [],
-    title: '',
-    content: '',
-    signedInUser: null,
-  }),
+  data: () => {
+    const { oruga } = useProgrammatic()
+    return {
+      signedInUser: null,
+      oruga,
+    }
+  },
+  computed: {
+    userScoutName() {
+      if (!this.signedInUser) return null
+      return this.signedInUser.user_metadata.full_name
+    },
+  },
   mounted() {
-    this.fetchPosts()
     supabase.auth.getUser().then(({ data: { user } }) => {
       this.signedInUser = user
       console.log(user)
     })
   },
   methods: {
-    async fetchPosts() {
-      const { data } = await supabase.from('posts').select()
-      this.posts = data
-    },
-    async createPost() {
-      await supabase
-        .from('posts')
-        .insert([
-          {
-            title: this.title,
-            content: this.content,
-          },
-        ])
-        .single()
-      this.title = ''
-      this.content = ''
-      this.fetchPosts()
-    },
     async signInWithKeycloak() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'keycloak',
@@ -72,6 +88,15 @@ export default {
       const { error } = await supabase.auth.signOut()
       console.log(error)
       this.signedInUser = null
+    },
+    support() {
+      this.oruga.notification.open({
+        message:
+          'Wänn öppis nöd aazäigt wird, tuän mal d Siitä noi ladä 🔄<br/>Wänns dänn immär nonig gaht, lüüt am Cosinus aa:<br/>Null Sibä Nüün, Drüü Acht Sächs, Sächs Sibä, Null Sächs',
+        position: 'top',
+        indefinite: true,
+        closable: true,
+      })
     },
   },
 }
