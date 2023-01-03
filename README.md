@@ -1,22 +1,41 @@
 # tramopoly
 
-> Tramopoly Web App
+This template should help get you started developing with Vue 3 in Vite.
 
-## Build Setup
+## Recommended IDE Setup
 
-``` bash
-# first of all, copy the example .env file and set your firestore credentials in it
-cp .env.local.example .env.local
-vi .env.local
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
 
-# install dependencies
-npm install
+## Customize configuration
 
-# serve with hot reload at localhost:8080
-npm run serve
+See [Vite Configuration Reference](https://vitejs.dev/config/).
 
-# build for production with minification
-npm run build
+## Project Setup
+
+```sh
+yarn
 ```
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+### Compile and Hot-Reload for Development
+
+```sh
+yarn dev
+```
+
+### Compile and Minify for Production
+
+```sh
+yarn build
+```
+
+### Run Unit Tests with [Vitest](https://vitest.dev/)
+
+```sh
+yarn test:unit
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+yarn lint
+```

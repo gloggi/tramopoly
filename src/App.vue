@@ -1,243 +1,91 @@
-<template>
-  <div id="app">
-    <div class="level">
-      <div class="level-left">
-        <span v-if="userIsLoggedIn && user.scoutName" class="level-item">Willkommä, {{user.scoutName}}.</span>
-        <span v-else-if="userIsLoggedIn" class="level-item">Willkommä.</span>
-        <a v-if="userIsLoggedIn" class="level-item" @click="signout">Uusloggä</a>
-        <router-link v-else :to="{ name: 'login' }" class="level-item">Iiloggä</router-link>
-        <router-link v-if="userIsAdmin" :to="{ name: 'index' }" class="level-item">Dashboard</router-link>
-        <router-link v-else-if="userIsLoggedIn && !userIsOperator" :to="{ name: 'index' }" class="level-item">{{user.group.name}}</router-link>
-        <router-link v-if="userIsOperator" :to="{ name: 'zentrale' }" class="level-item">Zentralä</router-link>
-        <router-link :to="{ name: 'map' }" class="level-item">Jokers</router-link>
-        <router-link v-if="userIsAdmin" :to="{ name: 'admin' }" class="level-item">Admin</router-link>
-        <router-link v-if="userIsAdmin" :to="{ name: 'report' }" class="level-item">Billet-Kontrollä</router-link>
-        <a class="level-item" @click="support">Hilfe</a>
-      </div>
-    </div>
-    <router-view @login="refreshLoginStatus" @update="updateNow" :checkpoint="checkpoint" :all-groups="allGroups" :station-owners="stationOwners" :mr-t-location="mrTLocation" :now="now">
-      <b-message slot="message" v-if="message && message.message" :type="message.type" :title="messageTitle" :closable="false">{{ message.message }}&#xa;....... Piiiiiiiiiiiiiip.....</b-message>
-      <b-message slot="message2" v-if="message && message.message" :type="message.type" :title="messageTitle" :closable="false">{{ message.message }}&#xa;....... Piiiiiiiiiiiiiip.....</b-message>
-      <b-message slot="message3" v-if="message && message.message" :type="message.type" :title="messageTitle" :closable="false">{{ message.message }}&#xa;....... Piiiiiiiiiiiiiip.....</b-message>
-    </router-view>
-  </div>
-</template>
-
-<script>
-import {
-  auth,
-  bindUserById,
-  checkpointDB,
-  groupsDB,
-  jokerVisitsDB,
-  mrTChangesDB,
-  settingsDB,
-  stationVisitsDB
-} from './firebaseConfig'
-import { calculateAllScores, renderMrTLocation } from './business'
-
-export default {
-  name: 'Tramopoly',
-  data () {
-    return {
-      firestoreUser: {},
-      user: null,
-      groups: [],
-      checkpoints: [],
-      stationVisits: [],
-      jokerVisits: [],
-      mrTChanges: [],
-      settings: null,
-      now: new Date(),
-      saldoTimer: null,
-      recalculateGroupsFlag: false
-    }
-  },
-  firestore: {
-    groups: groupsDB().where('active', '==', true)
-  },
-  computed: {
-    userIsLoggedIn () {
-      return this.user !== null
-    },
-    userIsOperator () {
-      return this.userIsLoggedIn && (this.user.role === 'operator' || this.user.role === 'admin')
-    },
-    userIsAdmin () {
-      return this.userIsLoggedIn && this.user.role === 'admin'
-    },
-    checkpoint () {
-      return this.checkpoints.length ? this.checkpoints.find(cp => cp.time) : null
-    },
-    allGroupsAndStationOwners () {
-      if (!this.userIsLoggedIn ||
-        (this.recalculateGroupsFlag && !this.recalculateGroupsFlag) ||
-        (this.groups.length && this.groups.some(group => !(group.abteilung && group.abteilung.id))) ||
-        !this.$firestoreRefs.checkpoints || !this.$firestoreRefs.settings || !this.$firestoreRefs.stationVisits || !this.$firestoreRefs.jokerVisits || !this.$firestoreRefs.mrTChanges
-      ) {
-        return { allGroups: [], stationOwners: new Map() }
-      }
-      return calculateAllScores(this.checkpoint, this.groups, this.stationVisits, this.jokerVisits, this.mrTChanges, this.settings, this.now)
-    },
-    allGroups () {
-      return this.allGroupsAndStationOwners.allGroups
-    },
-    stationOwners () {
-      return this.allGroupsAndStationOwners.stationOwners
-    },
-    mrTLocation () {
-      return renderMrTLocation(this.checkpoint, this.mrTChanges, this.now)
-    },
-    message () {
-      return this.settings && this.settings.message
-    },
-    messageTitle () {
-      if (!this.message) return ''
-      if (!this.message.title) return 'Information der Zürilinie'
-      return this.message.title
-    }
-  },
-  methods: {
-    refreshLoginStatus () {
-      return new Promise(resolve => {
-        auth.onAuthStateChanged(firestoreUser => {
-          if (firestoreUser) {
-            this.firestoreUser = firestoreUser
-            bindUserById(this, 'user', firestoreUser.uid)
-              .then(async () => {
-                await this.$bind('checkpoints', checkpointDB())
-                if (!this.checkpoint) {
-                  this.bindRestrictedCollections()
-                }
-              })
-          } else {
-            this.firestoreUser = {}
-            bindUserById(this, 'user', null)
-          }
-          resolve(firestoreUser)
-        })
-      })
-    },
-    bindRestrictedCollections () {
-      const checkpointDate = this.checkpoint ? this.checkpoint.time.toDate() : new Date(0)
-      return Promise.all([
-        this.$bind('stationVisits', stationVisitsDB(checkpointDate)),
-        this.$bind('jokerVisits', jokerVisitsDB(checkpointDate)),
-        this.$bind('mrTChanges', mrTChangesDB(checkpointDate)),
-        this.$bind('settings', settingsDB())
-      ]).then(() => {
-        this.recalculateGroupsFlag = !this.recalculateGroupsFlag
-      })
-    },
-    unbindRestrictedCollections () {
-      this.$unbind('stationVisits')
-      this.$unbind('jokerVisits')
-      this.$unbind('mrTChanges')
-      this.$unbind('settings')
-    },
-    async signout () {
-      auth.signOut()
-      this.unbindRestrictedCollections()
-      await this.refreshLoginStatus()
-      this.$router.push({ name: 'login' })
-    },
-    support () {
-      this.$buefy.snackbar.open({
-        message: 'Wänn öppis nöd aazäigt wird, tuän mal d Siitä noi ladä 🔄 Wänns dänn immär nonig gaht, lüüt am Cosinus aa: Null Sibä Nüün, Drüü Acht Sächs, Sächs Sibä, Null Sächs',
-        position: 'is-top',
-        indefinite: true
-      })
-    },
-    updateNow () {
-      clearInterval(this.saldoTimer)
-      this.now = new Date()
-      this.saldoTimer = setInterval(this.updateNow, 1000 * 10)
-    }
-  },
-  created () {
-    this.refreshLoginStatus().then(() => this.updateNow())
-  },
-  watch: {
-    checkpoint () {
-      this.bindRestrictedCollections()
-    }
-  }
-}
+<script setup>
+import { RouterLink, RouterView } from "vue-router";
+import HelloWorld from "./components/HelloWorld.vue";
 </script>
 
-<style lang="scss">
-  @import "~bulma/sass/utilities/_all";
+<template>
+  <header>
+    <img
+      alt="Vue logo"
+      class="logo"
+      src="@/assets/logo.svg"
+      width="125"
+      height="125"
+    />
 
-  @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,600,300italic');
-  $family-sans-serif: "Source Sans Pro", BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
-  $body-family: $family-sans-serif;
-  $weight-light: 200;
-  $weight-normal: 300;
-  $weight-medium: 600;
-  $weight-semibold: 600;
-  $weight-bold: 600;
-  $size-4: 1.75rem;
-  $size-5: 1.5rem;
-  $size-6: 1.25rem;
-  $size-7: 1rem;
+    <div class="wrapper">
+      <HelloWorld msg="You did it!" />
 
-  @import "~bulma";
-  @import "~buefy/src/scss/buefy";
+      <nav>
+        <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/about">About</RouterLink>
+      </nav>
+    </div>
+  </header>
 
-  body {
-    padding: 1.25rem;
-  }
+  <RouterView />
+</template>
 
-  .button {
-    font-weight: $weight-medium;
-  }
+<style scoped>
+header {
+  line-height: 1.5;
+  max-height: 100vh;
+}
 
-  .column.panel {
-    padding: 0;
-  }
+.logo {
+  display: block;
+  margin: 0 auto 2rem;
+}
 
-  .card {
-    margin-bottom: 1.5rem;
-  }
+nav {
+  width: 100%;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 2rem;
+}
 
-  tr.is-clickable {
-    cursor: pointer;
-  }
+nav a.router-link-exact-active {
+  color: var(--color-text);
+}
 
-  .panel-block.is-strikethrough {
-    color: $grey-light;
-  }
+nav a.router-link-exact-active:hover {
+  background-color: transparent;
+}
 
-  .panel-block span {
-    margin-right: 0.3em;
-  }
+nav a {
+  display: inline-block;
+  padding: 0 1rem;
+  border-left: 1px solid var(--color-border);
+}
 
-  tr.is-active-call {
-    background: $green !important;
-  }
+nav a:first-of-type {
+  border: 0;
+}
 
-  tr.has-content-vcentered > td {
-    vertical-align: middle;
-  }
-
-  tr.has-content-vcentered > td > span {
+@media (min-width: 1024px) {
+  header {
     display: flex;
+    place-items: center;
+    padding-right: calc(var(--section-gap) / 2);
   }
 
-  tr.has-content-vcentered > td > span > span {
-    align-self: center;
-    margin-right: 0.5em;
+  .logo {
+    margin: 0 2rem 0 0;
   }
 
-  .message div {
-    white-space: pre-wrap;
+  header .wrapper {
+    display: flex;
+    place-items: flex-start;
+    flex-wrap: wrap;
   }
 
-  input.input[disabled] {
-    color: $grey-dark;
-  }
+  nav {
+    text-align: left;
+    margin-left: -1rem;
+    font-size: 1rem;
 
-  input.input::placeholder, textarea.textarea::placeholder {
-    color: $grey;
+    padding: 1rem 0;
+    margin-top: 1rem;
   }
+}
 </style>

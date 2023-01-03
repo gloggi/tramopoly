@@ -1,17 +1,11 @@
-import Vue from 'vue'
-import App from './App'
-import router from './router.js'
-import Buefy from 'buefy'
-import { firestorePlugin } from 'vuefire'
+import { createApp } from "vue";
+import App from "./App.vue";
+import router from "./router";
 
-Vue.use(Buefy)
-Vue.use(firestorePlugin)
+import "./assets/main.css";
 
-Vue.config.productionTip = false
+const app = createApp(App);
 
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  router,
-  render: h => h(App)
-})
+app.use(router);
+
+app.mount("#app");
