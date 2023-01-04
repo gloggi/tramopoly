@@ -1,82 +1,92 @@
 <template>
   <div class="level">
     <div class="level-left">
-      <span v-if="signedInUser && userScoutName" class="level-item"
-        >Willkommä, {{ userScoutName }}.</span
+      <span
+        v-if="userSession.isLoggedIn && userSession.user.scoutName"
+        class="level-item"
       >
-      <span v-else-if="signedInUser" class="level-item">Willkommä.</span>
-      <a v-if="signedInUser" class="level-item" @click="signOut"> Uusloggä </a>
-      <a v-else @click="signInWithKeycloak" class="level-item"> Iiloggä </a>
+        Willkommä, {{ userSession.user.scoutName }}.
+      </span>
+      <span v-else-if="userSession.isLoggedIn" class="level-item">
+        Willkommä bim Tramopoly.
+      </span>
+      <a v-if="userSession.isLoggedIn" class="level-item" @click="signOut">
+        Uusloggä
+      </a>
       <a class="level-item" @click="support">Hilfe</a>
     </div>
   </div>
-  <tram-header :content="title" :loading="loading"></tram-header>
-  <router-view>
-    <template #message="{ message, type, title }">
-      <o-notification
-        v-if="message"
-        :variant="type"
-        :closable="false"
-        aria-close-label="Close notification"
-      >
-        <h5 class="title is-5">{{ title }}</h5>
-        <p>{{ message }}&#xa;....... Piiiiiiiiiiiiiip.....</p>
-      </o-notification>
+  <main class="columns is-multiline">
+    <tram-header :content="title" :loading="userSession.loading"></tram-header>
+    <template v-if="!userSession.loading">
+      <login-view v-if="!userSession.isLoggedIn"></login-view>
+      <register-view
+        v-else-if="userSession.isLoggedIn && !userSession.user.phone"
+      ></register-view>
+      <router-view v-else>
+        <template #message="{ message, type, title }">
+          <o-notification
+            v-if="message"
+            :variant="type"
+            :closable="false"
+            aria-close-label="Close notification"
+          >
+            <h5 class="title is-5">{{ title }}</h5>
+            <p>{{ message }}&#xa;....... Piiiiiiiiiiiiiip.....</p>
+          </o-notification>
+        </template>
+        <template #message2="{ message, type, title }">
+          <o-notification
+            v-if="message"
+            :variant="type"
+            :closable="false"
+            aria-close-label="Close notification"
+          >
+            <h5 class="title is-5">{{ title }}</h5>
+            <p>{{ message }}&#xa;....... Piiiiiiiiiiiiiip.....</p>
+          </o-notification>
+        </template>
+        <template #message3="{ message, type, title }">
+          <o-notification
+            v-if="message"
+            :variant="type"
+            :closable="false"
+            aria-close-label="Close notification"
+          >
+            <h5 class="title is-5">{{ title }}</h5>
+            <p>{{ message }}&#xa;....... Piiiiiiiiiiiiiip.....</p>
+          </o-notification>
+        </template>
+      </router-view>
     </template>
-    <template #message2="{ message, type, title }">
-      <o-notification
-        v-if="message"
-        :variant="type"
-        :closable="false"
-        aria-close-label="Close notification"
-      >
-        <h5 class="title is-5">{{ title }}</h5>
-        <p>{{ message }}&#xa;....... Piiiiiiiiiiiiiip.....</p>
-      </o-notification>
-    </template>
-    <template #message3="{ message, type, title }">
-      <o-notification
-        v-if="message"
-        :variant="type"
-        :closable="false"
-        aria-close-label="Close notification"
-      >
-        <h5 class="title is-5">{{ title }}</h5>
-        <p>{{ message }}&#xa;....... Piiiiiiiiiiiiiip.....</p>
-      </o-notification>
-    </template>
-  </router-view>
+  </main>
 </template>
 
 <script>
 import { RouterView } from 'vue-router'
-import { supabase } from '@/client'
 import { useProgrammatic } from '@oruga-ui/oruga-next'
+import { useUserSessionStore } from './stores/userSession'
 import TramHeader from '@/components/TramHeader.vue'
+import LoginView from '@/views/LoginView.vue'
+import RegisterView from '@/views/RegisterView.vue'
+import { setUpAuth, signOut } from '@/auth'
 
 export default {
   name: 'App',
-  components: { TramHeader, RouterView },
+  components: { RegisterView, LoginView, TramHeader, RouterView },
   data: () => {
     const { oruga } = useProgrammatic()
+    const userSession = useUserSessionStore()
+
     return {
-      signedInUser: null,
-      oruga,
       loading: true,
       title: 'Tramopoly',
+      oruga,
+      userSession,
     }
   },
-  computed: {
-    userScoutName() {
-      if (!this.signedInUser) return null
-      return this.signedInUser.user_metadata.full_name
-    },
-  },
   mounted() {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      this.signedInUser = user
-      this.loading = false
-    })
+    setUpAuth()
   },
   watch: {
     $route() {
@@ -88,21 +98,7 @@ export default {
     },
   },
   methods: {
-    async signInWithKeycloak() {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'keycloak',
-        options: {
-          scopes: 'openid',
-          redirectTo: location.protocol + '//' + location.host,
-        },
-      })
-      console.log(data, error)
-    },
-    async signOut() {
-      const { error } = await supabase.auth.signOut()
-      console.log(error)
-      this.signedInUser = null
-    },
+    signOut,
     support() {
       this.oruga.notification.open({
         message:

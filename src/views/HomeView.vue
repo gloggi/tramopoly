@@ -1,5 +1,7 @@
 <template>
-  <main>
+  <div
+    class="card column is-full is-one-third-desktop is-offset-one-third-desktop"
+  >
     <input name="title" v-model="title" />
     <input name="content" v-model="content" />
     <button @click="createPost">Save</button>
@@ -8,7 +10,7 @@
       <h3 class="title is-3">{{ post.title }}</h3>
       <article>{{ post.content }}</article>
     </div>
-  </main>
+  </div>
 </template>
 
 <script>
