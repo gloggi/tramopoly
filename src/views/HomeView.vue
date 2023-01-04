@@ -1,5 +1,6 @@
 <template>
   <main>
+    <tram-header>Home</tram-header>
     <input name="title" v-model="title" />
     <input name="content" v-model="content" />
     <button @click="createPost">Save</button>
@@ -13,10 +14,11 @@
 
 <script>
 import { supabase } from '@/client'
+import TramHeader from '@/components/TramHeader.vue'
 
 export default {
   name: 'HomeView',
-
+  components: { TramHeader },
   data: () => ({
     posts: [],
     title: '',
