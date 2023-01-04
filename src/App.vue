@@ -10,7 +10,8 @@
       <a class="level-item" @click="support">Hilfe</a>
     </div>
   </div>
-  <router-view @login="signInWithKeycloak">
+  <tram-header :content="title" :loading="loading"></tram-header>
+  <router-view @title="(newTitle) => (title = newTitle)">
     <template #message="{ message, type, title }">
       <o-notification
         v-if="message"
@@ -51,15 +52,18 @@
 import { RouterView } from 'vue-router'
 import { supabase } from '@/client'
 import { useProgrammatic } from '@oruga-ui/oruga-next'
+import TramHeader from '@/components/TramHeader.vue'
 
 export default {
   name: 'App',
-  components: { RouterView },
+  components: { TramHeader, RouterView },
   data: () => {
     const { oruga } = useProgrammatic()
     return {
       signedInUser: null,
       oruga,
+      loading: true,
+      title: 'Tramopoly',
     }
   },
   computed: {
@@ -71,7 +75,7 @@ export default {
   mounted() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       this.signedInUser = user
-      console.log(user)
+      this.loading = false
     })
   },
   methods: {

@@ -1,6 +1,5 @@
 <template>
   <main>
-    <tram-header>Home</tram-header>
     <input name="title" v-model="title" />
     <input name="content" v-model="content" />
     <button @click="createPost">Save</button>
@@ -25,6 +24,7 @@ export default {
     content: '',
   }),
   mounted() {
+    this.$emit('title', 'Home')
     this.fetchPosts()
   },
   methods: {
