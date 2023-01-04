@@ -1,1 +1,60 @@
 @import './fonts.scss';
+@import './bulma.scss';
+
+body {
+  padding: 1.25rem;
+}
+
+.button {
+  font-weight: $weight-medium;
+}
+
+.column.panel {
+  padding: 0;
+}
+
+.card {
+  margin-bottom: 1.5rem;
+}
+
+tr.is-clickable {
+  cursor: pointer;
+}
+
+.panel-block.is-strikethrough {
+  color: $grey-light;
+}
+
+.panel-block span {
+  margin-right: 0.3em;
+}
+
+tr.is-active-call {
+  background: $green !important;
+}
+
+tr.has-content-vcentered > td {
+  vertical-align: middle;
+}
+
+tr.has-content-vcentered > td > span {
+  display: flex;
+}
+
+tr.has-content-vcentered > td > span > span {
+  align-self: center;
+  margin-right: 0.5em;
+}
+
+.message div {
+  white-space: pre-wrap;
+}
+
+input.input[disabled] {
+  color: $grey-dark;
+}
+
+input.input::placeholder,
+textarea.textarea::placeholder {
+  color: $grey;
+}
