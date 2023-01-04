@@ -84,6 +84,7 @@ export default {
         provider: 'keycloak',
         options: {
           scopes: 'openid',
+          redirectTo: location.protocol + '//' + location.host,
         },
       })
       console.log(data, error)

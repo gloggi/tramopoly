@@ -1,10 +1,16 @@
-# :train: tramopoly :bus:
+# :train: Tramopoly :bus:
 
 Webapp for the tramopoly game of Pfadikorps Glockenhof ⚜
 
 ## Project Setup
 
-Copy the file .env to .env.local and fill in your Supabase project URL and API key.
+* Set up a free Supabase project.
+* Optional: Take note of the database password, to access the database directly later.
+* In the Supabase administration console:
+  * Under authentcation -> Providers, set up keycloak authentication.
+  * Under authentication -> URL Configuration, set Site URL to http://localhost:5173.
+  * Under Project settings -> API, find your values for the Supabase project URL and API key.
+* Copy the file .env to .env.local and fill in your Supabase project URL and API key.
 
 ```sh
 yarn
