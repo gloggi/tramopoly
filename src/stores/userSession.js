@@ -2,11 +2,14 @@ import { defineStore } from 'pinia'
 
 class User {
   constructor(supabaseUser) {
-    console.log({
-      ...supabaseUser,
-      user_metadata: { ...supabaseUser.user_metadata },
-    })
+    this.id = supabaseUser.id
     this.scoutName = supabaseUser.user_metadata.scout_name
+    this.phone = supabaseUser.phone
+    this.groupId = supabaseUser.user_metadata.group_id
+    this.preferredCallMethod = supabaseUser.user_metadata.preferred_call_method
+  }
+  get registered() {
+    return this.phone && this.groupId
   }
 }
 

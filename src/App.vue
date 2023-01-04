@@ -21,7 +21,7 @@
     <template v-if="!userSession.loading">
       <login-view v-if="!userSession.isLoggedIn"></login-view>
       <register-view
-        v-else-if="userSession.isLoggedIn && !userSession.user.phone"
+        v-else-if="userSession.isLoggedIn && !userSession.user.registered"
       ></register-view>
       <router-view v-else>
         <template #message="{ message, type, title }">
@@ -64,24 +64,21 @@
 
 <script>
 import { RouterView } from 'vue-router'
-import { useProgrammatic } from '@oruga-ui/oruga-next'
 import { useUserSessionStore } from './stores/userSession'
 import TramHeader from '@/components/TramHeader.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import { setUpAuth, signOut } from '@/auth'
+import { showAlert } from '@/utils'
 
 export default {
   name: 'App',
   components: { RegisterView, LoginView, TramHeader, RouterView },
   data: () => {
-    const { oruga } = useProgrammatic()
     const userSession = useUserSessionStore()
-
     return {
       loading: true,
       title: 'Tramopoly',
-      oruga,
       userSession,
     }
   },
@@ -100,13 +97,9 @@ export default {
   methods: {
     signOut,
     support() {
-      this.oruga.notification.open({
-        message:
-          'Wänn öppis nöd aazäigt wird, tuän mal d Siitä noi ladä 🔄<br/>Wänns dänn immär nonig gaht, lüüt am Cosinus aa:<br/>Null Sibä Nüün, Drüü Acht Sächs, Sächs Sibä, Null Sächs',
-        position: 'top',
-        indefinite: true,
-        closable: true,
-      })
+      showAlert(
+        'Wänn öppis nöd aazäigt wird, tuän mal d Siitä noi ladä 🔄<br/>Wänns dänn immär nonig gaht, lüüt am Cosinus aa:<br/>Null Sibä Nüün, Drüü Acht Sächs, Sächs Sibä, Null Sächs'
+      )
     },
   },
 }

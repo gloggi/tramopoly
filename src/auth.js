@@ -2,14 +2,16 @@ import { supabase } from '@/client'
 import { useProgrammatic } from '@oruga-ui/oruga-next'
 import { useUserSessionStore } from '@/stores/userSession'
 
-function setUpAuth() {
+async function setUpAuth() {
   const userSession = useUserSessionStore()
-  supabase.auth.getSession().then(({ data }) => {
-    userSession.session = data.session
-  })
-  supabase.auth.onAuthStateChange((_, session) => {
-    userSession.session = session
-  })
+  return Promise.all([
+    supabase.auth.getSession().then(({ data }) => {
+      userSession.session = data.session
+    }),
+    supabase.auth.onAuthStateChange((_, session) => {
+      userSession.session = session
+    }),
+  ])
 }
 
 async function signInWithOAuth() {
