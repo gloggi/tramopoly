@@ -11,7 +11,7 @@
     </div>
   </div>
   <tram-header :content="title" :loading="loading"></tram-header>
-  <router-view @title="(newTitle) => (title = newTitle)">
+  <router-view>
     <template #message="{ message, type, title }">
       <o-notification
         v-if="message"
@@ -77,6 +77,15 @@ export default {
       this.signedInUser = user
       this.loading = false
     })
+  },
+  watch: {
+    $route() {
+      this.title = this.$route.meta.title || 'Tramopoly'
+    },
+    title() {
+      document.title =
+        this.title + (this.title !== 'Tramopoly' ? ' - Tramopoly' : '')
+    },
   },
   methods: {
     async signInWithKeycloak() {

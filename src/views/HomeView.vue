@@ -13,18 +13,15 @@
 
 <script>
 import { supabase } from '@/client'
-import TramHeader from '@/components/TramHeader.vue'
 
 export default {
   name: 'HomeView',
-  components: { TramHeader },
   data: () => ({
     posts: [],
     title: '',
     content: '',
   }),
   mounted() {
-    this.$emit('title', 'Home')
     this.fetchPosts()
   },
   methods: {
