@@ -1,6 +1,5 @@
-# :train: Tramopoly :bus:
-
-Webapp for the tramopoly game of Pfadikorps Glockenhof ⚜
+# <img src="tramopoly.gif" alt="Tramopoly">
+<p align="center">Webapp for the tramopoly game of Pfadikorps Glockenhof :tram: :bus: ⚜</p>
 
 ## Project Setup
 

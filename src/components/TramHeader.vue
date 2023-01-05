@@ -2,9 +2,11 @@
   <div class="column is-full has-text-centered">
     <o-loading :active="loading" :full-page="false" />
     <div class="rails">
-      <header class="tram title" :style="{ color }">
-        {{ displayedContent }}
-      </header>
+      <span class="tram" @click="drive">
+        <header class="title" :style="{ color }">
+          {{ displayedContent }}
+        </header>
+      </span>
     </div>
   </div>
 </template>
@@ -30,22 +32,27 @@ export default {
     },
   },
   watch: {
-    content(newValue) {
+    content() {
+      this.drive()
+    },
+  },
+  methods: {
+    drive() {
       const timeline = gsap.timeline()
       const screenWidth = window.innerWidth
       timeline.to('.rails', {
         duration: this.duration,
         x: screenWidth,
-        ease: 'back.in(0.75)',
+        ease: 'back.in(1.5)',
         onComplete: () => {
-          this.displayedContent = newValue
+          this.displayedContent = this.content
         },
       })
       timeline.set('.rails', { x: -screenWidth })
       timeline.to('.rails', {
         duration: this.duration,
         x: 0,
-        ease: 'back(0.75)',
+        ease: 'back(1.5)',
       })
     },
   },
@@ -57,6 +64,9 @@ export default {
   position: relative;
 }
 .tram {
+  display: inline-block;
+}
+.title {
   color: #fff;
   display: inline;
   border-image-source: url(/border-tram.min.svg);
@@ -66,5 +76,6 @@ export default {
   border-image-outset: 0 2.8em;
   padding: 0.5em 0.3em 0.3em;
   line-height: 220%;
+  margin: 0.2rem 5.5rem;
 }
 </style>
