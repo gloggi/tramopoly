@@ -76,9 +76,7 @@ import { showAlert } from '@/utils'
 export default {
   name: 'RegisterView',
   data() {
-    const userSession = useUserSessionStore()
     return {
-      userSession,
       phone: '',
       scoutName: '',
       groupName: '',
@@ -150,24 +148,21 @@ export default {
       this.savedUserData = {
         phone: this.normalizedPhone,
         group_id: this.existingGroup?.id,
+        scout_name: this.scoutName,
+        preferred_call_method: this.preferredCallMethod,
       }
-      const { error } = await supabase.auth.updateUser({
-        ...(this.verifyPhoneNumber ? { phone: this.normalizedPhone } : {}),
-        data: {
-          phone: this.normalizedPhone,
-          scout_name: this.scoutName,
-          preferred_call_method: this.preferredCallMethod,
-        },
-      })
-      if (error) {
-        console.log(error)
-        showAlert(
-          'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä oder s Tramopoly imnä anonymä Browsertab ufzmachä.'
-        )
-        return
-      }
-
       if (this.verifyPhoneNumber) {
+        const { error } = await supabase.auth.updateUser({
+          phone: this.normalizedPhone,
+        })
+        if (error) {
+          console.log(error)
+          showAlert(
+            'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä oder s Tramopoly imnä anonymä Browsertab ufzmachä.'
+          )
+          return
+        }
+
         // Direct the user to the OTP field
         this.$refs.otp.focus()
       } else {
@@ -178,7 +173,7 @@ export default {
     async verifyOtp() {
       if (!this.shouldVerifyOtp || !this.otp) return
       await this.withoutLosingSession(async () => {
-        const { data, error } = await supabase.auth.verifyOtp({
+        const { error } = await supabase.auth.verifyOtp({
           phone: this.savedUserData.phone,
           token: this.otp,
           type: 'phone_change',
@@ -188,7 +183,6 @@ export default {
           showAlert(
             'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä oder s Tramopoly imnä anonymä Browsertab ufzmachä.'
           )
-          return
         }
       })
       await this.assignGroup()
@@ -224,18 +218,19 @@ export default {
         }
         this.savedUserData.group_id = data.id
       }
-      const { error } = await supabase.auth.updateUser({
-        data: {
-          group_id: this.savedUserData.group_id,
-        },
-      })
+      const userSession = useUserSessionStore()
+      const { error } = await supabase
+        .from('profiles')
+        .update(this.savedUserData)
+        .eq('id', userSession.session.user.id)
       if (error) {
         console.log(error)
         showAlert(
-          'Bim Zuewiisä vo dim Account zu de Gruppä isch öppis schiäf gangä. Mäld dich bitte bim Cosinus (klick uf "Hilfe").'
+          'Bim Fertigstellä vo dim Account isch öppis schiäf gangä. Mäld dich bitte bim Cosinus (klick uf "Hilfe").'
         )
         return
       }
+      await userSession.fetchProfile()
     },
   },
 }

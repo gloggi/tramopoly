@@ -1,10 +1,7 @@
 <template>
   <div class="level">
     <div class="level-left">
-      <span
-        v-if="userSession.isLoggedIn && userSession.user.scoutName"
-        class="level-item"
-      >
+      <span v-if="userSession.isRegistered" class="level-item">
         Willkommä, {{ userSession.user.scoutName }}.
       </span>
       <span v-else-if="userSession.isLoggedIn" class="level-item">
@@ -19,10 +16,9 @@
   <main class="columns is-multiline">
     <tram-header :content="title" :loading="userSession.loading"></tram-header>
     <template v-if="!userSession.loading">
-      <login-view v-if="!userSession.isLoggedIn"></login-view>
-      <register-view
-        v-else-if="userSession.isLoggedIn && !userSession.user.registered"
-      ></register-view>
+      <template v-if="userSession.loading"></template>
+      <login-view v-else-if="!userSession.isLoggedIn"></login-view>
+      <register-view v-else-if="!userSession.isRegistered"></register-view>
       <router-view v-else>
         <template #message="{ message, type, title }">
           <o-notification
