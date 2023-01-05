@@ -118,6 +118,14 @@ export default {
   mounted() {
     this.fetchAbteilungen()
     this.fetchGroups()
+    supabase
+      .channel('public:groups')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'groups' },
+        () => this.fetchGroups()
+      )
+      .subscribe()
   },
   methods: {
     async fetchAbteilungen() {
