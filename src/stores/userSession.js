@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { supabase } from '@/client'
+import { useGroup } from '@/stores/groups'
 
 class Profile {
   constructor(supabaseProfile, supabaseUser) {
@@ -9,6 +10,13 @@ class Profile {
     this.groupId = supabaseProfile.group_id
     this.preferredCallMethod = supabaseProfile.preferred_call_method
     this.role = supabaseProfile.role
+
+    this._group = useGroup(this.groupId)
+  }
+
+  get group() {
+    this._group.subscribe()
+    return this._group.group
   }
 }
 

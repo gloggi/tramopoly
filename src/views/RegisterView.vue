@@ -25,8 +25,8 @@
           required
         />
       </o-field>
-      <o-field v-if="existingGroup" label="Abteilig">
-        <o-input v-model="existingGroup.abteilung.name" disabled />
+      <o-field v-if="selectedGroup" label="Abteilig">
+        <o-input v-model="selectedGroup.abteilung.name" disabled />
       </o-field>
       <o-field v-else label="Abteilig">
         <o-select v-model="abteilung" expanded required>
@@ -68,6 +68,25 @@
   </div>
 </template>
 
+<script setup>
+import { storeToRefs } from 'pinia'
+import { useAbteilungen } from '@/stores/abteilungen'
+import { useGroups } from '@/stores/groups'
+
+const abteilungenStore = useAbteilungen({
+  filter: { active: true },
+})
+const { all: abteilungen } = storeToRefs(abteilungenStore)
+abteilungenStore.fetch()
+
+const groupsStore = useGroups({
+  select: 'id,name,abteilung:abteilungen(id,name)',
+  filter: { active: true },
+})
+groupsStore.subscribe()
+const { all: groups } = storeToRefs(groupsStore)
+</script>
+
 <script>
 import { useUserSession } from '@/stores/userSession'
 import { supabase } from '@/client'
@@ -82,12 +101,10 @@ export default {
       groupName: '',
       abteilung: '',
       preferredCallMethod: '',
-      groups: [],
       verifyPhoneNumber: import.meta.env.VITE_USE_TWILIO_PHONE_VERIFICATION,
       otp: '',
       confirmation: null,
       selectedGroup: null,
-      abteilungen: [],
       savedUserData: null,
       savedGroupData: null,
     }
@@ -103,43 +120,11 @@ export default {
       }
       return cleaned
     },
-    existingGroup() {
-      return (
-        this.selectedGroup ||
-        this.groups.find((group) => group.name === this.groupName)
-      )
-    },
     shouldVerifyOtp() {
       return this.verifyPhoneNumber && this.savedUserData
     },
   },
-  mounted() {
-    this.fetchAbteilungen()
-    this.fetchGroups()
-    supabase
-      .channel('public:groups')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'groups' },
-        () => this.fetchGroups()
-      )
-      .subscribe()
-  },
   methods: {
-    async fetchAbteilungen() {
-      const { data } = await supabase
-        .from('abteilungen')
-        .select()
-        .eq('active', true)
-      this.abteilungen = data
-    },
-    async fetchGroups() {
-      const { data } = await supabase
-        .from('groups')
-        .select('id,name,abteilung:abteilungen(id,name)')
-        .eq('active', true)
-      this.groups = data
-    },
     async register() {
       this.savedGroupData = {
         name: this.groupName,
@@ -147,7 +132,7 @@ export default {
       }
       this.savedUserData = {
         phone: this.normalizedPhone,
-        group_id: this.existingGroup?.id,
+        group_id: this.selectedGroup?.id,
         scout_name: this.scoutName,
         preferred_call_method: this.preferredCallMethod,
       }
