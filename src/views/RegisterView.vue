@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { useUserSessionStore } from '@/stores/userSession'
+import { useUserSession } from '@/stores/userSession'
 import { supabase } from '@/client'
 import { showAlert } from '@/utils'
 
@@ -218,11 +218,11 @@ export default {
         }
         this.savedUserData.group_id = data.id
       }
-      const userSession = useUserSessionStore()
+      const userSession = useUserSession()
       const { error } = await supabase
         .from('profiles')
         .update(this.savedUserData)
-        .eq('id', userSession.session.user.id)
+        .eq('id', userSession.userId)
       if (error) {
         console.log(error)
         showAlert(

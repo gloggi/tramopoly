@@ -1,18 +1,5 @@
 import { supabase } from '@/client'
 import { useProgrammatic } from '@oruga-ui/oruga-next'
-import { useUserSessionStore } from '@/stores/userSession'
-
-async function setUpAuth() {
-  const userSession = useUserSessionStore()
-  supabase.auth.onAuthStateChange((_, session) => {
-    userSession.session = session
-    userSession.fetchProfile()
-  })
-  return supabase.auth.getSession().then(({ data }) => {
-    userSession.session = data.session
-    return userSession.fetchProfile()
-  })
-}
 
 async function signInWithOAuth() {
   const { error } = await supabase.auth.signInWithOAuth({
@@ -40,4 +27,4 @@ async function signOut() {
   }
 }
 
-export { setUpAuth, signInWithOAuth, signOut }
+export { signInWithOAuth, signOut }

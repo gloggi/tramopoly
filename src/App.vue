@@ -1,24 +1,22 @@
 <template>
   <div class="level">
     <div class="level-left">
-      <span v-if="userSession.isRegistered" class="level-item">
-        Willkommä, {{ userSession.user.scoutName }}.
+      <span v-if="isRegistered" class="level-item">
+        Willkommä, {{ user.scoutName }}.
       </span>
-      <span v-else-if="userSession.isLoggedIn" class="level-item">
+      <span v-else-if="isLoggedIn" class="level-item">
         Willkommä bim Tramopoly.
       </span>
-      <a v-if="userSession.isLoggedIn" class="level-item" @click="signOut">
-        Uusloggä
-      </a>
+      <a v-if="isLoggedIn" class="level-item" @click="signOut"> Uusloggä </a>
       <a class="level-item" @click="support">Hilfe</a>
     </div>
   </div>
   <main class="columns is-multiline">
-    <tram-header :content="title" :loading="userSession.loading"></tram-header>
-    <template v-if="!userSession.loading">
-      <template v-if="userSession.loading"></template>
-      <login-view v-else-if="!userSession.isLoggedIn"></login-view>
-      <register-view v-else-if="!userSession.isRegistered"></register-view>
+    <tram-header :content="title" :loading="loading"></tram-header>
+    <template v-if="!loading">
+      <template v-if="loading"></template>
+      <login-view v-else-if="!isLoggedIn"></login-view>
+      <register-view v-else-if="!isRegistered"></register-view>
       <router-view v-else>
         <template #message="{ message, type, title }">
           <o-notification
@@ -58,28 +56,31 @@
   </main>
 </template>
 
+<script setup>
+import { useUserSession } from '@/stores/userSession'
+import { storeToRefs } from 'pinia'
+
+const userSession = useUserSession()
+const { loading, isLoggedIn, isRegistered, user } = storeToRefs(userSession)
+userSession.subscribeAuth()
+userSession.fetchAuth()
+</script>
+
 <script>
 import { RouterView } from 'vue-router'
-import { useUserSessionStore } from './stores/userSession'
 import TramHeader from '@/components/TramHeader.vue'
 import LoginView from '@/views/LoginView.vue'
 import RegisterView from '@/views/RegisterView.vue'
-import { setUpAuth, signOut } from '@/auth'
+import { signOut } from '@/auth'
 import { showAlert } from '@/utils'
 
 export default {
   name: 'App',
   components: { RegisterView, LoginView, TramHeader, RouterView },
   data: () => {
-    const userSession = useUserSessionStore()
     return {
-      loading: true,
       title: 'Tramopoly',
-      userSession,
     }
-  },
-  mounted() {
-    setUpAuth()
   },
   watch: {
     $route() {
