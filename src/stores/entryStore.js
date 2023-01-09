@@ -1,7 +1,11 @@
 import { defineStore } from 'pinia'
 import { supabase } from '@/client'
 
-export const useEntryStore = (table, wrapperCallback = (data) => data) => {
+export const useEntryStore = (
+  table,
+  wrapperCallback = (data) => data,
+  { select = '*' }
+) => {
   return (id) =>
     defineStore(`${table}-${id}`, {
       state: () => ({ data: undefined }),
@@ -30,7 +34,7 @@ export const useEntryStore = (table, wrapperCallback = (data) => data) => {
           if (this.data && !forceReload) return
           const { data } = await supabase
             .from(table)
-            .select()
+            .select(select)
             .eq('id', id)
             .single()
           this.data = data

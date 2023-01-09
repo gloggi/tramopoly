@@ -39,6 +39,12 @@ export const useUserSession = defineStore('userSession', {
         ? new Profile(state.userProfile, state.session.user)
         : null,
     userId: (state) => state.session?.user.id,
+    isOperator() {
+      return this.isRegistered && this.userProfile.role === 'operator'
+    },
+    isAdmin() {
+      return this.isRegistered && this.userProfile.role === 'admin'
+    },
   },
   actions: {
     async fetchProfile() {
