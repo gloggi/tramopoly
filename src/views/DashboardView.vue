@@ -59,6 +59,7 @@ import { useUserSession } from '@/stores/userSession'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import GroupDetail from '@/components/GroupDetail.vue'
+import { useOperator } from '@/composables/useOperator'
 
 const userSession = useUserSession()
 const { user, isOperator } = storeToRefs(userSession)
@@ -68,17 +69,16 @@ if (isOperator.value) {
   router.replace({ name: 'zentrale' })
 }
 
+const { operator, operatorName, operatorBusy, operatorPhoneInWords } =
+  useOperator(user.value.groupId)
+
 // TODO
-const operator = {}
 const mrTLocation = ''
 const groupIsCurrentlyMrT = false
 const mrTShouldCallOperator = false
-const operatorBusy = false
 const callOperator = () => {}
-const operatorName = 'TODO'
 const loggedInUserIsActiveCaller = false
 const finishCall = () => {}
-const operatorPhoneInWords = 'null sibä nüün'
 </script>
 
 <script>

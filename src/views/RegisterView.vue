@@ -76,14 +76,12 @@ import { useGroups } from '@/stores/groups'
 const abteilungenStore = useAbteilungen({
   filter: { active: true },
 })
-const { all: abteilungen } = storeToRefs(abteilungenStore)
-abteilungenStore.fetch()
+const { all: abteilungen } = storeToRefs(abteilungenStore.fetch())
 
 const groupsStore = useGroups({
   select: 'id,name,abteilung:abteilungen(id,name)',
   filter: { active: true },
-})
-groupsStore.subscribe()
+}).subscribe()
 const { all: groups } = storeToRefs(groupsStore)
 </script>
 

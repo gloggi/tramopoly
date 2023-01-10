@@ -16,9 +16,15 @@ function filterQuery(query, filter) {
 export const useCollectionStore = (
   table,
   wrapperCallback = (data) => data,
-  { select = '*', filter = null }
+  { select = '*', filter = null, ...otherOptions }
 ) => {
   const storeId = [table, 'all', select, JSON.stringify(filter)].join('-')
+  const self = () =>
+    useCollectionStore(table, wrapperCallback, {
+      select,
+      filter,
+      ...otherOptions,
+    })
   return defineStore(storeId, {
     state: () => ({ data: undefined }),
     getters: {
@@ -36,13 +42,13 @@ export const useCollectionStore = (
             this.fetch(true)
           )
           .subscribe()
-        this.fetch()
+        return this.fetch()
       },
-      async fetch(forceReload = false) {
-        if (this.data && !forceReload) return
+      fetch(forceReload = false) {
+        if (this.data && !forceReload) return self()
         const query = supabase.from(table).select(select)
-        const { data } = await filterQuery(query, filter)
-        this.data = data
+        filterQuery(query, filter).then(({ data }) => (this.data = data))
+        return self()
       },
     },
   })

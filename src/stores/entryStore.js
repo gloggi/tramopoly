@@ -4,10 +4,15 @@ import { supabase } from '@/client'
 export const useEntryStore = (
   table,
   wrapperCallback = (data) => data,
-  { select = '*' }
+  { select = '*', ...otherOptions }
 ) => {
-  return (id) =>
-    defineStore(`${table}-${id}`, {
+  return (id) => {
+    const self = () =>
+      useEntryStore(table, wrapperCallback, {
+        select,
+        ...otherOptions,
+      })(id)
+    return defineStore(`${table}-${id}-${select}`, {
       state: () => ({ data: undefined }),
       getters: {
         loading: (state) => state.data === undefined,
@@ -28,17 +33,19 @@ export const useEntryStore = (
               () => this.fetch(true)
             )
             .subscribe()
-          this.fetch()
+          return this.fetch()
         },
-        async fetch(forceReload = false) {
-          if (this.data && !forceReload) return
-          const { data } = await supabase
+        fetch(forceReload = false) {
+          if (this.data && !forceReload) return self()
+          supabase
             .from(table)
             .select(select)
             .eq('id', id)
             .single()
-          this.data = data
+            .then(({ data }) => (this.data = data))
+          return self()
         },
       },
     })()
+  }
 }

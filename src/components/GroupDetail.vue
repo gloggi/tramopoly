@@ -102,16 +102,15 @@
 import { useGroup } from '@/stores/groups'
 import { storeToRefs } from 'pinia'
 import { toRefs } from 'vue'
-
 const props = defineProps({
   groupId: { type: Number, required: true },
 })
 
 const { groupId } = toRefs(props)
 
-const groupStore = useGroup(groupId.value)
-groupStore.subscribe()
-const { loading, entry: group } = storeToRefs(groupStore)
+const { loading, entry: group } = storeToRefs(
+  useGroup(groupId.value).subscribe()
+)
 
 // TODO
 const betterGroup = null
