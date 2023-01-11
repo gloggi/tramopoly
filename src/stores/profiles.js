@@ -1,13 +1,28 @@
 import { useCollectionStore } from '@/stores/collectionStore'
 import { useEntryStore } from '@/stores/entryStore'
+import { useGroup } from '@/stores/groups'
 
 export class Profile {
-  constructor(data) {
+  constructor(data, subscribe) {
     this.id = data.id
     this.scoutName = data.scout_name
-    this.groupId = data.group_id
     this.phone = data.phone
+    this.preferredCallMethod = data.preferred_call_method
+    this.role = data.role
     this.busy = data.busy
+    this.groupId = data.group_id || data.group?.id
+    this._groupData = data.group
+    this._subscribed = subscribe
+  }
+
+  get group() {
+    if (!this.groupId) return null
+    const groupStore = useGroup(this.groupId, {
+      initialData: this._groupData,
+    })
+    if (this._subscribed) groupStore.subscribe()
+    else groupStore.fetch()
+    return groupStore.entry
   }
 }
 

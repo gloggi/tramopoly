@@ -40,7 +40,7 @@
         </div>
         <div class="column">
           <div class="title is-3">{{ group.realEstatePoints }}</div>
-          <div class="subtitle is-6">Immobiliäpünkt</div>
+          <div class="subtitle is-6">Immobiliä&shy;pünkt</div>
         </div>
         <div class="column">
           <div class="title is-3">{{ group.mrTPoints }}</div>
@@ -108,9 +108,9 @@ const props = defineProps({
 
 const { groupId } = toRefs(props)
 
-const { loading, entry: group } = storeToRefs(
-  useGroup(groupId.value).subscribe()
-)
+const groupStore = useGroup(groupId.value)
+groupStore.subscribe()
+const { loading, entry: group } = storeToRefs(groupStore)
 
 // TODO
 const betterGroup = null

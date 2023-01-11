@@ -4,22 +4,19 @@ import { supabase } from '@/client'
 export const useEntryStore = (
   table,
   wrapperCallback = (data) => data,
-  { select = '*', ...otherOptions }
+  { initialData = undefined, select = '*' }
 ) => {
   return (id) => {
-    const self = () =>
-      useEntryStore(table, wrapperCallback, {
-        select,
-        ...otherOptions,
-      })(id)
     return defineStore(`${table}-${id}-${select}`, {
-      state: () => ({ data: undefined }),
+      state: () => ({ data: initialData, subscribed: false }),
       getters: {
         loading: (state) => state.data === undefined,
-        entry: (state) => (state.data ? wrapperCallback(state.data) : null),
+        entry: (state) =>
+          state.data ? wrapperCallback(state.data, state.subscribed) : null,
       },
       actions: {
         subscribe() {
+          this.subscribed = true
           supabase
             .channel(`public:${table}:id=eq.${id}`)
             .on(
@@ -27,23 +24,22 @@ export const useEntryStore = (
               {
                 event: '*',
                 schema: 'public',
-                table: table,
-                filter: 'id=eq.' + id,
+                table,
+                filter: `id=eq.${id}`,
               },
               () => this.fetch(true)
             )
             .subscribe()
           return this.fetch()
         },
-        fetch(forceReload = false) {
-          if (this.data && !forceReload) return self()
-          supabase
+        async fetch(forceReload = false) {
+          if (this.data && !forceReload) return
+          const { data } = await supabase
             .from(table)
             .select(select)
             .eq('id', id)
             .single()
-            .then(({ data }) => (this.data = data))
-          return self()
+          this.data = data
         },
       },
     })()

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { supabase } from '@/client'
 
-function filterQuery(query, filter) {
+function applyFilterToQuery(query, filter) {
   if (!filter) return query
   return Object.entries(filter).reduce((query, [operator, args]) => {
     if (!query.operator || typeof query.operator !== 'function') {
@@ -16,26 +16,21 @@ function filterQuery(query, filter) {
 export const useCollectionStore = (
   table,
   wrapperCallback = (data) => data,
-  { select = '*', filter = null, ...otherOptions }
+  { initialData = undefined, select = '*', filter = null }
 ) => {
   const storeId = [table, 'all', select, JSON.stringify(filter)].join('-')
-  const self = () =>
-    useCollectionStore(table, wrapperCallback, {
-      select,
-      filter,
-      ...otherOptions,
-    })
   return defineStore(storeId, {
-    state: () => ({ data: undefined }),
+    state: () => ({ data: initialData, subscribed: false }),
     getters: {
       loading: (state) => state.data === undefined,
       all: (state) =>
         typeof state.data?.map === 'function'
-          ? state.data.map(wrapperCallback)
+          ? state.data.map((entry) => wrapperCallback(entry, state.subscribed))
           : [],
     },
     actions: {
       subscribe() {
+        this.subscribed = true
         supabase
           .channel('public:' + table)
           .on('postgres_changes', { event: '*', schema: 'public', table }, () =>
@@ -44,11 +39,11 @@ export const useCollectionStore = (
           .subscribe()
         return this.fetch()
       },
-      fetch(forceReload = false) {
-        if (this.data && !forceReload) return self()
+      async fetch(forceReload = false) {
+        if (this.data && !forceReload) return
         const query = supabase.from(table).select(select)
-        filterQuery(query, filter).then(({ data }) => (this.data = data))
-        return self()
+        const { data } = await applyFilterToQuery(query, filter)
+        this.data = data
       },
     },
   })

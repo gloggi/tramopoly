@@ -1,72 +1,43 @@
 import { defineStore } from 'pinia'
 import { supabase } from '@/client'
-import { useGroup } from '@/stores/groups'
-
-class Profile {
-  constructor(supabaseProfile, supabaseUser) {
-    this.id = supabaseProfile.id
-    this.scoutName = supabaseProfile.scout_name
-    this.phone = supabaseUser.phone
-    this.groupId = supabaseProfile.group_id
-    this.preferredCallMethod = supabaseProfile.preferred_call_method
-    this.role = supabaseProfile.role
-
-    this._group = useGroup(this.groupId)
-  }
-
-  get group() {
-    this._group.subscribe()
-    return this._group.group
-  }
-}
+import { useProfile } from '@/stores/profiles'
 
 export const useUserSession = defineStore('userSession', {
-  state: () => ({ session: undefined, userProfile: undefined }),
+  state: () => ({ session: undefined }),
   getters: {
-    loading: (state) =>
-      state.session === undefined ||
-      (state.session !== null && !state.userProfile),
-    isLoggedIn: (state) => !!state.session?.user.id,
-    isRegistered(state) {
-      return (
-        this.isLoggedIn &&
-        state.session.user.phone &&
-        state.userProfile?.group_id
-      )
+    profileStore: (state) => {
+      if (!state.session?.user.id) return null
+      const profileStore = useProfile(state.session?.user.id)
+      profileStore.subscribe()
+      return profileStore
     },
-    user: (state) =>
-      state.session && state.userProfile
-        ? new Profile(state.userProfile, state.session.user)
-        : null,
+    loading() {
+      return this.session === undefined || this.profileStore?.loading
+    },
+    isLoggedIn: (state) => !!state.session?.user.id,
+    isRegistered: (state) => state.session?.user.phone && state.user?.groupId,
+    user() {
+      return this.profileStore.entry
+    },
     userId: (state) => state.session?.user.id,
     isOperator() {
-      return this.isRegistered && this.userProfile.role === 'operator'
+      return this.isRegistered && this.user?.role === 'operator'
     },
     isAdmin() {
-      return this.isRegistered && this.userProfile.role === 'admin'
+      return this.isRegistered && this.user?.role === 'admin'
     },
   },
   actions: {
-    async fetchProfile() {
-      if (!this.session?.user.id) return
-
-      const { data } = await supabase
-        .from('profiles')
-        .select()
-        .eq('id', this.session.user.id)
-        .single()
-      this.userProfile = data
-    },
     async subscribeAuth() {
       supabase.auth.onAuthStateChange((_, session) => {
         this.session = session
-        this.fetchProfile()
+        this.profileStore?.fetch(true)
       })
     },
     async fetchAuth() {
       const { data } = await supabase.auth.getSession()
       this.session = data.session
-      await this.fetchProfile()
+      this.profileStore?.fetch(true)
     },
   },
 })

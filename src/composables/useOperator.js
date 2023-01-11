@@ -3,7 +3,9 @@ import { useGroup } from '@/stores/groups'
 import { storeToRefs } from 'pinia'
 
 export function useOperator(groupId) {
-  const { entry: group, loading } = storeToRefs(useGroup(groupId).subscribe())
+  const groupStore = useGroup(groupId)
+  groupStore.subscribe()
+  const { entry: group, loading } = storeToRefs(groupStore)
 
   const operator = computed(() => {
     if (loading.value) return null
