@@ -9,7 +9,7 @@ export class Profile {
     this.phone = data.phone
     this.preferredCallMethod = data.preferred_call_method
     this.role = data.role
-    this.busy = data.busy
+    this.activeCallerId = data.active_caller_id
     this.groupId = data.group_id || data.group?.id
     this._groupData = data.group
     this._subscribed = subscribe

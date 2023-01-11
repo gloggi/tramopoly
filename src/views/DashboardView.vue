@@ -19,20 +19,32 @@
           v-if="!operatorBusy"
           variant="primary"
           outlined
+          tag="a"
+          target="_blank"
+          :href="callLinkHref"
           @click="callOperator"
         >
           📞 Zentralä ({{ operatorName }})
         </o-button>
-        <button
+        <o-button
           v-else-if="loggedInUserIsActiveCaller"
-          class="button is-link is-outlined is-danger"
+          variant="danger"
+          outlined
           @click="finishCall"
         >
           🚫 Färtig telefoniärt
-        </button>
-        <button v-else class="button is-link is-outlined" @click="callOperator">
+        </o-button>
+        <o-button
+          v-else
+          variant="danger"
+          class="button is-link is-outlined"
+          tag="a"
+          target="_blank"
+          :href="callLinkHref"
+          @click="callOperator"
+        >
           🚫 Zentralä ({{ operatorName }} bsetzt)
-        </button>
+        </o-button>
         <div class="is-size-7" style="margin-top: 10px">
           {{ operatorPhoneInWords }}
         </div>
@@ -60,6 +72,7 @@ import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import GroupDetail from '@/components/GroupDetail.vue'
 import { useOperator } from '@/composables/useOperator'
+import { useOperatorCall } from '@/composables/useOperatorCall'
 
 const userSession = useUserSession()
 const { user, isOperator } = storeToRefs(userSession)
@@ -72,13 +85,13 @@ if (isOperator.value) {
 const { operator, operatorName, operatorBusy, operatorPhoneInWords } =
   useOperator(user.value.groupId)
 
+const { callOperator, finishCall, loggedInUserIsActiveCaller, callLinkHref } =
+  useOperatorCall(user, operator)
+
 // TODO
 const mrTLocation = ''
 const groupIsCurrentlyMrT = false
 const mrTShouldCallOperator = false
-const callOperator = () => {}
-const loggedInUserIsActiveCaller = false
-const finishCall = () => {}
 </script>
 
 <script>

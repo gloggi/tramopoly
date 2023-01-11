@@ -16,7 +16,7 @@ export function useOperator(groupId) {
     loading.value ? '' : operator.value.scoutName
   )
   const operatorBusy = computed(() =>
-    loading.value ? false : operator.value.busy
+    loading.value ? false : operator.value.activeCallerId !== null
   )
 
   const operatorPhoneInWords = computed(() => {
