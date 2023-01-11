@@ -106,6 +106,7 @@ export default {
       confirmation: null,
       selectedGroup: null,
       savedUserData: null,
+      savedPhone: null,
       savedGroupData: null,
     }
   },
@@ -131,11 +132,11 @@ export default {
         abteilung_id: this.abteilung,
       }
       this.savedUserData = {
-        phone: this.normalizedPhone,
         group_id: this.selectedGroup?.id,
         scout_name: this.scoutName,
         preferred_call_method: this.preferredCallMethod,
       }
+      this.savedPhone = this.normalizedPhone
       if (this.verifyPhoneNumber) {
         const { error } = await supabase.auth.updateUser({
           phone: this.normalizedPhone,
@@ -159,7 +160,7 @@ export default {
       if (!this.shouldVerifyOtp || !this.otp) return
       await this.withoutLosingSession(async () => {
         const { error } = await supabase.auth.verifyOtp({
-          phone: this.savedUserData.phone,
+          phone: this.savedPhone,
           token: this.otp,
           type: 'phone_change',
         })
@@ -205,9 +206,9 @@ export default {
       }
       const userSession = useUserSession()
       const { error } = await supabase
-        .from('profiles')
+        .from('registerable_profiles')
         .update(this.savedUserData)
-        .eq('id', userSession.userId)
+        .eq('row_num', 1) // filtering is required for UPDATE calls, so we add a filter on a dummy column
       if (error) {
         console.log(error)
         showAlert(
