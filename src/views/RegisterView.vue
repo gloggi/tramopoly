@@ -25,8 +25,8 @@
           required
         />
       </o-field>
-      <o-field v-if="selectedGroup" label="Abteilig">
-        <o-input v-model="selectedGroup.abteilung.name" disabled />
+      <o-field v-if="selectedOrNamedGroup" label="Abteilig">
+        <o-input v-model="selectedOrNamedGroup.abteilung.name" disabled />
       </o-field>
       <o-field v-else label="Abteilig">
         <o-select v-model="abteilung" expanded required>
@@ -91,6 +91,7 @@ const { all: groups } = storeToRefs(groupsStore)
 import { useUserSession } from '@/stores/userSession'
 import { supabase } from '@/client'
 import { showAlert } from '@/utils'
+import { useGroups } from '@/stores/groups'
 
 export default {
   name: 'RegisterView',
@@ -111,6 +112,13 @@ export default {
     }
   },
   computed: {
+    selectedOrNamedGroup() {
+      if (this.selectedGroup) return this.selectedGroup
+      return useGroups({
+        select: '*,abteilung:abteilungen(*,operator:operator_id(*))',
+        filter: { active: true },
+      }).all.find(group => group.name === this.groupName)
+    },
     normalizedPhone() {
       const cleaned = this.phone.trim().replace(/[^0-9+]/gi, '')
       // handle most swiss mobile phone numbers
@@ -132,7 +140,7 @@ export default {
         abteilung_id: this.abteilung,
       }
       this.savedUserData = {
-        group_id: this.selectedGroup?.id,
+        group_id: this.selectedOrNamedGroup?.id,
         scout_name: this.scoutName,
         preferred_call_method: this.preferredCallMethod,
       }
