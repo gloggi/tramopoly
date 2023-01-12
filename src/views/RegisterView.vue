@@ -137,18 +137,19 @@ export default {
         preferred_call_method: this.preferredCallMethod,
       }
       this.savedPhone = this.normalizedPhone
-      if (this.verifyPhoneNumber) {
-        const { error } = await supabase.auth.updateUser({
-          phone: this.normalizedPhone,
-        })
-        if (error) {
-          console.log(error)
-          showAlert(
-            'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä oder s Tramopoly imnä anonymä Browsertab ufzmachä.'
-          )
-          return
-        }
+      const { error, data } = await supabase.auth.updateUser({
+        phone: this.normalizedPhone,
+      })
+      console.log('after updating user with phone', data, error)
+      if (error) {
+        console.log(error)
+        showAlert(
+          'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä oder s Tramopoly imnä anonymä Browsertab ufzmachä.'
+        )
+        return
+      }
 
+      if (this.verifyPhoneNumber) {
         // Direct the user to the OTP field
         this.$refs.otp.focus()
       } else {
