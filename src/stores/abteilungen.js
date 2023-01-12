@@ -24,7 +24,9 @@ export class Abteilung {
   }
 }
 
-export const useAbteilungen = (options = {}) =>
+export const useAbteilungen = (
+  options = { select: '*,operator:operator_id(*)' }
+) =>
   useCollectionStore(
     'abteilungen',
     (data, subscribe) => new Abteilung(data, subscribe),

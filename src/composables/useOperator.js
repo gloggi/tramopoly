@@ -7,10 +7,7 @@ export function useOperator(groupId) {
   groupStore.subscribe()
   const { entry: group, loading } = storeToRefs(groupStore)
 
-  const operator = computed(() => {
-    if (loading.value) return null
-    return group.value.operator
-  })
+  const operator = computed(() => group.value?.abteilung.operator)
 
   const operatorName = computed(() =>
     loading.value ? '' : operator.value.scoutName

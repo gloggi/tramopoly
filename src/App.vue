@@ -17,7 +17,7 @@
       <template v-if="loading"></template>
       <login-view v-else-if="!isLoggedIn"></login-view>
       <register-view v-else-if="!isRegistered"></register-view>
-      <router-view v-else>
+      <router-view v-else-if="user.groupId">
         <template #message="{ message, type, title }">
           <o-notification
             v-if="message"

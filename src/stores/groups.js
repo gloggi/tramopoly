@@ -20,14 +20,11 @@ export class Group {
     else abteilungStore.fetch()
     return abteilungStore.entry
   }
-
-  get operator() {
-    if (!this.abteilung) return null
-    return this.abteilung.operator
-  }
 }
 
-export const useGroups = (options = {}) =>
+export const useGroups = (
+  options = { select: '*,abteilung:abteilungen(*,operator:operator_id(*))' }
+) =>
   useCollectionStore(
     'groups',
     (data, subscribe) => new Group(data, subscribe),

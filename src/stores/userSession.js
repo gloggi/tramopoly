@@ -15,7 +15,8 @@ export const useUserSession = defineStore('userSession', {
       return this.session === undefined || this.profileStore?.loading
     },
     isLoggedIn: (state) => !!state.session?.user.id,
-    isRegistered: (state) => state.session?.user.phone && state.user?.groupId,
+    isRegistered: (state) =>
+      !!(state.session?.user.phone && state.user?.groupId),
     user() {
       return this.profileStore.entry
     },

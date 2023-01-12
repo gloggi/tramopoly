@@ -80,7 +80,7 @@ abteilungenStore.fetch()
 const { all: abteilungen } = storeToRefs(abteilungenStore)
 
 const groupsStore = useGroups({
-  select: 'id,name,abteilung:abteilung_id(id,name)',
+  select: '*,abteilung:abteilungen(*,operator:operator_id(*))',
   filter: { active: true },
 })
 groupsStore.subscribe()
