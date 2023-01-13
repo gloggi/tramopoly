@@ -3,6 +3,8 @@
 
 body {
   padding: 1.25rem;
+  position: relative;
+  min-height: 100vh;
 }
 
 .button, .button span {
@@ -15,6 +17,10 @@ body {
 
 .card {
   margin-bottom: 1.5rem;
+}
+
+.is-gap-2 {
+  gap: 0.5rem;
 }
 
 tr.is-clickable {
@@ -57,4 +63,27 @@ input.input[disabled] {
 input.input::placeholder,
 textarea.textarea::placeholder {
   color: $grey;
+}
+
+.fullscreen-chat {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.modal-card {
+  background-color: white;
+  z-index: 1;
+  width: 66vw;
+
+  @media screen and (max-width: 768px) {
+    width: 100vw;
+  }
+}
+
+@media screen and (min-width: 769px) {
+  .is-flex-direction-row-desktop {
+    flex-direction: row !important;
+  }
 }

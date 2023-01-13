@@ -3,50 +3,65 @@
     class="column is-full is-one-third-desktop is-offset-one-third-desktop has-text-centered"
   >
     <slot v-if="operator" name="message"></slot>
-    <div v-if="operator" class="card">
-      <div class="card-content">
-        <o-notification
-          v-if="groupIsCurrentlyMrT && mrTShouldCallOperator"
-          variant="danger"
-          title="Mäldäd oi!"
-          :closable="false"
-          ><h3>Mäldäd oi!</h3>
-          Oii Gruppä isch aktuell Mr. T. Darum müändär mindischtäns all 10
-          Minutä bi dä Zentralä aalütä. Bitte mäldäd oi bi oinä
-          Telefonischt*innä.</o-notification
-        >
-        <o-button
-          v-if="!operatorBusy"
-          variant="primary"
-          outlined
-          tag="a"
-          target="_blank"
-          :href="callLinkHref"
-          @click="callOperator"
-        >
-          📞 Zentralä ({{ operatorName }})
-        </o-button>
-        <o-button
-          v-else-if="loggedInUserIsActiveCaller"
-          variant="danger"
-          outlined
-          @click="finishCall"
-        >
-          🚫 Färtig telefoniärt
-        </o-button>
-        <o-button
-          v-else
-          variant="danger"
-          class="button is-link is-outlined"
-          tag="a"
-          target="_blank"
-          :href="callLinkHref"
-          @click="callOperator"
-        >
-          🚫 Zentralä ({{ operatorName }} bsetzt)
-        </o-button>
-        <div class="is-size-7" style="margin-top: 10px">
-          {{ operatorPhoneInWords }}
+    <div class="card">
+      <div
+        class="card-content is-flex is-flex-direction-column is-flex-direction-row-desktop is-justify-content-space-evenly"
+        style="gap: 0.5rem"
+      >
+        <div>
+          <o-button
+            variant="primary"
+            outlined
+            @click="
+              $router.push({ name: 'chat', query: { action: 'visitStation' } })
+            "
+            >🚉 Station chaufä</o-button
+          >
+        </div>
+        <div v-if="operator">
+          <o-notification
+            v-if="groupIsCurrentlyMrT && mrTShouldCallOperator"
+            variant="danger"
+            title="Mäldäd oi!"
+            :closable="false"
+            ><h3>Mäldäd oi!</h3>
+            Oii Gruppä isch aktuell Mr. T. Darum müändär mindischtäns all 10
+            Minutä bi dä Zentralä aalütä. Bitte mäldäd oi bi oinä
+            Telefonischt*innä.</o-notification
+          >
+          <o-button
+            v-if="!operatorBusy"
+            variant="primary"
+            outlined
+            tag="a"
+            target="_blank"
+            :href="callLinkHref"
+            @click="callOperator"
+          >
+            📞 Zentralä ({{ operatorName }})
+          </o-button>
+          <o-button
+            v-else-if="loggedInUserIsActiveCaller"
+            variant="danger"
+            outlined
+            @click="finishCall"
+          >
+            🚫 Färtig telefoniärt
+          </o-button>
+          <o-button
+            v-else
+            variant="danger"
+            class="button is-link is-outlined"
+            tag="a"
+            target="_blank"
+            :href="callLinkHref"
+            @click="callOperator"
+          >
+            🚫 Zentralä ({{ operatorName }} bsetzt)
+          </o-button>
+          <div class="is-size-7" style="margin-top: 10px">
+            {{ operatorPhoneInWords }}
+          </div>
         </div>
       </div>
     </div>

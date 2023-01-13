@@ -63,8 +63,9 @@ export default {
 .column {
   position: relative;
 }
-.tram {
-  display: inline-block;
+.rails {
+  display: flex;
+  justify-content: center;
 }
 .title {
   color: #fff;
@@ -77,5 +78,6 @@ export default {
   padding: 0.5em 0.3em 0.3em;
   line-height: 220%;
   margin: 0.2rem 5.5rem;
+  white-space: nowrap;
 }
 </style>

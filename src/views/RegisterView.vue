@@ -2,7 +2,7 @@
   <div
     class="card column is-full is-one-third-desktop is-offset-one-third-desktop"
   >
-    <form v-on:submit.prevent="register">
+    <form @submit.prevent="register">
       <o-field label="Händynummärä"
         ><o-input
           type="tel"

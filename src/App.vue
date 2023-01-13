@@ -1,14 +1,16 @@
 <template>
   <div class="level">
     <div class="level-left">
-      <span v-if="isRegistered" class="level-item">
-        Willkommä, {{ user.scoutName }}.
-      </span>
-      <span v-else-if="isLoggedIn" class="level-item">
-        Willkommä bim Tramopoly.
-      </span>
-      <a v-if="isLoggedIn" class="level-item" @click="signOut"> Uusloggä </a>
-      <a class="level-item" @click="support">Hilfe</a>
+      <div class="level-item is-gap-2">
+        <span v-if="isRegistered"> Willkommä, {{ user.scoutName }}. </span>
+        <span v-else-if="isLoggedIn"> Willkommä bim Tramopoly. </span>
+        <a v-if="isLoggedIn" @click="signOut"> Uusloggä </a>
+        <a @click="support">Hilfe</a>
+      </div>
+      <div class="level-item is-gap-2" v-if="!isOperator">
+        <router-link :to="{ name: 'dashboard' }">Dashboard</router-link>
+        <router-link :to="{ name: 'chat' }">Chat</router-link>
+      </div>
     </div>
   </div>
   <main class="columns is-multiline">
@@ -17,7 +19,7 @@
       <template v-if="loading"></template>
       <login-view v-else-if="!isLoggedIn"></login-view>
       <register-view v-else-if="!isRegistered"></register-view>
-      <router-view v-else-if="user.groupId">
+      <router-view v-else-if="user.groupId" :group-id="user.groupId">
         <template #message="{ message, type, title }">
           <o-notification
             v-if="message"
@@ -61,7 +63,8 @@ import { useUserSession } from '@/stores/userSession'
 import { storeToRefs } from 'pinia'
 
 const userSession = useUserSession()
-const { loading, isLoggedIn, isRegistered, user } = storeToRefs(userSession)
+const { loading, isLoggedIn, isRegistered, user, isOperator } =
+  storeToRefs(userSession)
 userSession.subscribeAuth()
 userSession.fetchAuth()
 </script>

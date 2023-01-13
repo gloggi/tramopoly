@@ -728,6 +728,11 @@ domexception@^4.0.0:
   dependencies:
     webidl-conversions "^7.0.0"
 
+emoji-picker-element@^1.15.0:
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/emoji-picker-element/-/emoji-picker-element-1.15.0.tgz#7065d5c5c50ca732a21dd87b7a491b4c3f726295"
+  integrity sha512-jX93zEn+JWx8degiSB7k3j3ITZfzgVQjymXRbyjpYjdnPJtI+NJXvCW6hdQ3Ius3x5YYmk7ACawz6atPCr6/rA==
+
 entities@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/entities/-/entities-4.4.0.tgz#97bdaba170339446495e653cfd2db78962900174"
@@ -1304,6 +1309,11 @@ levn@~0.3.0:
   dependencies:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
+
+linkifyjs@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/linkifyjs/-/linkifyjs-4.1.0.tgz#0460bfcc37d3348fa80e078d92e7bbc82588db15"
+  integrity sha512-Ffv8VoY3+ixI1b3aZ3O+jM6x17cOsgwfB1Wq7pkytbo1WlyRp6ZO0YDMqiWT/gQPY/CmtiGuKfzDIVqxh1aCTA==
 
 local-pkg@^0.4.2:
   version "0.4.2"

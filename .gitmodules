@@ -1,0 +1,3 @@
+[submodule "src/vue-advanced-chat"]
+	path = src/vue-advanced-chat
+	url = git@github.com:gloggi/vue-advanced-chat.git
