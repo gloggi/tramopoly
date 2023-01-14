@@ -8,7 +8,7 @@ export const useEntryStore = (
 ) => {
   return (id) => {
     return defineStore(`${table}-${id}-${select}`, {
-      state: () => ({ data: initialData, subscribed: false }),
+      state: () => ({ data: initialData, subscribed: false, fetching: false }),
       getters: {
         loading: (state) => state.data === undefined,
         entry: (state) =>
@@ -33,13 +33,15 @@ export const useEntryStore = (
           return this.fetch()
         },
         async fetch(forceReload = false) {
-          if (this.data && !forceReload) return
+          if ((this.fetching || this.data) && !forceReload) return
+          this.fetching = true
           const { data } = await supabase
             .from(table)
             .select(select)
             .eq('id', id)
             .single()
           this.data = data
+          this.fetching = false
         },
       },
     })()

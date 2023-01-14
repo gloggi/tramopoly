@@ -45,10 +45,11 @@ export const useStationVisits = (
   useCollectionStore(
     'station_visits',
     (data, subscribe) => new StationVisit(data, subscribe),
-    options
+    options,
+    (entry) => useStationVisit(entry.id, { ...options, initialData: entry })
   )()
 
-export const useAbteilung = (
+export const useStationVisit = (
   id,
   options = { select: '*,operator:operator_id(*)' }
 ) =>

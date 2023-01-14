@@ -28,7 +28,8 @@ export const useGroups = (
   useCollectionStore(
     'groups',
     (data, subscribe) => new Group(data, subscribe),
-    options
+    options,
+    (entry) => useGroup(entry.id, { ...options, initialData: entry })
   )()
 
 export const useGroup = (

@@ -14,7 +14,8 @@ export const useStations = (options = { select: '*' }) =>
   useCollectionStore(
     'stations',
     (data, subscribe) => new Station(data, subscribe),
-    options
+    options,
+    (entry) => useStation(entry.id, { ...options, initialData: entry })
   )()
 
 export const useStation = (id, options = { select: '*' }) =>

@@ -30,7 +30,8 @@ export const useAbteilungen = (
   useCollectionStore(
     'abteilungen',
     (data, subscribe) => new Abteilung(data, subscribe),
-    options
+    options,
+    (entry) => useAbteilung(entry.id, { ...options, initialData: entry })
   )()
 
 export const useAbteilung = (

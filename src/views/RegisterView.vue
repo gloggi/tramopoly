@@ -148,7 +148,6 @@ export default {
       const { error, data } = await supabase.auth.updateUser({
         phone: this.normalizedPhone,
       })
-      console.log('after updating user with phone', data, error)
       if (error) {
         console.log(error)
         showAlert(

@@ -27,7 +27,12 @@ export class Profile {
 }
 
 export const useProfiles = (options = {}) =>
-  useCollectionStore('profiles', (data) => new Profile(data), options)()
+  useCollectionStore(
+    'profiles',
+    (data) => new Profile(data),
+    options,
+    (entry) => useProfile(entry.id, { ...options, initialData: entry })
+  )()
 
 export const useProfile = (id, options = {}) =>
   useEntryStore('profiles', (data) => new Profile(data), options)(id)
