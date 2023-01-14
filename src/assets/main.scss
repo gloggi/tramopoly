@@ -87,3 +87,10 @@ textarea.textarea::placeholder {
     flex-direction: row !important;
   }
 }
+
+.station-visit-image {
+  display: inline-block;
+  height: 200px;
+  width: 200px;
+  background-size: cover;
+}

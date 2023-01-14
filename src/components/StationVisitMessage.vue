@@ -1,22 +1,19 @@
 <template>
-  <div class="vac-message-container">
-    <div class="vac-message-card vac-message-current">
-      <div class="vac-format-message-wrapper">
-        <div class="">
-          <div class="vac-format-container">
-            <span class=""
-              ><span
-                >TODO render station visit {{ stationVisit.id }}</span
-              ></span
-            >
-          </div>
-        </div>
-      </div>
-      <div class="vac-text-timestamp">
-        <span>{{ stationVisit.created_at }}</span>
-      </div>
-    </div>
-    <span></span>
+  <div v-if="stationVisit.proofPhotoUrl">
+    <a :href="stationVisit.proofPhotoUrl" target="_blank">
+      <span
+        class="station-visit-image"
+        :style="{ backgroundImage: `url('${stationVisit.proofPhotoUrl}')` }"
+      ></span
+    ></a>
+  </div>
+
+  <span>
+    TODO {{ stationVisit.group?.name }} isch bi
+    {{ stationVisit.station?.name }} gsi
+  </span>
+  <div class="vac-text-timestamp">
+    <span>{{ stationVisit.createdAt?.toLocaleString() }}</span>
   </div>
 </template>
 

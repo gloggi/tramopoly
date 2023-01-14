@@ -1,3 +1,6 @@
+INSERT INTO storage.buckets (id, name) VALUES ('proofPhotos', 'proofPhotos');
+
+
 INSERT INTO public.abteilungen (id, created_at, name, active, logo_url) VALUES (1, now(), 'Gloggi', true, NULL);
 
 SELECT pg_catalog.setval('public.abteilungen_id_seq', 1, true);

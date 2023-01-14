@@ -77,6 +77,8 @@ import { useStations } from '@/stores/stations'
 import { supabase } from '@/client'
 import { showAlert } from '@/utils'
 import { useStationVisits } from '@/stores/stationVisits'
+import slugify from 'slugify'
+import { useGroup } from '@/stores/groups'
 
 export default {
   name: 'ChatView',
@@ -118,23 +120,13 @@ export default {
         date: message.createdAt.toDateString(),
       }))
     },
-    presentedStationVisits() {
-      return this.stationVisits.map((sv) => ({
-        ...sv,
-        _id: sv.id,
-        senderId: this.userId,
-        content: '',
-        timestamp: sv.createdAt.toString().substring(16, 21),
-        date: sv.createdAt.toDateString(),
-      }))
-    },
     allChatContent() {
       return this.presentedMessages
-        .concat(this.presentedStationVisits)
+        .concat(this.stationVisits.map((sv) => sv.toMessage()))
         .sort((a, b) => a.createdAt - b.createdAt)
     },
   },
-  mounted() {
+  async mounted() {
     if (this.$refs.top) {
       this.chatTop = Math.ceil(this.$refs.top.getBoundingClientRect().bottom)
     }
@@ -147,7 +139,12 @@ export default {
       this.messages.push(this.prepareMessageForStorage(message))
     },
     prepareMessageForStorage(message) {
-      return { id: message._id, sender_id: message.senderId, ...message }
+      return {
+        id: message._id,
+        sender_id: message.senderId,
+        createdAt: new Date(message.created_at),
+        ...message,
+      }
     },
     onChangeStation() {
       const responses = [
@@ -163,13 +160,28 @@ export default {
       return cost > 6000
     },
     async submit() {
-      console.log(this.photo)
-      this.stationVisits.push({
-        id: crypto.randomUUID(),
-        createdAt: new Date(),
-      })
+      const timestamp = new Date().toISOString()
+      const stationName =
+        this.stations.find((station) => station.id === this.station).name ||
+        this.station
+      const groupName = useGroup(this.groupId).entry?.name || this.groupId
+      const extension = this.photo.name.split('.').pop()
+      const filename = slugify(
+        `${timestamp}-${stationName}-${groupName}}`
+      ).substring(0, 62 - extension.length)
+      const { data, error: err } = await supabase.storage
+        .from('proofPhotos')
+        .upload(`${filename}.${extension}`, this.photo)
+      if (err) {
+        console.log(error)
+        showAlert(
+          'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä und dä Stationsbsuäch nomal z erfassä.'
+        )
+        return
+      }
       const { error } = await supabase.rpc('visit_station', {
         station_id: this.station,
+        proof_photo_path: data.path,
       })
       if (error) {
         console.log(error)
