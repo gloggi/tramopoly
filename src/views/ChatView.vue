@@ -73,6 +73,7 @@ import GroupChat from '@/components/GroupChat'
 import { useUserSession } from '@/stores/userSession'
 import { useOperator } from '@/composables/useOperator'
 import StationVisitMessage from '@/components/StationVisitMessage'
+import { useStations } from '@/stores/stations'
 
 export default {
   name: 'ChatView',
@@ -87,11 +88,6 @@ export default {
       station: null,
       fileLabel: '',
       photo: null,
-      stations: [
-        // TODO
-        { id: 1, name: 'HB', value: 5000 },
-        { id: 2, name: 'Paradeplatz', value: 7000 },
-      ],
       messages: [], // TODO useMessages(this.groupId).all
       stationVisits: [], // TODO useStationVisits(this.groupId).all
       operatorName: useOperator(this.groupId).operatorName,
@@ -99,6 +95,11 @@ export default {
     }
   },
   computed: {
+    stations() {
+      const stationsStore = useStations()
+      stationsStore.fetch()
+      return stationsStore.all
+    },
     presentedMessages() {
       return this.messages.map((message) => ({
         ...message,
