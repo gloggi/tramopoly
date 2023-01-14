@@ -74,6 +74,9 @@ import { useUserSession } from '@/stores/userSession'
 import { useOperator } from '@/composables/useOperator'
 import StationVisitMessage from '@/components/StationVisitMessage'
 import { useStations } from '@/stores/stations'
+import { supabase } from '@/client'
+import { showAlert } from '@/utils'
+import { useStationVisits } from '@/stores/stationVisits'
 
 export default {
   name: 'ChatView',
@@ -89,7 +92,6 @@ export default {
       fileLabel: '',
       photo: null,
       messages: [], // TODO useMessages(this.groupId).all
-      stationVisits: [], // TODO useStationVisits(this.groupId).all
       operatorName: useOperator(this.groupId).operatorName,
       userId: useUserSession().userId,
     }
@@ -100,31 +102,36 @@ export default {
       stationsStore.fetch()
       return stationsStore.all
     },
+    stationVisits() {
+      const stationVisitsStore = useStationVisits({
+        filter: { group_id: this.groupId },
+      })
+      stationVisitsStore.subscribe()
+      return stationVisitsStore.all
+    },
     presentedMessages() {
       return this.messages.map((message) => ({
         ...message,
         _id: message.id,
         senderId: message.sender_id,
-        timestamp: message.created_at.toString().substring(16, 21),
-        date: message.created_at.toDateString(),
+        timestamp: message.createdAt.toString().substring(16, 21),
+        date: message.createdAt.toDateString(),
       }))
     },
     presentedStationVisits() {
-      return this.stationVisits.map((sv) => {
-        return {
-          ...sv,
-          _id: sv.id,
-          senderId: this.userId,
-          content: '',
-          timestamp: sv.created_at.toString().substring(16, 21),
-          date: sv.created_at.toDateString(),
-        }
-      })
+      return this.stationVisits.map((sv) => ({
+        ...sv,
+        _id: sv.id,
+        senderId: this.userId,
+        content: '',
+        timestamp: sv.createdAt.toString().substring(16, 21),
+        date: sv.createdAt.toDateString(),
+      }))
     },
     allChatContent() {
       return this.presentedMessages
         .concat(this.presentedStationVisits)
-        .sort((a, b) => a.created_at - b.created_at)
+        .sort((a, b) => a.createdAt - b.createdAt)
     },
   },
   mounted() {
@@ -155,12 +162,21 @@ export default {
       // TODO
       return cost > 6000
     },
-    submit() {
+    async submit() {
       console.log(this.photo)
       this.stationVisits.push({
         id: crypto.randomUUID(),
-        created_at: new Date(),
+        createdAt: new Date(),
       })
+      const { error } = await supabase.rpc('visit_station', {
+        station_id: this.station,
+      })
+      if (error) {
+        console.log(error)
+        showAlert(
+          'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä und dä Stationsbsuäch nomal z erfassä.'
+        )
+      }
       this.station = null
       this.photo = null
       this.modalOpen = false
