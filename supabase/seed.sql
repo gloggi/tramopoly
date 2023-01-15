@@ -2,6 +2,17 @@ INSERT INTO storage.buckets (id, name) VALUES ('proofPhotos', 'proofPhotos');
 INSERT INTO storage.buckets (id, name) VALUES ('messageFiles', 'messageFiles');
 
 
+INSERT INTO public.settings (game_end) VALUES (now() + interval '10 hours');
+
+
+INSERT INTO public.mr_t_rewards (duration, value) VALUES (15, 300);
+INSERT INTO public.mr_t_rewards (duration, value) VALUES (30, 1000);
+INSERT INTO public.mr_t_rewards (duration, value) VALUES (45, 1750);
+INSERT INTO public.mr_t_rewards (duration, value) VALUES (60, 3000);
+INSERT INTO public.mr_t_rewards (duration, value) VALUES (75, 5000);
+INSERT INTO public.mr_t_rewards (duration, value) VALUES (90, 10000);
+
+
 INSERT INTO public.abteilungen (id, created_at, name, active, logo_url) VALUES (1, now(), 'Gloggi', true, NULL);
 
 SELECT pg_catalog.setval('public.abteilungen_id_seq', 1, true);
