@@ -79,6 +79,7 @@ import { showAlert } from '@/utils'
 import { useStationVisits } from '@/stores/stationVisits'
 import slugify from 'slugify'
 import { useGroup } from '@/stores/groups'
+import { useMessages } from '@/stores/messages'
 
 export default {
   name: 'ChatView',
@@ -87,18 +88,28 @@ export default {
     groupId: { type: Number, required: true },
   },
   data() {
+    const userSessionStore = useUserSession()
     return {
       modalOpen: false,
       chatTop: 0,
       station: null,
       fileLabel: '',
       photo: null,
-      messages: [], // TODO useMessages(this.groupId).all
       operatorName: useOperator(this.groupId).operatorName,
-      userId: useUserSession().userId,
+      userId: userSessionStore.userId,
+      userName: userSessionStore.user?.scoutName,
     }
   },
   computed: {
+    messages() {
+      const messagesStore = useMessages({
+        select:
+          '*,message_files(*),sender:sender_id(*),reply_message:reply_message_id(*,message_files(*),sender:sender_id(*))',
+        filter: { group_id: this.groupId },
+      })
+      messagesStore.subscribe()
+      return messagesStore.all
+    },
     stations() {
       const stationsStore = useStations()
       stationsStore.fetch()
@@ -106,23 +117,16 @@ export default {
     },
     stationVisits() {
       const stationVisitsStore = useStationVisits({
+        select: '*,group:group_id(*),station:station_id(*)',
         filter: { group_id: this.groupId },
       })
       stationVisitsStore.subscribe()
       return stationVisitsStore.all
     },
-    presentedMessages() {
-      return this.messages.map((message) => ({
-        ...message,
-        _id: message.id,
-        senderId: message.sender_id,
-        timestamp: message.createdAt.toString().substring(16, 21),
-        date: message.createdAt.toDateString(),
-      }))
-    },
     allChatContent() {
-      return this.presentedMessages
-        .concat(this.stationVisits.map((sv) => sv.toMessage()))
+      return this.messages
+        .map((message) => message.toChatFormat())
+        .concat(this.stationVisits.map((sv) => sv.toChatFormat()))
         .sort((a, b) => a.createdAt - b.createdAt)
     },
   },
@@ -135,15 +139,38 @@ export default {
     }
   },
   methods: {
-    addMessage(message) {
-      this.messages.push(this.prepareMessageForStorage(message))
-    },
-    prepareMessageForStorage(message) {
-      return {
-        id: message._id,
-        sender_id: message.senderId,
-        createdAt: new Date(message.created_at),
-        ...message,
+    async addMessage(message) {
+      try {
+        const uploadedFiles = await Promise.all(
+          (message.files || []).map(async (file) => {
+            const timestamp = new Date().toISOString()
+            const groupName = useGroup(this.groupId).entry?.name || this.groupId
+            const extension = file.extension
+            const filename = slugify(
+              `${timestamp}-${groupName}-${this.userName}}`
+            ).substring(0, 62 - extension.length)
+            const { data, error } = await supabase.storage
+              .from('messageFiles')
+              .upload(
+                `${filename}.${extension}`,
+                await (await fetch(file.url)).blob(),
+                { contentType: file.type }
+              )
+            if (error) throw error
+            return data.path
+          })
+        )
+        const { error } = await supabase.rpc('post_message', {
+          content: message.content,
+          file_paths: uploadedFiles,
+          reply_message_id: message.replyMessage?._id || null,
+        })
+        if (error) throw error
+      } catch (error) {
+        console.log(error)
+        showAlert(
+          'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä und dä Stationsbsuäch nomal z erfassä.'
+        )
       }
     },
     onChangeStation() {

@@ -1,4 +1,5 @@
 INSERT INTO storage.buckets (id, name) VALUES ('proofPhotos', 'proofPhotos');
+INSERT INTO storage.buckets (id, name) VALUES ('messageFiles', 'messageFiles');
 
 
 INSERT INTO public.abteilungen (id, created_at, name, active, logo_url) VALUES (1, now(), 'Gloggi', true, NULL);

@@ -48,7 +48,7 @@ export class StationVisit {
     return imageStore.url
   }
 
-  toMessage() {
+  toChatFormat() {
     return {
       _id: this.id,
       senderId: useUserSession().userId,

@@ -9,7 +9,7 @@ using (((bucket_id = 'proofPhotos'::text) AND (EXISTS ( SELECT 1
   WHERE ((u.id = auth.uid()) AND (o.id = objects.owner))))));
 
 
-create policy "Enable uploading for logged in users"
+create policy "Enable uploading proof photos for logged in users"
 on "storage"."objects"
 as permissive
 for insert
