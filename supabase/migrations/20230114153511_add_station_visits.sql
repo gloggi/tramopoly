@@ -9,7 +9,8 @@ create table "public"."station_visits" (
     "proof_photo_path" text,
     "accepted_at" timestamp without time zone,
     "rejected_at" timestamp without time zone,
-    "needs_verification" boolean not null default true
+    "needs_verification" boolean not null default true,
+    "verified_at" timestamp without time zone
 );
 
 

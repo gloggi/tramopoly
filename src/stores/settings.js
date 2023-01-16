@@ -1,21 +1,21 @@
 import { useCollectionStore } from '@/stores/collectionStore'
-import { useEntryStore } from '@/stores/entryStore'
+import { defineStore } from 'pinia'
+import { supabase } from '@/client'
 
 export class Settings {
   constructor(data, subscribe) {
     this.id = data.id
+    this.gameStart = new Date(data.game_start)
     this.gameEnd = new Date(data.game_end)
     this.interestPeriod = data.interest_period
-    this.interestRate = data.interest_rate
+    this.interestRateStart = data.interest_rate_start
+    this.interestRateEnd = data.interest_rate_end
     this.messageTitle = data.message_title
     this.messageText = data.message_text
     this.messageType = data.message_type
     this.realEstateValueRatio = data.real_estate_value_ratio
     this.rentRatio = data.rent_ratio
     this.starterCash = data.starter_cash
-    this.mrTRewards = (data.mr_t_rewards || []).map(
-      (reward) => new MrTReward(reward, subscribe)
-    )
     this._subscribed = subscribe
   }
 
@@ -36,17 +36,36 @@ export class MrTReward {
   }
 }
 
-export const useSettings = (
-  id,
-  options = {
-    select: '*',
-  }
-) =>
-  useEntryStore(
-    'settings',
-    (data, subscribe) => new Settings(data, subscribe),
-    options
-  )(id)
+export const useSettings = () =>
+  defineStore(`settings`, {
+    state: () => ({ data: undefined, subscribed: false, fetching: false }),
+    getters: {
+      loading: (state) => state.data === undefined,
+      entry: (state) =>
+        state.data ? new Settings(state.data, state.subscribed) : null,
+    },
+    actions: {
+      subscribe() {
+        this.subscribed = true
+        supabase
+          .channel(`public:settings`)
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'settings' },
+            () => this.fetch(true)
+          )
+          .subscribe()
+        return this.fetch()
+      },
+      async fetch(forceReload = false) {
+        if ((this.fetching || this.data) && !forceReload) return
+        this.fetching = true
+        const { data } = await supabase.from('settings').select('*').single()
+        this.data = data
+        this.fetching = false
+      },
+    },
+  })()
 
 const useMrTRewards = (options = { select: '*' }) =>
   useCollectionStore(

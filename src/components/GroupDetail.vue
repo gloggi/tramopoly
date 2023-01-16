@@ -35,7 +35,7 @@
     <div class="card-content">
       <div class="columns is-vcentered">
         <div class="column">
-          <div class="title is-3">{{ group.saldo }}.-</div>
+          <div class="title is-3">{{ balance }}.-</div>
           <div class="subtitle is-6">Guäthabä</div>
         </div>
         <div class="column">
@@ -99,9 +99,12 @@
 </template>
 
 <script setup>
+import { gsap } from 'gsap'
 import { useGroup } from '@/stores/groups'
 import { storeToRefs } from 'pinia'
-import { toRefs } from 'vue'
+import { toRefs, ref } from 'vue'
+import { useGroupBalances } from '@/stores/groupBalances'
+
 const props = defineProps({
   groupId: { type: Number, required: true },
 })
@@ -111,6 +114,23 @@ const { groupId } = toRefs(props)
 const groupStore = useGroup(groupId.value)
 groupStore.subscribe()
 const { loading, entry: group } = storeToRefs(groupStore)
+
+const groupBalancesStore = useGroupBalances()
+groupBalancesStore.subscribe()
+const balance = ref(0)
+function updateBalanceWithin(seconds) {
+  gsap.to(balance, {
+    duration: seconds,
+    ease: 'linear',
+    snap: { value: 1 },
+    onComplete: () => updateBalanceWithin(Math.min(4, 2 * seconds)),
+    value: groupBalancesStore.balances.for(
+      groupId.value,
+      new Date().valueOf() + seconds * 1000
+    ),
+  })
+}
+updateBalanceWithin(1)
 
 // TODO
 const betterGroup = null
