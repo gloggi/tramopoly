@@ -54,8 +54,8 @@ export const useGroupBalances = () => {
         subscribeToTable('station_visits', () => this.fetch(true))
         return this.fetch()
       },
-      async fetch(forceReload = false) {
-        if ((this.fetching || this.data) && !forceReload) return
+      async fetch(forceReload = false, onDone = () => {}) {
+        if ((this.fetching || this.data) && !forceReload) return onDone()
         this.fetching = true
         this.fetchTime = new Date()
         const { data } = await supabase.rpc('calculate_balance_coeffs', {
@@ -63,6 +63,7 @@ export const useGroupBalances = () => {
         })
         this.data = data
         this.fetching = false
+        return onDone()
       },
     },
   })()

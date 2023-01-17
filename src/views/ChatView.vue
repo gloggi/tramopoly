@@ -7,7 +7,7 @@
       init-message="Willkommä bim Tramopoly-Chät 💬 Da chasch mit de Zentralä kommuniziärä. Mit äm Tram-Chnopf chasch Stationä und Jokärs bsuächä ↴"
       single-room
       @add-message="addMessage"
-      @textarea-action-handler="modalOpen = true"
+      @textarea-action-handler="openModal"
       @toggle-rooms-list="$router.push({ name: 'dashboard' })"
     >
       <template
@@ -80,6 +80,7 @@ import { useStationVisits } from '@/stores/stationVisits'
 import slugify from 'slugify'
 import { useGroup } from '@/stores/groups'
 import { useMessages } from '@/stores/messages'
+import { useGroupBalances } from '@/stores/groupBalances'
 
 export default {
   name: 'ChatView',
@@ -98,6 +99,7 @@ export default {
       operatorName: useOperator(this.groupId).operatorName,
       userId: userSessionStore.userId,
       userName: userSessionStore.user?.scoutName,
+      groupBalancesStore: useGroupBalances(),
     }
   },
   computed: {
@@ -135,7 +137,7 @@ export default {
       this.chatTop = Math.ceil(this.$refs.top.getBoundingClientRect().bottom)
     }
     if (this.$route.query.action === 'visitStation') {
-      this.modalOpen = true
+      this.openModal()
     }
   },
   methods: {
@@ -173,6 +175,11 @@ export default {
         )
       }
     },
+    async openModal() {
+      this.groupBalancesStore.fetch(true, () => {
+        this.modalOpen = true
+      })
+    },
     onChangeStation() {
       const responses = [
         'Nie! Zeig Fotti!',
@@ -183,8 +190,9 @@ export default {
       this.fileLabel = responses[Math.floor(Math.random() * responses.length)]
     },
     groupHasLessMoneyThan(cost) {
-      // TODO
-      return cost > 6000
+      return (
+        cost > this.groupBalancesStore.balances.for(this.groupId, new Date())
+      )
     },
     async submit() {
       const timestamp = new Date().toISOString()
