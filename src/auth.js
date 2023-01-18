@@ -25,6 +25,7 @@ async function signOut() {
       message: `Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä oder s Tramopoly imnä anonymä Browsertab ufzmachä.`,
     })
   }
+  supabase.getChannels().forEach((channel) => channel.unsubscribe())
 }
 
 export { signInWithOAuth, signOut }
