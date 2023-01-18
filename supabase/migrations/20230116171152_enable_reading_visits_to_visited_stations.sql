@@ -1,7 +1,5 @@
 drop policy "Enable reading own group's station visits" on "public"."station_visits";
 
-set check_function_bodies = off;
-
 create or replace view "public"."visited_stations" as  SELECT sv.id,
     sv.created_at,
     sv.group_id,

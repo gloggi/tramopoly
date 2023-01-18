@@ -5,8 +5,8 @@ import { supabase } from '@/client'
 export class Settings {
   constructor(data, subscribe) {
     this.id = data.id
-    this.gameStart = new Date(data.game_start)
-    this.gameEnd = new Date(data.game_end)
+    this.gameStart = data.game_start ? new Date(data.game_start) : null
+    this.gameEnd = data.game_end ? new Date(data.game_end) : null
     this.interestPeriod = data.interest_period
     this.interestRateStart = data.interest_rate_start
     this.interestRateEnd = data.interest_rate_end
@@ -30,7 +30,7 @@ export class Settings {
 export class MrTReward {
   constructor(data) {
     this.id = data.id
-    this.createdAt = new Date(data.created_at)
+    this.createdAt = data.created_at ? new Date(data.created_at) : null
     this.duration = data.duration
     this.value = data.value
   }

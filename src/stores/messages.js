@@ -6,7 +6,7 @@ import { useProfile } from '@/stores/profiles'
 export class Message {
   constructor(data, subscribe) {
     this.id = data.id
-    this.createdAt = new Date(data.created_at)
+    this.createdAt = data.created_at ? new Date(data.created_at) : null
     this.senderId = data.sender_id || data.sender?.id
     this._senderData = data.sender
     this.content = data.content
@@ -57,7 +57,7 @@ export class Message {
 export class MessageFile {
   constructor(data) {
     this.id = data.id
-    this.createdAt = new Date(data.created_at)
+    this.createdAt = data.created_at ? new Date(data.created_at) : null
     this._filePath = data.file_path
     this.messageId = data.message_id
   }

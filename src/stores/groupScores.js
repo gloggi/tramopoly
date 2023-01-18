@@ -3,7 +3,7 @@ import { supabase } from '@/client'
 import { useSettings } from '@/stores/settings'
 import { gsap } from 'gsap'
 
-export const useGroupBalances = () => {
+export const useGroupScores = () => {
   const subscribeToTable = (table, callback) => {
     supabase
       .channel(`public:${table}`)
@@ -16,16 +16,28 @@ export const useGroupBalances = () => {
 
   const timeline = gsap.timeline()
 
-  return defineStore('groupBalances', {
+  return defineStore('groupScores', {
     state: () => ({
       data: undefined,
       t0: undefined,
       subscribed: false,
       fetching: false,
       balances: {},
+      interestRates: {},
+      realEstatePoints: {},
+      mrTPoints: {},
     }),
     getters: {
       loading: (state) => state.data === undefined || settingsStore.loading,
+      totals: (state) =>
+        Object.fromEntries(
+          Object.keys(state.balances).map((key) => [
+            key,
+            state.balances[key] +
+              state.realEstatePoints[key] +
+              state.mrTPoints[key],
+          ])
+        ),
     },
     actions: {
       subscribe() {
@@ -49,24 +61,33 @@ export const useGroupBalances = () => {
       },
       _setData(data) {
         this.data = data
-        if (data && data.length) this.t0 = new Date(data[0].t0)
-        this._animate(2)
-      },
-      _animate(seconds) {
         this.data.forEach((entry) => {
           if (this.balances[entry.group_id] === undefined) {
             this.balances[entry.group_id] = 0
           }
+          this.interestRates[entry.group_id] = entry.c1
+          this.realEstatePoints[entry.group_id] = entry.real_estate_points
+          this.mrTPoints[entry.group_id] = entry.mr_t_points
         })
+        if (data && data.length)
+          this.t0 = data[0].t0 ? new Date(data[0].t0) : null
+        this._animate(2)
+      },
+      _animate(seconds) {
         timeline.clear().to(this.balances, {
           duration: seconds,
           ease: 'linear',
           snap: this.data.map((entry) => entry.group_id).join(','),
           onComplete: () => this._animate(Math.min(4, 2 * seconds)),
-          ...this._calculateAll(new Date().valueOf() + seconds * 1000),
+          ...this._calculateAllAt(new Date().valueOf() + seconds * 1000),
         })
       },
-      _calculateAll(t) {
+      _calculateAllAt(t) {
+        if (settingsStore.loading) {
+          return Object.fromEntries(
+            this.data.map(({ group_id }) => [group_id, 0])
+          )
+        }
         const { gameStart, gameEnd } = settingsStore.entry
         const clampedT = Math.min(Math.max(gameStart, t), gameEnd)
         const secondsSinceT0 = (clampedT - this.t0) / 1000

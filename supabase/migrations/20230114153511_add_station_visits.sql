@@ -7,10 +7,11 @@ create table "public"."station_visits" (
     "group_id" bigint not null,
     "station_id" bigint not null,
     "proof_photo_path" text,
-    "accepted_at" timestamp without time zone,
-    "rejected_at" timestamp without time zone,
+    "accepted_at" timestamp with time zone,
+    "rejected_at" timestamp with time zone,
+    "operator_comment" text,
     "needs_verification" boolean not null default true,
-    "verified_at" timestamp without time zone
+    "verified_at" timestamp with time zone
 );
 
 

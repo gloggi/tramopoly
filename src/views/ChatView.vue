@@ -17,6 +17,7 @@
       >
         <station-visit-message
           :station-visit="stationVisit"
+          :group-id="groupId"
         ></station-visit-message>
       </template>
       <template #custom-action-icon>
@@ -80,7 +81,7 @@ import { useStationVisits } from '@/stores/stationVisits'
 import slugify from 'slugify'
 import { useGroup } from '@/stores/groups'
 import { useMessages } from '@/stores/messages'
-import { useGroupBalances } from '@/stores/groupBalances'
+import { useGroupScores } from '@/stores/groupScores'
 
 export default {
   name: 'ChatView',
@@ -99,7 +100,7 @@ export default {
       operatorName: useOperator(this.groupId).operatorName,
       userId: userSessionStore.userId,
       userName: userSessionStore.user?.scoutName,
-      groupBalancesStore: useGroupBalances(),
+      groupScoresStore: useGroupScores(),
     }
   },
   computed: {
@@ -118,10 +119,7 @@ export default {
       return stationsStore.all
     },
     stationVisits() {
-      const stationVisitsStore = useStationVisits({
-        select: '*,group:group_id(*),station:station_id(*)',
-        filter: { group_id: this.groupId },
-      })
+      const stationVisitsStore = useStationVisits()
       stationVisitsStore.subscribe()
       return stationVisitsStore.all
     },
@@ -176,7 +174,7 @@ export default {
       }
     },
     async openModal() {
-      this.groupBalancesStore.fetch(true, () => {
+      this.groupScoresStore.fetch(true, () => {
         this.modalOpen = true
       })
     },
@@ -190,7 +188,7 @@ export default {
       this.fileLabel = responses[Math.floor(Math.random() * responses.length)]
     },
     groupHasLessMoneyThan(cost) {
-      return cost > this.groupBalancesStore.balances[this.groupId]
+      return cost > this.groupScoresStore.balances[this.groupId]
     },
     async submit() {
       const timestamp = new Date().toISOString()

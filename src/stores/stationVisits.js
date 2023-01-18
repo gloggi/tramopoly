@@ -8,16 +8,17 @@ import { useUserSession } from '@/stores/userSession'
 export class StationVisit {
   constructor(data, subscribe) {
     this.id = data.id
-    this.createdAt = new Date(data.created_at)
+    this.createdAt = data.created_at ? new Date(data.created_at) : null
     this._proofPhotoPath = data.proof_photo_path
     this.groupId = data.group_id || data.group?.id
     this._groupData = data.group
     this.stationId = data.station_id || data.station?.id
     this._stationData = data.station
-    this.acceptedAt = new Date(data.accepted_at)
-    this.rejectedAt = new Date(data.rejected_at)
+    this.acceptedAt = data.accepted_at ? new Date(data.accepted_at) : null
+    this.rejectedAt = data.rejected_at ? new Date(data.rejected_at) : null
+    this.operatorComment = data.operator_comment
     this.needsVerification = data.needs_verification
-    this.verifiedAt = new Date(data.verified_at)
+    this.verifiedAt = data.verified_at ? new Date(data.verified_at) : null
     this._subscribed = subscribe
   }
 
@@ -44,6 +45,21 @@ export class StationVisit {
   get proofPhotoUrl() {
     if (!this._proofPhotoPath) return null
     const imageStore = useImage('proofPhotos', this._proofPhotoPath)
+    imageStore.fetch()
+    return imageStore.url
+  }
+
+  get proofPhotoPreviewUrl() {
+    if (!this._proofPhotoPath) return null
+    const imageStore = useImage(
+      'proofPhotos',
+      this._proofPhotoPath,
+      undefined,
+      {
+        width: 300,
+        height: 200,
+      }
+    )
     imageStore.fetch()
     return imageStore.url
   }
@@ -84,7 +100,7 @@ export const useStationVisits = (
 
 export const useStationVisit = (
   id,
-  options = { select: '*,operator:operator_id(*)' }
+  options = { select: '*,group:group_id(*),station:station_id(*)' }
 ) =>
   useEntryStore(
     'station_visits',

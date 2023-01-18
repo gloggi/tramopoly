@@ -24,7 +24,9 @@
                 <h4 class="subtitle is-6">{{ group.abteilung.name }}</h4>
               </div>
               <div class="column is-narrow has-text-right">
-                <div class="title is-4">{{ group.totalPoints }}</div>
+                <div class="title is-4">
+                  {{ groupScoresStore.totals[groupId] }}
+                </div>
                 <div class="subtitle is-6">Pünkt insgesamt</div>
               </div>
             </div>
@@ -35,15 +37,24 @@
     <div class="card-content">
       <div class="columns is-vcentered">
         <div class="column">
-          <div class="title is-3">{{ balance }}.-</div>
+          <div class="title is-3">
+            {{ groupScoresStore.balances[groupId] }}.-
+            <span class="tag is-info is-small mb-2"
+              >+{{ interestPerMinute }}.-/min</span
+            >
+          </div>
           <div class="subtitle is-6">Guäthabä</div>
         </div>
         <div class="column">
-          <div class="title is-3">{{ group.realEstatePoints }}</div>
+          <div class="title is-3">
+            {{ groupScoresStore.realEstatePoints[groupId] }}
+          </div>
           <div class="subtitle is-6">Immobiliä&shy;pünkt</div>
         </div>
         <div class="column">
-          <div class="title is-3">{{ group.mrTPoints }}</div>
+          <div class="title is-3">
+            {{ groupScoresStore.mrTPoints[groupId] }}
+          </div>
           <div class="subtitle is-6">Mr. T Pünkt</div>
         </div>
       </div>
@@ -101,8 +112,8 @@
 <script setup>
 import { useGroup } from '@/stores/groups'
 import { storeToRefs } from 'pinia'
-import { toRefs, computed } from 'vue'
-import { useGroupBalances } from '@/stores/groupBalances'
+import { toRefs, computed, onMounted } from 'vue'
+import { useGroupScores } from '@/stores/groupScores'
 
 const props = defineProps({
   groupId: { type: Number, required: true },
@@ -114,13 +125,16 @@ const groupStore = useGroup(groupId.value)
 groupStore.subscribe()
 const { loading: groupsLoading, entry: group } = storeToRefs(groupStore)
 
-const groupBalancesStore = useGroupBalances()
-groupBalancesStore.subscribe()
-const { loading: groupBalancesLoading } = storeToRefs(groupBalancesStore)
-const balance = computed(() => groupBalancesStore.balances[groupId.value])
+const groupScoresStore = useGroupScores()
+groupScoresStore.subscribe()
+const { loading: groupScoresLoading } = storeToRefs(groupScoresStore)
+onMounted(() => {
+  groupScoresStore.fetch(true)
+})
 
-const loading = computed(
-  () => groupsLoading.value || groupBalancesLoading.value
+const loading = computed(() => groupsLoading.value || groupScoresLoading.value)
+const interestPerMinute = computed(() =>
+  Math.round(groupScoresStore.interestRates[groupId.value] * 60)
 )
 
 // TODO

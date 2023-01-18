@@ -25,8 +25,13 @@ export const useImages = (bucket, paths) =>
     },
   })()
 
-export const useImage = (bucket, path, initialData = undefined) =>
-  defineStore(`image-${bucket}-${path}`, {
+export const useImage = (
+  bucket,
+  path,
+  initialData = undefined,
+  transform = undefined
+) => {
+  return defineStore(`image-${bucket}-${path}-${JSON.stringify(transform)}`, {
     state: () => ({ url: initialData, fetching: false }),
     getters: {
       loading: (state) => state.url === undefined,
@@ -37,9 +42,10 @@ export const useImage = (bucket, path, initialData = undefined) =>
         this.fetching = true
         const { data } = await supabase.storage
           .from(bucket)
-          .createSignedUrl(path, 10 * 60 * 60)
+          .createSignedUrl(path, 10 * 60 * 60, { transform })
         this.url = data.signedUrl
         this.fetching = false
       },
     },
   })()
+}
