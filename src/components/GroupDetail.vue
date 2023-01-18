@@ -59,9 +59,12 @@
         </div>
       </div>
     </div>
-    <section class="card-content has-background-grey-lighter">
+    <section
+      v-if="!(betterGroupLoading && worseGroupLoading)"
+      class="card-content has-background-grey-lighter"
+    >
       <div class="columns is-mobile has-text-left">
-        <div class="column">
+        <div v-if="!betterGroupLoading" class="column">
           <div class="title is-6">Die Nächscht&shy;bessärä</div>
           <div v-if="betterGroup" class="columns is-vcentered is-gapless">
             <div class="column is-narrow is-flex">
@@ -69,7 +72,7 @@
                 ><img
                   :title="betterGroup.abteilung.name"
                   style="opacity: 0.7"
-                  :src="'/' + betterGroup.abteilung.id + '.svg'"
+                  :src="betterGroup.abteilung.logoUrl"
               /></span>
             </div>
             <div class="column">
@@ -79,13 +82,13 @@
               <h4 class="subtitle is-6">{{ betterGroup.totalPoints }} Pünkt</h4>
             </div>
           </div>
-          <div v-else>
+          <div v-else-if="betterGroup === null">
             <h4 class="title is-4" style="clear: left">
               👑👸 Käi Gruppä isch bessär!
             </h4>
           </div>
         </div>
-        <div class="column" v-if="worseGroup">
+        <div v-if="!worseGroupLoading && worseGroup" class="column">
           <div class="title is-6">Die Nächscht&shy;schlächtärä</div>
           <div class="columns is-vcentered is-gapless">
             <div class="column is-narrow is-flex">
@@ -93,7 +96,7 @@
                 ><img
                   :title="worseGroup.abteilung.name"
                   style="opacity: 0.7"
-                  :src="'/' + worseGroup.abteilung.id + '.svg'"
+                  :src="worseGroup.abteilung.logoUrl"
               /></span>
             </div>
             <div class="column">
@@ -114,6 +117,7 @@ import { useGroup } from '@/stores/groups'
 import { storeToRefs } from 'pinia'
 import { toRefs, computed, onMounted } from 'vue'
 import { useGroupScores } from '@/stores/groupScores'
+import { useCompetitors } from '@/composables/useCompetitors'
 
 const props = defineProps({
   groupId: { type: Number, required: true },
@@ -137,9 +141,8 @@ const interestPerMinute = computed(() =>
   Math.round(groupScoresStore.interestRates[groupId.value] * 60)
 )
 
-// TODO
-const betterGroup = null
-const worseGroup = null
+const { betterGroup, betterGroupLoading, worseGroup, worseGroupLoading } =
+  useCompetitors(groupId)
 </script>
 
 <script>
