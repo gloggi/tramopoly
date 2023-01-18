@@ -1,31 +1,7 @@
 import { defineStore } from 'pinia'
 import { supabase } from '@/client'
 import { useSettings } from '@/stores/settings'
-
-export class GroupBalances {
-  constructor(data, t0) {
-    this.data = data
-    this.t0 = t0
-    this._settingsStore = useSettings()
-    this._settingsStore.subscribe()
-  }
-
-  for(groupId, t = this.t0) {
-    const coefficients = this.data?.find(
-      (balances) => balances.group_id === groupId
-    )
-    if (!coefficients || !this._settings()) return 0
-    const { c0, c1 } = coefficients
-    const { gameStart, gameEnd } = this._settings()
-    const secondsSinceCalculationTime =
-      (Math.min(Math.max(gameStart, t), gameEnd) - this.t0) / 1000
-    return Math.floor(c0 + secondsSinceCalculationTime * c1)
-  }
-
-  _settings() {
-    return this._settingsStore.entry
-  }
-}
+import { gsap } from 'gsap'
 
 export const useGroupBalances = () => {
   const subscribeToTable = (table, callback) => {
@@ -34,16 +10,22 @@ export const useGroupBalances = () => {
       .on('postgres_changes', { event: '*', schema: 'public', table }, callback)
       .subscribe()
   }
+
+  const settingsStore = useSettings()
+  settingsStore.subscribe()
+
+  const timeline = gsap.timeline()
+
   return defineStore('groupBalances', {
     state: () => ({
       data: undefined,
-      fetchTime: undefined,
+      t0: undefined,
       subscribed: false,
       fetching: false,
+      balances: {},
     }),
     getters: {
-      loading: (state) => state.data === undefined,
-      balances: (state) => new GroupBalances(state.data, state.fetchTime),
+      loading: (state) => state.data === undefined || settingsStore.loading,
     },
     actions: {
       subscribe() {
@@ -57,13 +39,43 @@ export const useGroupBalances = () => {
       async fetch(forceReload = false, onDone = () => {}) {
         if ((this.fetching || this.data) && !forceReload) return onDone()
         this.fetching = true
-        this.fetchTime = new Date()
+        this.t0 = new Date()
         const { data } = await supabase.rpc('calculate_balance_coeffs', {
-          t0: this.fetchTime,
+          t0: this.t0,
         })
-        this.data = data
+        this._setData(data)
         this.fetching = false
         return onDone()
+      },
+      _setData(data) {
+        this.data = data
+        if (data && data.length) this.t0 = new Date(data[0].t0)
+        this._animate(2)
+      },
+      _animate(seconds) {
+        this.data.forEach((entry) => {
+          if (this.balances[entry.group_id] === undefined) {
+            this.balances[entry.group_id] = 0
+          }
+        })
+        timeline.clear().to(this.balances, {
+          duration: seconds,
+          ease: 'linear',
+          snap: this.data.map((entry) => entry.group_id).join(','),
+          onComplete: () => this._animate(Math.min(4, 2 * seconds)),
+          ...this._calculateAll(new Date().valueOf() + seconds * 1000),
+        })
+      },
+      _calculateAll(t) {
+        const { gameStart, gameEnd } = settingsStore.entry
+        const clampedT = Math.min(Math.max(gameStart, t), gameEnd)
+        const secondsSinceT0 = (clampedT - this.t0) / 1000
+        return Object.fromEntries(
+          this.data.map(({ group_id, c0, c1 }) => [
+            group_id,
+            Math.floor(c0 + secondsSinceT0 * c1),
+          ])
+        )
       },
     },
   })()

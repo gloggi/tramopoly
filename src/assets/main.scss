@@ -94,3 +94,8 @@ textarea.textarea::placeholder {
   width: 200px;
   background-size: cover;
 }
+
+/* TODO remove if reverting back to using upstream vue-advanced-chat web component */
+.vac-room-header .vac-rotate-icon {
+  transform: rotate(0) !important;
+}

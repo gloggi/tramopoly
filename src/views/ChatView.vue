@@ -190,9 +190,7 @@ export default {
       this.fileLabel = responses[Math.floor(Math.random() * responses.length)]
     },
     groupHasLessMoneyThan(cost) {
-      return (
-        cost > this.groupBalancesStore.balances.for(this.groupId, new Date())
-      )
+      return cost > this.groupBalancesStore.balances[this.groupId]
     },
     async submit() {
       const timestamp = new Date().toISOString()

@@ -99,10 +99,9 @@
 </template>
 
 <script setup>
-import { gsap } from 'gsap'
 import { useGroup } from '@/stores/groups'
 import { storeToRefs } from 'pinia'
-import { toRefs, ref } from 'vue'
+import { toRefs, computed } from 'vue'
 import { useGroupBalances } from '@/stores/groupBalances'
 
 const props = defineProps({
@@ -113,24 +112,16 @@ const { groupId } = toRefs(props)
 
 const groupStore = useGroup(groupId.value)
 groupStore.subscribe()
-const { loading, entry: group } = storeToRefs(groupStore)
+const { loading: groupsLoading, entry: group } = storeToRefs(groupStore)
 
 const groupBalancesStore = useGroupBalances()
 groupBalancesStore.subscribe()
-const balance = ref(0)
-function updateBalanceWithin(seconds) {
-  gsap.to(balance, {
-    duration: seconds,
-    ease: 'linear',
-    snap: { value: 1 },
-    onComplete: () => updateBalanceWithin(Math.min(4, 2 * seconds)),
-    value: groupBalancesStore.balances.for(
-      groupId.value,
-      new Date().valueOf() + seconds * 1000
-    ),
-  })
-}
-updateBalanceWithin(1)
+const { loading: groupBalancesLoading } = storeToRefs(groupBalancesStore)
+const balance = computed(() => groupBalancesStore.balances[groupId.value])
+
+const loading = computed(
+  () => groupsLoading.value || groupBalancesLoading.value
+)
 
 // TODO
 const betterGroup = null
