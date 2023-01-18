@@ -29,6 +29,15 @@
     <div class="card modal-card">
       <div class="card-content">
         <form @submit.prevent="submit">
+          <o-field label="Guäthabä">
+            <o-input
+              v-model="balance"
+              class="has-text-weight-semibold"
+              expanded
+              disabled
+              @input="onChangeStation"
+            ></o-input>
+          </o-field>
           <o-field label="Wo sinder grad?">
             <o-select
               v-model="station"
@@ -128,6 +137,12 @@ export default {
         .map((message) => message.toChatFormat())
         .concat(this.stationVisits.map((sv) => sv.toChatFormat()))
         .sort((a, b) => a.createdAt - b.createdAt)
+    },
+    balance: {
+      get() {
+        return this.groupScoresStore.balances[this.groupId] + '.-'
+      },
+      set() {},
     },
   },
   async mounted() {

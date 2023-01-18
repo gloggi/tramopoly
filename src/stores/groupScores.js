@@ -64,23 +64,65 @@ export const useGroupScores = () => {
         this.data.forEach((entry) => {
           if (this.balances[entry.group_id] === undefined) {
             this.balances[entry.group_id] = 0
+            this.interestRates[entry.group_id] = 0
+            this.realEstatePoints[entry.group_id] = 0
+            this.mrTPoints[entry.group_id] = 0
           }
-          this.interestRates[entry.group_id] = entry.c1
-          this.realEstatePoints[entry.group_id] = entry.real_estate_points
-          this.mrTPoints[entry.group_id] = entry.mr_t_points
         })
         if (data && data.length)
           this.t0 = data[0].t0 ? new Date(data[0].t0) : null
         this._animate(2)
       },
       _animate(seconds) {
-        timeline.clear().to(this.balances, {
+        const commonTweenVars = {
           duration: seconds,
           ease: 'linear',
           snap: this.data.map((entry) => entry.group_id).join(','),
-          onComplete: () => this._animate(Math.min(4, 2 * seconds)),
           ...this._calculateAllAt(new Date().valueOf() + seconds * 1000),
-        })
+        }
+        timeline
+          .clear()
+          .to(this.balances, {
+            ...commonTweenVars,
+            onComplete: () => this._animate(Math.min(4, 2 * seconds)),
+            ...this._calculateAllAt(new Date().valueOf() + seconds * 1000),
+          })
+          .to(
+            this.interestRates,
+            {
+              ...commonTweenVars,
+              ...Object.fromEntries(
+                this.data.map(({ group_id, c1 }) => [group_id, c1])
+              ),
+            },
+            0
+          )
+          .to(
+            this.realEstatePoints,
+            {
+              ...commonTweenVars,
+              ...Object.fromEntries(
+                this.data.map(({ group_id, real_estate_points }) => [
+                  group_id,
+                  real_estate_points,
+                ])
+              ),
+            },
+            0
+          )
+          .to(
+            this.mrTPoints,
+            {
+              ...commonTweenVars,
+              ...Object.fromEntries(
+                this.data.map(({ group_id, mr_t_points }) => [
+                  group_id,
+                  mr_t_points,
+                ])
+              ),
+            },
+            0
+          )
       },
       _calculateAllAt(t) {
         if (settingsStore.loading) {
