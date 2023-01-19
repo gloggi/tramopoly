@@ -30,11 +30,11 @@
       </div>
     </header>
     <div class="card-content">
-      <div class="columns is-vcentered">
+      <div class="columns is-align-items-end">
         <div class="column">
           <div class="title is-3">
             {{ groupScoresStore.balances[groupId] }}.-
-            <span class="tag is-info is-small mb-2">
+            <span class="tag is-info is-small mb-2 is-valign-text-top">
               +{{ interestPerMinute }}.-/min
             </span>
           </div>
@@ -49,7 +49,10 @@
         <div class="column">
           <div class="title is-3">
             {{ groupScoresStore.mrTPoints[groupId] }}
-            <span v-if="groupIsCurrentlyMrT" class="tag is-info is-small mb-2">
+            <span
+              v-if="groupIsCurrentlyMrT"
+              class="tag is-info is-small mb-2 is-valign-text-top"
+            >
               Aktuellä Mr. T!
             </span>
           </div>
@@ -77,7 +80,9 @@
               <h4 class="title is-4" style="clear: left">
                 {{ betterGroup.name }}
               </h4>
-              <h4 class="subtitle is-6">{{ betterGroup.totalPoints }} Pünkt</h4>
+              <h4 class="subtitle is-6">
+                {{ groupScoresStore.totals[betterGroup.id] }} Pünkt
+              </h4>
             </div>
           </div>
           <div v-else-if="betterGroup === null">
@@ -101,7 +106,9 @@
               <h4 class="title is-4" style="clear: left">
                 {{ worseGroup.name }}
               </h4>
-              <h4 class="subtitle is-6">{{ worseGroup.totalPoints }} Pünkt</h4>
+              <h4 class="subtitle is-6">
+                {{ groupScoresStore.totals[worseGroup.id] }} Pünkt
+              </h4>
             </div>
           </div>
         </div>
@@ -136,7 +143,7 @@ onMounted(() => {
 
 const loading = computed(() => groupsLoading.value || groupScoresLoading.value)
 const interestPerMinute = computed(() =>
-  Math.round(groupScoresStore.interestRates[groupId.value] * 60)
+  Math.round(groupScoresStore.interestRates[groupId.value])
 )
 
 const { betterGroup, betterGroupLoading, worseGroup, worseGroupLoading } =

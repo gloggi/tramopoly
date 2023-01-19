@@ -83,7 +83,7 @@ textarea.textarea::placeholder {
 }
 
 @media screen and (min-width: 769px) {
-  .is-flex-direction-row-desktop {
+  .is-flex-direction-row-widescreen {
     flex-direction: row !important;
   }
 }
@@ -94,7 +94,9 @@ textarea.textarea::placeholder {
   width: 300px;
   background-size: cover;
 }
-
+.is-valign-text-top {
+  vertical-align: text-top !important;
+}
 .is-multiline-text {
   white-space: pre-wrap !important;
 }

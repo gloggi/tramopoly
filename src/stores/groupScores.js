@@ -92,7 +92,7 @@ export const useGroupScores = () => {
             {
               ...commonTweenVars,
               ...Object.fromEntries(
-                this.data.map(({ group_id, c1 }) => [group_id, c1])
+                this.data.map(({ group_id, c1 }) => [group_id, c1 * 60])
               ),
             },
             0

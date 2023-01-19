@@ -1,11 +1,11 @@
 <template>
   <div
-    class="column is-full is-one-third-desktop is-offset-one-third-desktop has-text-centered"
+    class="column is-full is-one-third-widescreen is-offset-one-third-widescreen has-text-centered"
   >
     <slot v-if="operator" name="message"></slot>
     <div class="card">
       <div
-        class="card-content is-flex is-flex-direction-column is-flex-direction-row-desktop is-justify-content-space-evenly"
+        class="card-content is-flex is-flex-direction-column is-flex-direction-row-widescreen is-justify-content-space-evenly"
         style="gap: 0.5rem"
       >
         <div>

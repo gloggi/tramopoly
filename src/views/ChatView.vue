@@ -51,13 +51,12 @@
                 :key="station.id"
                 :disabled="groupHasLessMoneyThan(station.value)"
               >
-                <template v-if="groupHasLessMoneyThan(station.value)"
-                  >🚫 {{ station.name }} - {{ station.value }} (nöd gnuäg
-                  Cäsh)</template
-                >
-                <template v-else
-                  >{{ station.name }} - {{ station.value }}</template
-                >
+                <template v-if="groupHasLessMoneyThan(station.value)">
+                  🚫 {{ station.name }} - {{ station.value }}.- (nöd gnuäg Cäsh)
+                </template>
+                <template v-else>
+                  {{ station.name }} - {{ station.value }}.-
+                </template>
               </option>
             </o-select>
           </o-field>

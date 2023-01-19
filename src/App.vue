@@ -7,7 +7,7 @@
         <a v-if="isLoggedIn" @click="signOut"> Uusloggä </a>
         <a @click="support">Hilfe</a>
       </div>
-      <div class="level-item is-gap-2" v-if="!isOperator">
+      <div class="level-item is-gap-2" v-if="isLoggedIn && !isOperator">
         <router-link :to="{ name: 'dashboard' }">Dashboard</router-link>
         <router-link :to="{ name: 'chat' }">Chat</router-link>
       </div>

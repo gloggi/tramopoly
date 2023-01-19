@@ -16,17 +16,11 @@
               ></o-loading>
             </span>
           </div>
-          <div class="is-size-6 is-multiline-text">
-            {{ stationVisit.operatorComment }}
-          </div>
         </template>
         <template v-else-if="isInvalid">
           <div class="is-size-5 has-text-weight-semibold">
             {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi, aber
             miär händ läidär nöd gnuäg Cäsh gha zums chaufä 💔
-          </div>
-          <div class="is-size-6 is-multiline-text">
-            {{ stationVisit.operatorComment }}
           </div>
         </template>
         <template v-else>
@@ -38,18 +32,12 @@
                 >+{{ interestPerMinute }}.-/min</span
               >
             </div>
-            <div class="is-size-6 is-multiline-text">
-              {{ stationVisit.operatorComment }}
-            </div>
           </template>
           <template v-else>
             <div class="is-size-5 has-text-weight-semibold">
               {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi, aber
               die Station ghört scho {{ stationOwnerName }}. Darum hämmer müäsä
               {{ rentAmount }} Miäti zahlä 💸
-            </div>
-            <div class="is-size-6 is-multiline-text">
-              {{ stationVisit.operatorComment }}
             </div>
           </template>
         </template>
@@ -58,9 +46,6 @@
         <div class="is-size-5 has-text-weight-semibold">
           {{ visitorGroupName }} hät behauptät, dass sie bi
           {{ visitedStationName }} gsi sind, aber d Zentralä hät das abglehnt 🙅
-        </div>
-        <div class="is-size-6 is-multiline-text">
-          {{ stationVisit.operatorComment }}
         </div>
       </template>
       <template v-else>
@@ -75,9 +60,6 @@
               :can-cancel="false"
             ></o-loading>
           </span>
-        </div>
-        <div class="is-size-6 is-multiline-text">
-          {{ stationVisit.operatorComment }}
         </div>
       </template>
     </template>
@@ -95,6 +77,9 @@
         </div>
       </template>
     </template>
+    <div class="is-size-6 is-multiline-text">
+      {{ stationVisit.operatorComment }}
+    </div>
     <div v-if="stationVisit.proofPhotoUrl">
       <a v-if="isOwnGroup" :href="stationVisit.proofPhotoUrl" target="_blank">
         <span

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="column is-full is-one-third-desktop is-offset-one-third-desktop mt-5 is-flex is-justify-content-center"
+    class="column is-full is-one-third-widescreen is-offset-one-third-widescreen mt-5 is-flex is-justify-content-center"
   >
     <o-button class="midata-button" @click="signInWithOAuth"
       >Mit MiData iigloggä</o-button

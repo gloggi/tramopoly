@@ -1,6 +1,6 @@
 <template>
   <div
-    class="card column is-full is-one-third-desktop is-offset-one-third-desktop"
+    class="card column is-full is-one-third-widescreen is-offset-one-third-widescreen"
   >
     <form @submit.prevent="register">
       <o-field label="Händynummärä"
@@ -50,7 +50,7 @@
   </div>
   <div
     v-if="shouldVerifyOtp"
-    class="card column is-full is-one-third-desktop is-offset-one-third-desktop"
+    class="card column is-full is-one-third-widescreen is-offset-one-third-widescreen"
   >
     <form v-on:submit.prevent="verifyOtp">
       <o-field label="SMS-Code"
