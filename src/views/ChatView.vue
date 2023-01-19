@@ -161,7 +161,7 @@ export default {
             const groupName = useGroup(this.groupId).entry?.name || this.groupId
             const extension = file.extension
             const filename = slugify(
-              `${timestamp}-${groupName}-${this.userName}}`
+              `${timestamp}-${groupName}-${this.userName}`
             ).substring(0, 62 - extension.length)
             const { data, error } = await supabase.storage
               .from('messageFiles')
@@ -212,13 +212,13 @@ export default {
       const groupName = useGroup(this.groupId).entry?.name || this.groupId
       const extension = this.photo.name.split('.').pop()
       const filename = slugify(
-        `${timestamp}-${stationName}-${groupName}}`
+        `${timestamp}-${stationName}-${groupName}`
       ).substring(0, 62 - extension.length)
       const { data, error: err } = await supabase.storage
         .from('proofPhotos')
         .upload(`${filename}.${extension}`, this.photo)
       if (err) {
-        console.log(error)
+        console.log(err)
         showAlert(
           'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä und dä Stationsbsuäch nomal z erfassä.'
         )

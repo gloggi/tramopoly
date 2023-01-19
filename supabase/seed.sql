@@ -1,5 +1,6 @@
 INSERT INTO storage.buckets (id, name) VALUES ('proofPhotos', 'proofPhotos');
 INSERT INTO storage.buckets (id, name) VALUES ('messageFiles', 'messageFiles');
+INSERT INTO storage.buckets (id, name, public) VALUES ('abteilungLogos', 'abteilungLogos', TRUE);
 
 
 INSERT INTO public.settings (game_end) VALUES (now() + interval '10 hours');

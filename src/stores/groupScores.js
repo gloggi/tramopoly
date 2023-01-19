@@ -42,6 +42,7 @@ export const useGroupScores = () => {
     actions: {
       subscribe() {
         this.subscribed = true
+        subscribeToTable('abteilungen', () => this.fetch(true))
         subscribeToTable('groups', () => this.fetch(true))
         subscribeToTable('settings', () => this.fetch(true))
         // subscribeToTable('joker_visits', () => this.fetch(true)) // TODO

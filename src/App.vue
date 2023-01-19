@@ -11,6 +11,9 @@
         <router-link :to="{ name: 'dashboard' }">Dashboard</router-link>
         <router-link :to="{ name: 'chat' }">Chat</router-link>
       </div>
+      <div class="level-item is-gap-2" v-if="isLoggedIn && isAdmin">
+        <router-link :to="{ name: 'admin' }">Admin</router-link>
+      </div>
     </div>
   </div>
   <main class="columns is-multiline">
@@ -63,7 +66,7 @@ import { useUserSession } from '@/stores/userSession'
 import { storeToRefs } from 'pinia'
 
 const userSession = useUserSession()
-const { loading, isLoggedIn, isRegistered, user, isOperator } =
+const { loading, isLoggedIn, isRegistered, user, isOperator, isAdmin } =
   storeToRefs(userSession)
 userSession.subscribeAuth()
 userSession.fetchAuth()

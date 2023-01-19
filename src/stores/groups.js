@@ -6,6 +6,7 @@ export class Group {
   constructor(data, subscribe) {
     this.id = data.id
     this.name = data.name
+    this.active = data.active
     this.abteilungId = data.abteilung_id || data.abteilung?.id
     this._abteilungData = data.abteilung
     this._subscribed = subscribe

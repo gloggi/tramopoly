@@ -4,7 +4,7 @@ import { supabase } from '@/client'
 function applyFilterToQuery(query, filter) {
   if (!filter) return query
   return Object.entries(filter).reduce((query, [operator, args]) => {
-    if (!query.operator || typeof query.operator !== 'function') {
+    if (!query[operator] || typeof query[operator] !== 'function') {
       const key = operator
       const value = args
       return query.eq(key, value)

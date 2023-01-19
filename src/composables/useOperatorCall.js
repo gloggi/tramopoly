@@ -33,7 +33,15 @@ export function useOperatorCall(user, operator) {
       : `tel:${operator.value.phone}`
   )
 
-  return { callOperator, finishCall, loggedInUserIsActiveCaller, callLinkHref }
+  const activeCallerId = computed(() => operator.value?.activeCallerId)
+
+  return {
+    callOperator,
+    finishCall,
+    loggedInUserIsActiveCaller,
+    callLinkHref,
+    activeCallerId,
+  }
 }
 
 async function setActiveCall(operatorId, callerId) {
