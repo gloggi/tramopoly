@@ -29,36 +29,7 @@
             Minutä bi dä Zentralä aalütä. Bitte mäldäd oi bi oinä
             Telefonischt*innä.</o-notification
           >
-          <o-button
-            v-if="!operatorBusy"
-            variant="primary"
-            outlined
-            tag="a"
-            target="_blank"
-            :href="callLinkHref"
-            @click="callOperator"
-          >
-            📞 Zentralä ({{ operatorName }})
-          </o-button>
-          <o-button
-            v-else-if="loggedInUserIsActiveCaller"
-            variant="danger"
-            outlined
-            @click="finishCall"
-          >
-            🚫 Färtig telefoniärt
-          </o-button>
-          <o-button
-            v-else
-            variant="danger"
-            class="button is-link is-outlined"
-            tag="a"
-            target="_blank"
-            :href="callLinkHref"
-            @click="callOperator"
-          >
-            🚫 Zentralä ({{ operatorName }} bsetzt)
-          </o-button>
+          <call-operator-button v-if="user" :user="user"></call-operator-button>
           <div class="is-size-7" style="margin-top: 10px">
             {{ operatorPhoneInWords }}
           </div>
@@ -74,7 +45,8 @@
           <h4 class="card-header-title title is-4">Wo isch dä Mr. T? 🕵️</h4>
         </header>
         <div class="card-content">
-          <p>{{ mrTLocation }}</p>
+          <p>Zum das usäfindä, muäsch i dä Zentralä aalütä.</p>
+          <call-operator-button v-if="user" :user="user"></call-operator-button>
         </div>
       </div>
     </div>
@@ -87,7 +59,7 @@ import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import GroupDetail from '@/components/GroupDetail.vue'
 import { useOperator } from '@/composables/useOperator'
-import { useOperatorCall } from '@/composables/useOperatorCall'
+import CallOperatorButton from '@/components/CallOperatorButton'
 
 const userSession = useUserSession()
 const { user, isOperator } = storeToRefs(userSession)
@@ -97,14 +69,9 @@ if (isOperator.value) {
   router.replace({ name: 'zentrale' })
 }
 
-const { operator, operatorName, operatorBusy, operatorPhoneInWords } =
-  useOperator(user.value.groupId)
-
-const { callOperator, finishCall, loggedInUserIsActiveCaller, callLinkHref } =
-  useOperatorCall(user, operator)
+const { operator, operatorPhoneInWords } = useOperator(user.value.groupId)
 
 // TODO
-const mrTLocation = ''
 const groupIsCurrentlyMrT = false
 const mrTShouldCallOperator = false
 </script>

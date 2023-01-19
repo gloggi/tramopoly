@@ -2,11 +2,6 @@
   <div class="card" v-if="!loading">
     <header class="card-content has-background-light">
       <slot></slot>
-      <span
-        v-if="group.isCurrentlyMrT"
-        class="tag is-info is-medium is-pulled-right mb-2"
-        >Aktuellä Mr. T!</span
-      >
       <div v-if="group.name" style="clear: both">
         <div class="columns is-vcentered is-gapless has-text-left">
           <div v-if="group.abteilung.id" class="column is-narrow is-flex">
@@ -39,9 +34,9 @@
         <div class="column">
           <div class="title is-3">
             {{ groupScoresStore.balances[groupId] }}.-
-            <span class="tag is-info is-small mb-2"
-              >+{{ interestPerMinute }}.-/min</span
-            >
+            <span class="tag is-info is-small mb-2">
+              +{{ interestPerMinute }}.-/min
+            </span>
           </div>
           <div class="subtitle is-6">Guäthabä</div>
         </div>
@@ -54,6 +49,9 @@
         <div class="column">
           <div class="title is-3">
             {{ groupScoresStore.mrTPoints[groupId] }}
+            <span v-if="groupIsCurrentlyMrT" class="tag is-info is-small mb-2">
+              Aktuellä Mr. T!
+            </span>
           </div>
           <div class="subtitle is-6">Mr. T Pünkt</div>
         </div>
@@ -143,6 +141,9 @@ const interestPerMinute = computed(() =>
 
 const { betterGroup, betterGroupLoading, worseGroup, worseGroupLoading } =
   useCompetitors(groupId)
+
+// TODO
+const groupIsCurrentlyMrT = false
 </script>
 
 <script>
