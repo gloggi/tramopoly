@@ -17,17 +17,16 @@
         label="Namä"
         sortable
       >
-        <span>
+        <div>
           <span class="has-text-weight-bold">{{ row.scoutName }}</span>
-
           <span
             v-if="isCurrentlyMrT(row).value"
-            class="tag is-info is-pulled-right is-small mb-2 is-valign-text-top"
+            class="tag is-info is-pulled-right is-small mb-2 is-valign-middle has-text-weight-bold"
             title="🕵️"
           >
             Mr. T
           </span>
-        </span>
+        </div>
       </o-table-column>
       <o-table-column
         #default="{ row }"

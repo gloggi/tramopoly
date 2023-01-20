@@ -10,8 +10,7 @@
       striped
       hoverable
       :row-class="rowClass"
-      default-sort="totalPoints"
-      default-sort-direction="desc"
+      default-sort="name"
       style="table-layout: fixed"
     >
       <o-table-column #default="{ row }" field="name" label="Abteilig" sortable>
@@ -25,12 +24,16 @@
         </span>
         <span class="has-text-weight-bold">{{ row.name }}</span>
       </o-table-column>
-      <o-table-column #default="{ row }" field="active" label="Aktiv" sortable>
-        <span>
-          <o-switch
-            :model-value="row.active"
-            @update:modelValue="(value) => setAbteilungActive(row.id, value)"
-          ></o-switch>
+      <o-table-column
+        #default="{ row }"
+        field="totalPoints"
+        label="Total"
+        sortable
+        numeric
+        :custom-sort="sortByScore(totals)"
+      >
+        <span class="has-text-weight-bold">
+          {{ totals[row.id] }}
         </span>
       </o-table-column>
       <o-table-column
@@ -41,13 +44,15 @@
         numeric
         :custom-sort="sortByScore(balances)"
       >
-        {{ balances[row.id] }}
-        <span
-          v-if="row.id in interestRates"
-          class="tag is-info is-small mb-2 is-valign-text-top"
-        >
-          +{{ interestRates[row.id] }}.-/min
-        </span>
+        <div>
+          {{ balances[row.id] }}
+          <span
+            v-if="row.id in interestRates"
+            class="tag is-info is-small mb-2 is-valign-middle has-text-weight-bold is-inline-flex"
+          >
+            +{{ interestRates[row.id] }}.-/min
+          </span>
+        </div>
       </o-table-column>
       <o-table-column
         #default="{ row }"
@@ -65,19 +70,17 @@
         sortable
         numeric
         :custom-sort="sortByScore(mrTPoints)"
-        >{{ mrTPoints[row.id] }}</o-table-column
       >
-      <o-table-column
-        #default="{ row }"
-        field="totalPoints"
-        label="Total"
-        sortable
-        numeric
-        :custom-sort="sortByScore(totals)"
-      >
-        <span class="has-text-weight-bold">
-          {{ totals[row.id] }}
-        </span>
+        <div>
+          {{ mrTPoints[row.id] }}
+          <span
+            v-if="isCurrentlyMrT(row).value"
+            class="tag is-info is-small mb-2 is-valign-middle has-text-weight-bold is-inline-flex"
+            title="🕵️"
+          >
+            Mr. T
+          </span>
+        </div>
       </o-table-column>
       <o-table-column
         #default="{ row }"
@@ -103,6 +106,14 @@
           </abteilung-edit-modal>
         </span>
       </o-table-column>
+      <o-table-column #default="{ row }" field="active" label="Aktiv" sortable>
+        <span>
+          <o-switch
+            :model-value="row.active"
+            @update:modelValue="(value) => setAbteilungActive(row.id, value)"
+          ></o-switch>
+        </span>
+      </o-table-column>
     </o-table>
   </div>
 </template>
@@ -114,6 +125,7 @@ import { useAbteilungen } from '@/stores/abteilungen'
 import { useProfiles } from '@/stores/profiles'
 import { useAbteilungScores } from '@/composables/abteilungScores'
 import AbteilungEditModal from '@/components/AbteilungEditModal'
+import { computed } from 'vue'
 
 const abteilungenStore = useAbteilungen()
 abteilungenStore.subscribe()
@@ -144,6 +156,8 @@ const {
 } = useAbteilungScores()
 
 const sortByScore = (scoring) => (a, b, isAsc) => {
+  if (!a || !(a.id in scoring)) return 1
+  if (!b || !(b.id in scoring)) return -1
   return (isAsc ? 1 : -1) * (scoring[a.id] - scoring[b.id])
 }
 
@@ -152,6 +166,13 @@ function rowClass(row) {
     return 'has-content-vcentered inactive-row'
   }
   return 'has-content-vcentered'
+}
+
+// TODO
+const currentMrT = null
+
+const isCurrentlyMrT = (abteilung) => {
+  return computed(() => abteilung.id === currentMrT?.abteilungId)
 }
 </script>
 
