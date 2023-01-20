@@ -9,7 +9,14 @@
       :href="callLinkHref"
       @click="callOperator"
     >
-      📞 Zentralä ({{ operatorName }})
+      <o-icon
+        v-if="user.preferredCallMethod === 'whatsapp'"
+        icon="whatsapp"
+        size="small"
+        pack="fab"
+        style="vertical-align: text-bottom; margin-right: calc(-0.25em - 1px)"
+      ></o-icon>
+      <span v-else>📞</span> Zentralä ({{ operatorName }})
     </o-button>
     <o-button
       v-else-if="loggedInUserIsActiveCaller"
