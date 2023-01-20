@@ -131,6 +131,7 @@
     <abteilung-management></abteilung-management>
     <group-management></group-management>
     <user-management></user-management>
+    <mock-data-creator v-if="dev"></mock-data-creator>
   </div>
 </template>
 
@@ -144,6 +145,7 @@ import { useEditableSettings } from '@/composables/editableSettings'
 import UserManagement from '@/components/UserManagement'
 import GroupManagement from '@/components/GroupManagement'
 import AbteilungManagement from '@/components/AbteilungManagement'
+import MockDataCreator from '@/components/MockDataCreator'
 
 const userSession = useUserSession()
 const { isAdmin } = storeToRefs(userSession)
@@ -157,6 +159,8 @@ const selectedMessageType = ref('is-info')
 
 const { gameStart, gameEnd, setStartTimeToNow, setEndTimeToNow } =
   useEditableSettings()
+
+const dev = import.meta.env.DEV
 
 // TODO
 const mrTChanges = []
