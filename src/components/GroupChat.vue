@@ -3,12 +3,12 @@
     height="100%"
     :current-user-id="userId"
     :rooms-list-opened="!singleRoom"
-    room-id="1"
+    :room-id="`${groupId}`"
     :rooms="[{ roomId: '1', roomName: operatorName, users: [] }]"
     :messages="messagesWithInitialMessage"
     :message-actions="[{ name: 'replyMessage', title: 'Antwortä' }]"
     :text-messages="translations"
-    messages-loaded
+    :messages-loaded="messagesLoaded"
     textarea-action-enabled
     :show-new-messages-divider="false"
     :show-emojis="false"
@@ -43,6 +43,7 @@ export default {
     groupId: { type: Number, required: true },
     initMessage: { type: String, default: 'Willkommä bim Tramopoly-Chät.' },
     messages: { type: Array, default: () => [] },
+    messagesLoaded: { type: Boolean, default: false },
   },
   data: () => ({
     userId: useUserSession().userId,
@@ -60,14 +61,12 @@ export default {
       IS_TYPING: 'schriibt...',
       CANCEL_SELECT_MESSAGE: 'Abbrächä',
     },
-    messagesLoaded: false,
   }),
   computed: {
     operatorName() {
       return useOperator(this.groupId).operatorName
     },
     messagesWithInitialMessage() {
-      if (!this.messagesLoaded) return []
       return [
         {
           _id: '0',
@@ -82,10 +81,8 @@ export default {
     },
   },
   methods: {
-    fetchMessages() {
-      setTimeout(() => {
-        this.messagesLoaded = true
-      })
+    fetchMessages(...args) {
+      this.$emit('fetch-messages', ...args)
     },
     async sendMessage({ content, files, replyMessage }) {
       const message = {

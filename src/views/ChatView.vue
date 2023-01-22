@@ -4,8 +4,10 @@
     <group-chat
       :group-id="groupId"
       :messages="allChatContent"
+      :messages-loaded="allChatContentLoaded"
       init-message="Willkommä bim Tramopoly-Chät 💬 Da chasch mit de Zentralä kommuniziärä. Mit äm Tram-Chnopf chasch Stationä und Jokärs bsuächä ↴"
       single-room
+      @fetch-messages="fetchMoreChatContent"
       @add-message="addMessage"
       @textarea-action-handler="openModal"
       @toggle-rooms-list="$router.push({ name: 'dashboard' })"
@@ -31,7 +33,7 @@
         <form @submit.prevent="submit">
           <o-field label="Guäthabä">
             <o-input
-              v-model="balance"
+              :model-value="balance"
               class="has-text-weight-semibold"
               expanded
               disabled
@@ -85,11 +87,10 @@ import StationVisitMessage from '@/components/StationVisitMessage'
 import { useStations } from '@/stores/stations'
 import { supabase } from '@/client'
 import { showAlert } from '@/utils'
-import { useStationVisits } from '@/stores/stationVisits'
 import slugify from 'slugify'
 import { useGroup } from '@/stores/groups'
-import { useMessages } from '@/stores/messages'
 import { useGroupScores } from '@/stores/groupScores'
+import { useChatContents } from '@/stores/chatContent'
 
 export default {
   name: 'ChatView',
@@ -99,6 +100,9 @@ export default {
   },
   data() {
     const userSessionStore = useUserSession()
+    const chatContentsStore = useChatContents(this.groupId)
+    chatContentsStore.subscribe()
+
     return {
       modalOpen: false,
       chatTop: 0,
@@ -109,39 +113,25 @@ export default {
       userId: userSessionStore.userId,
       userName: userSessionStore.user?.scoutName,
       groupScoresStore: useGroupScores(),
+      chatContentsStore,
+      allChatContentLoaded: false,
+      fakeMessages: null,
     }
   },
   computed: {
-    messages() {
-      const messagesStore = useMessages({
-        select:
-          '*,message_files(*),sender:sender_id(*),reply_message:reply_message_id(*,message_files(*),sender:sender_id(*))',
-        filter: { group_id: this.groupId },
-      })
-      messagesStore.subscribe()
-      return messagesStore.all
-    },
     stations() {
       const stationsStore = useStations()
       stationsStore.fetch()
       return stationsStore.all
     },
     stationVisits() {
-      const stationVisitsStore = useStationVisits()
-      stationVisitsStore.subscribe()
-      return stationVisitsStore.all
+      return this.chatContentsStore.allStationVisits
     },
     allChatContent() {
-      return this.messages
-        .map((message) => message.toChatFormat())
-        .concat(this.stationVisits.map((sv) => sv.toChatFormat()))
-        .sort((a, b) => a.createdAt - b.createdAt)
+      return this.chatContentsStore.all
     },
-    balance: {
-      get() {
-        return this.groupScoresStore.balances[this.groupId] + '.-'
-      },
-      set() {},
+    balance() {
+      return this.groupScoresStore.balances[this.groupId] + '.-'
     },
   },
   async mounted() {
@@ -153,6 +143,9 @@ export default {
     }
   },
   methods: {
+    async fetchMoreChatContent() {
+      this.allChatContentLoaded = !(await this.chatContentsStore.fetchMore())
+    },
     async addMessage(message) {
       try {
         const uploadedFiles = await Promise.all(

@@ -10,7 +10,6 @@ export function useEditableSettings() {
   const settingsId = computed(() => settingsStore.entry?.id)
 
   const setGameStart = async (value) => {
-    console.log('setting start', value)
     await supabase
       .from('settings')
       .update({ game_start: value })
