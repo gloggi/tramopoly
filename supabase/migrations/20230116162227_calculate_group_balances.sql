@@ -29,10 +29,33 @@ function stationOwner(station_id) {
    return stationVisitsById[stationPurchases[station_id]].group_id
 }
 
+/**
+ * Calculates the interest rate for a purchase at a given time in the game.
+ * In case we have set different interest rates for game start and end, this linearly
+ * interpolates between the two values. This is a mechanism we can use to encourage
+ * purchases towards the end of the game, when they would otherwise earn the owner
+ * comparatively less.
+ */
 function interestRatePerSecond(buyingTime) {
    const lerpVal = (clamp(buyingTime) - settings.game_start) / (settings.game_end - settings.game_start)
    const interpolated = settings.interest_rate_start + lerpVal * (settings.interest_rate_end - settings.interest_rate_start)
    return interpolated / settings.interest_period / 60
+}
+
+/**
+ * Calculates the real estate value ratio for a purchase at a given time in the game.
+ * Depending on the interest rate (e.g. 10% per 15mins), with a fixed real estate value
+ * ratio (e.g. 50%), it is not beneficial at the end of the game (e.g. in the last
+ * 50% / 10% * 15mins = 75mins) to buy stations, because stations cost more than they
+ * reward the buyer with. During this time (the last 75mins), we can set the real estate
+ * value ratio to 100% (i.e. purchases will be "free" except for not having the cash handy)
+ * in order to encourage purchases at the end of the game.
+ */
+function realEstateValueRatio(buyingTime) {
+   const start = settings.game_start.valueOf()
+   const end = settings.game_end.valueOf()
+   const turningPoint = Math.min(Math.max(start, end - (settings.full_real_estate_periods * settings.interest_period * 60 * 1000)), end)
+   return (clamp(buyingTime) >= turningPoint) ? 1. : settings.real_estate_value_ratio
 }
 
 function clamp(timestamp) {
@@ -53,7 +76,10 @@ groups.forEach(group => {
       .map(sv => sv.value)
    ) * -1
 
-   const realEstatePoints = stationExpenses * -1 * settings.real_estate_value_ratio
+   const realEstatePoints = sum(stationVisits
+     .filter(sv => sv.group_id === group.id && sv.id === stationPurchases[sv.station_id])
+     .map(sv => sv.value * realEstateValueRatio(sv.created_at))
+   )
 
    const rentIncome = sum(stationVisits
       .filter(sv => stationOwner(sv.station_id) === group.id && sv.id !== stationPurchases[sv.station_id])

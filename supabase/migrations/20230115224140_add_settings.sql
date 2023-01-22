@@ -20,7 +20,8 @@ create table "public"."settings" (
     "message_type" text,
     "real_estate_value_ratio" double precision not null default '0.5'::double precision,
     "rent_ratio" double precision not null default '0.2'::double precision,
-    "starter_cash" smallint not null default '5000'::smallint
+    "starter_cash" smallint not null default '5000'::smallint,
+    "full_real_estate_periods" double precision not null default '5'::double precision
 );
 
 
