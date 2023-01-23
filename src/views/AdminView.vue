@@ -23,7 +23,7 @@
                     @click="setStartTimeToNow"
                     class="button is-info is-outlined"
                   >
-                    Spiel startä (Startziit uf jetzt setzä)
+                    Spiel startä (Startzit uf jetzt setzä)
                   </button>
                 </p>
               </o-field>
@@ -41,7 +41,7 @@
                     @click="setEndTimeToNow"
                     class="button is-info is-outlined"
                   >
-                    Spiel beändä (Endziit uf jetzt setzä)
+                    Spiel beändä (Endzit uf jetzt setzä)
                   </button>
                 </p>
               </o-field>

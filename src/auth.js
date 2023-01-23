@@ -12,7 +12,7 @@ async function signInWithOAuth() {
   if (error) {
     const { oruga } = useProgrammatic()
     oruga.notification.open({
-      message: `Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä oder s Tramopoly imnä anonymä Browsertab ufzmachä.`,
+      message: `Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä oder s Tramopoly imnä anonymä Browsertab ufzmachä.`,
     })
   }
 }
@@ -22,7 +22,7 @@ async function signOut() {
   if (error) {
     const { oruga } = useProgrammatic()
     oruga.notification.open({
-      message: `Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä oder s Tramopoly imnä anonymä Browsertab ufzmachä.`,
+      message: `Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä oder s Tramopoly imnä anonymä Browsertab ufzmachä.`,
     })
   }
   supabase.getChannels().forEach((channel) => channel.unsubscribe())

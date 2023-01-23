@@ -22,6 +22,16 @@
           :group-id="groupId"
         ></station-visit-message>
       </template>
+      <template
+        v-for="jokerVisit in jokerVisits"
+        #[`message_${jokerVisit.id}`]
+        :key="jokerVisit.id"
+      >
+        <joker-visit-message
+          :joker-visit="jokerVisit"
+          :group-id="groupId"
+        ></joker-visit-message>
+      </template>
       <template #custom-action-icon>
         <o-icon icon="subway"></o-icon>
       </template>
@@ -37,32 +47,32 @@
               class="has-text-weight-semibold"
               expanded
               disabled
-              @input="onChangeStation"
             ></o-input>
           </o-field>
           <o-field label="Wo sinder grad?">
-            <o-select
-              v-model="station"
-              expanded
-              required
-              @input="onChangeStation"
-            >
+            <o-select v-model="stop" expanded required @input="onChangeStop">
               <option
-                v-for="station in stations"
-                :value="station.id"
-                :key="station.id"
-                :disabled="groupHasLessMoneyThan(station.value)"
+                v-for="stop in stationsAndJokers"
+                :value="`${stop.type}-${stop.id}`"
+                :key="`${stop.type}-${stop.id}`"
+                :disabled="groupHasLessMoneyThan(stop)"
               >
-                <template v-if="groupHasLessMoneyThan(station.value)">
-                  🚫 {{ station.name }} - {{ station.value }}.- (nöd gnuäg Cäsh)
+                <template v-if="groupHasLessMoneyThan(stop)">
+                  🚫 {{ stop.name }} - {{ stop.value }}.- (nöd gnuäg Cäsh)
+                </template>
+                <template v-else-if="stop.type === 'joker'">
+                  🃏 {{ stop.name }} (Jokär) - {{ stop.value }}.-
+                  <template v-if="stop.bonusCallValue"
+                    >(+{{ stop.bonusCallValue }}.- Bonus-Aruäf)</template
+                  >
                 </template>
                 <template v-else>
-                  {{ station.name }} - {{ station.value }}.-
+                  {{ stop.name }} - {{ stop.value }}.-
                 </template>
               </option>
             </o-select>
           </o-field>
-          <o-field v-show="station" :label="fileLabel">
+          <o-field v-if="station" :label="fileLabel">
             <o-upload v-model="photo" capture accept="image/*" required>
               <o-button tag="a" variant="secondary">
                 <o-icon icon="camera"></o-icon>
@@ -70,9 +80,42 @@
               </o-button>
             </o-upload>
           </o-field>
-          <o-button v-if="photo" variant="primary" native-type="submit" outlined
-            >Geilo, probieremer z chaufä!</o-button
+          <o-button
+            v-if="station && photo"
+            variant="primary"
+            native-type="submit"
+            outlined
           >
+            Geilo, probieremer z chaufä!
+          </o-button>
+          <o-field v-if="joker">
+            <template #label>
+              <template v-if="joker.challenge">
+                <div>
+                  Ah ächt? Dänn müändär aber uf oiäm Bewisfotti ä Challenge
+                  erfüllä:
+                </div>
+                <div class="has-text-primary is-size-3">
+                  {{ joker.challenge }}
+                </div>
+              </template>
+              <template v-else>{{ fileLabel }}</template>
+            </template>
+            <o-upload v-model="photo" capture accept="image/*" required>
+              <o-button tag="a" variant="secondary">
+                <o-icon icon="camera"></o-icon>
+                <span>Lug, da!</span>
+              </o-button>
+            </o-upload>
+          </o-field>
+          <o-button
+            v-if="joker && photo"
+            variant="primary"
+            native-type="submit"
+            outlined
+          >
+            Let's goooo!
+          </o-button>
         </form>
       </div>
     </div>
@@ -91,10 +134,12 @@ import slugify from 'slugify'
 import { useGroup } from '@/stores/groups'
 import { useGroupScores } from '@/stores/groupScores'
 import { useChatContents } from '@/stores/chatContent'
+import { useJokers } from '@/stores/jokers'
+import JokerVisitMessage from '@/components/JokerVisitMessage'
 
 export default {
   name: 'ChatView',
-  components: { StationVisitMessage, GroupChat },
+  components: { JokerVisitMessage, StationVisitMessage, GroupChat },
   props: {
     groupId: { type: Number, required: true },
   },
@@ -106,7 +151,7 @@ export default {
     return {
       modalOpen: false,
       chatTop: 0,
-      station: null,
+      stop: null,
       fileLabel: '',
       photo: null,
       operatorName: useOperator(this.groupId).operatorName,
@@ -119,13 +164,41 @@ export default {
     }
   },
   computed: {
+    station() {
+      let match
+      if (!this.stop || !(match = this.stop.match(/^station-([0-9]+)$/))) {
+        return null
+      }
+      return this.stations.find((station) => station.id === parseInt(match[1]))
+    },
+    joker() {
+      let match
+      if (!this.stop || !(match = this.stop.match(/^joker-([0-9]+)$/))) {
+        return null
+      }
+      return this.jokers.find((joker) => joker.id === parseInt(match[1]))
+    },
     stations() {
       const stationsStore = useStations()
       stationsStore.fetch()
       return stationsStore.all
     },
+    jokers() {
+      const jokersStore = useJokers()
+      jokersStore.subscribe()
+      return jokersStore.all
+    },
+    stationsAndJokers() {
+      return this.stations
+        .map((station) => ({ ...station, type: 'station' }))
+        .concat(this.jokers.map((joker) => ({ ...joker, type: 'joker' })))
+        .sort((a, b) => a.name.localeCompare(b.name))
+    },
     stationVisits() {
       return this.chatContentsStore.allStationVisits
+    },
+    jokerVisits() {
+      return this.chatContentsStore.allJokerVisits
     },
     allChatContent() {
       return this.chatContentsStore.all
@@ -138,13 +211,16 @@ export default {
     if (this.$refs.top) {
       this.chatTop = Math.ceil(this.$refs.top.getBoundingClientRect().bottom)
     }
-    if (this.$route.query.action === 'visitStation') {
+    if (this.$route.query.action === 'visit') {
       this.openModal()
     }
   },
   methods: {
     async fetchMoreChatContent() {
-      this.allChatContentLoaded = !(await this.chatContentsStore.fetchMore())
+      const moreToLoad = await this.chatContentsStore.fetchMore()
+      if (moreToLoad !== undefined) {
+        this.allChatContentLoaded = !moreToLoad
+      }
     },
     async addMessage(message) {
       try {
@@ -176,7 +252,7 @@ export default {
       } catch (error) {
         console.log(error)
         showAlert(
-          'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä und dä Stationsbsuäch nomal z erfassä.'
+          'Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä und dä Stations- odär Jokärbsuäch nomal z erfassä.'
         )
       }
     },
@@ -185,27 +261,29 @@ export default {
         this.modalOpen = true
       })
     },
-    onChangeStation() {
+    onChangeStop() {
       const responses = [
         'Nie! Zeig Fotti!',
-        'Eh nöd! Chaschs bewiise?',
+        'Eh nöd! Chaschs bewise?',
         'Nice! Wie gsehts deet us?',
         "Pics or it didn't happen!",
+        'Ja was! Zeig..?',
       ]
       this.fileLabel = responses[Math.floor(Math.random() * responses.length)]
     },
-    groupHasLessMoneyThan(cost) {
-      return cost > this.groupScoresStore.balances[this.groupId]
+    groupHasLessMoneyThan(stationOrJoker) {
+      return (
+        stationOrJoker.type === 'station' &&
+        stationOrJoker.value > this.groupScoresStore.balances[this.groupId]
+      )
     },
     async submit() {
       const timestamp = new Date().toISOString()
-      const stationName =
-        this.stations.find((station) => station.id === this.station).name ||
-        this.station
+      const stopName = this.station?.name || this.joker?.name || this.stop
       const groupName = useGroup(this.groupId).entry?.name || this.groupId
       const extension = this.photo.name.split('.').pop()
       const filename = slugify(
-        `${timestamp}-${stationName}-${groupName}`
+        `${timestamp}-${stopName}-${groupName}`
       ).substring(0, 62 - extension.length)
       const { data, error: err } = await supabase.storage
         .from('proofPhotos')
@@ -213,23 +291,40 @@ export default {
       if (err) {
         console.log(err)
         showAlert(
-          'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä und dä Stationsbsuäch nomal z erfassä.'
+          'Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä und dä Bsuäch nomal z erfassä.'
         )
         return
       }
+      await (this.station
+        ? this.submitStationVisit(data.path)
+        : this.submitJokerVisit(data.path))
+      this.stop = null
+      this.photo = null
+      this.modalOpen = false
+    },
+    async submitStationVisit(proofPhotoPath) {
       const { error } = await supabase.rpc('visit_station', {
-        station_id: this.station,
-        proof_photo_path: data.path,
+        station_id: this.station.id,
+        proof_photo_path: proofPhotoPath,
       })
       if (error) {
         console.log(error)
         showAlert(
-          'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä und dä Stationsbsuäch nomal z erfassä.'
+          'Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä und dä Stationsbsuäch nomal z erfassä.'
         )
       }
-      this.station = null
-      this.photo = null
-      this.modalOpen = false
+    },
+    async submitJokerVisit(proofPhotoPath) {
+      const { error } = await supabase.rpc('visit_joker', {
+        joker_id: this.joker.id,
+        proof_photo_path: proofPhotoPath,
+      })
+      if (error) {
+        console.log(error)
+        showAlert(
+          'Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä und dä Jokärbsuäch nomal z erfassä.'
+        )
+      }
     },
   },
 }

@@ -11,7 +11,7 @@ AS $function$
 
 const groups = plv8.execute('SELECT * FROM groups WHERE active=TRUE')
 const settings = plv8.execute('SELECT * FROM settings LIMIT 1')[0]
-// const jokerVisits = plv8.execute('SELECT * FROM joker_visits ...')
+const jokerVisits = plv8.execute('SELECT jv.*, jokers.value FROM joker_visits jv INNER JOIN jokers ON jv.joker_id=jokers.id WHERE jv.accepted_at IS NOT NULL AND jv.rejected_at IS NULL AND jv.created_at < $1 ORDER BY jv.created_at', [new Date(clamp(t0))])
 // Station visits are fetched in reverse order, so that we can more easily calculate the owner of each station
 const stationVisits = plv8.execute('SELECT sv.*, stations.value AS value FROM station_visits sv INNER JOIN stations ON sv.station_id=stations.id WHERE sv.accepted_at IS NOT NULL AND sv.rejected_at IS NULL AND sv.needs_verification=FALSE AND sv.verified_at IS NOT NULL AND sv.created_at < $1 ORDER BY sv.created_at DESC', [new Date(clamp(t0))])
 
@@ -69,7 +69,9 @@ function sum(list) {
 groups.forEach(group => {
    const starterCash = settings.starter_cash
 
-   const jokerIncome = 0 // TODO sum(...)
+   const jokerIncome = sum(jokerVisits
+      .filter(jv => jv.group_id === group.id)
+      .map(jv => jv.value + jv.earned_bonus_value))
 
    const stationExpenses = sum(stationVisits
       .filter(sv => sv.group_id === group.id && sv.id === stationPurchases[sv.station_id])

@@ -3,6 +3,7 @@ import { supabase } from '@/client'
 import { useMessages } from '@/stores/messages'
 import { applyFilterToQuery } from '@/stores/collectionStore'
 import { useStationVisits } from '@/stores/stationVisits'
+import { useJokerVisits } from '@/stores/jokerVisits'
 import { showAlert } from '@/utils'
 
 export const useChatContents = (groupId) => {
@@ -18,9 +19,9 @@ export const useChatContents = (groupId) => {
 
   return defineStore(`chatContents-${groupId}`, {
     state: () => ({
-      // TODO add joker stores
       messagesStores: [],
       stationVisitsStores: [],
+      jokerVisitsStores: [],
       subscribed: false,
       fetching: false,
       fetchingMore: false,
@@ -28,7 +29,9 @@ export const useChatContents = (groupId) => {
     }),
     getters: {
       allStores: (state) =>
-        state.messagesStores.concat(state.stationVisitsStores),
+        state.messagesStores
+          .concat(state.stationVisitsStores)
+          .concat(state.jokerVisitsStores),
       loading() {
         return this.allStores.some((store) => store.loading)
       },
@@ -42,6 +45,8 @@ export const useChatContents = (groupId) => {
         state.messagesStores.flatMap((store) => store.all || []),
       allStationVisits: (state) =>
         state.stationVisitsStores.flatMap((store) => store.all || []),
+      allJokerVisits: (state) =>
+        state.jokerVisitsStores.flatMap((store) => store.all || []),
     },
     actions: {
       subscribe() {
@@ -58,14 +63,14 @@ export const useChatContents = (groupId) => {
         this.fetching = false
       },
       async fetchMore() {
-        if (this.fetchingMore) return true
+        if (this.fetchingMore) return undefined
         this.fetchingMore = true
 
         const { data, error } = await applyFilterToQuery(
           supabase
             .from('chat_contents')
             .select('id,created_at')
-            .eq('group_id', groupId)
+            .overlaps('accessible_to', [groupId])
             .order('created_at', { ascending: false })
             .order('id', { ascending: false }),
           this._oldEnoughFilter()
@@ -73,7 +78,7 @@ export const useChatContents = (groupId) => {
         if (error) {
           console.log(error)
           showAlert(
-            'Öppis isch schiäf gangä bim Ladä vo de Chät-Nachrichtä. Probiär mal d Siitä neu z ladä.'
+            'Öppis isch schiäf gangä bim Ladä vo de Chät-Nachrichtä. Probiär mal d Sitä neu z ladä.'
           )
           return
         }
@@ -90,7 +95,10 @@ export const useChatContents = (groupId) => {
         this.messagesStores = [...this.messagesStores, moreMessagesStore]
 
         const moreStationVisitsStore = useStationVisits({
-          filter: { group_id: groupId, ...this._nextPageFilter(newCursor) },
+          filter: {
+            overlaps: ['accessible_to', [groupId]],
+            ...this._nextPageFilter(newCursor),
+          },
           select: '*,group:group_id(*),station:station_id(*)',
         })
         const stationVisitsLoaded = this.subscribed
@@ -101,9 +109,23 @@ export const useChatContents = (groupId) => {
           moreStationVisitsStore,
         ]
 
-        // TODO add joker store
+        const moreJokerVisitsStore = useJokerVisits({
+          filter: { group_id: groupId, ...this._nextPageFilter(newCursor) },
+          select: '*,group:group_id(*),joker:joker_id(*)',
+        })
+        const jokerVisitsLoaded = this.subscribed
+          ? moreJokerVisitsStore.subscribe()
+          : moreJokerVisitsStore.fetch()
+        this.jokerVisitsStores = [
+          ...this.jokerVisitsStores,
+          moreJokerVisitsStore,
+        ]
 
-        await Promise.all([messagesLoaded, stationVisitsLoaded])
+        await Promise.all([
+          messagesLoaded,
+          stationVisitsLoaded,
+          jokerVisitsLoaded,
+        ])
 
         this.cursor = newCursor
         this.fetchingMore = false

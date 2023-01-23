@@ -5,8 +5,8 @@
         <template v-if="needsVerification">
           <div class="is-size-5 has-text-weight-semibold">
             {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi. D
-            Zentralä muäs grad no schnäll berächnä ob zu däm Ziitpunkt gnuäg
-            Cäsh umä gsii isch zums chaufä 🏦
+            Zentralä muäs grad no schnäll berächnä ob zu däm Zitpunkt gnuäg Cäsh
+            umä gsi isch zums chaufä 🏦
             <span class="checking-spinner">
               <o-loading
                 :full-page="false"
@@ -31,6 +31,12 @@
               <span v-if="interestPerMinute" class="tag is-info is-small mb-2"
                 >+{{ interestPerMinute }}.-/min</span
               >
+            </div>
+          </template>
+          <template v-else-if="isSelfVisit">
+            <div class="is-size-5 has-text-weight-semibold">
+              {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi, aber
+              diä Station ghört ois scho 😴
             </div>
           </template>
           <template v-else>
@@ -68,6 +74,12 @@
         <div class="is-size-5 has-text-weight-semibold">
           {{ visitorGroupName }} isch vor ois bi {{ visitedStationName }} gsi
           und häts gchauft 💰💰💰
+        </div>
+      </template>
+      <template v-else-if="isSelfVisit">
+        <div class="is-size-5 has-text-weight-semibold">
+          {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi, aber diä
+          Station ghört ihnä scho 🤷
         </div>
       </template>
       <template v-else>
@@ -134,21 +146,30 @@ export default {
     isInvalid() {
       return !this.needsVerification && !this.stationVisit.verifiedAt
     },
+    purchase() {
+      const stationVisitsStore = useStationVisits()
+      stationVisitsStore.subscribe()
+      const { loading, all } = stationVisitsStore
+      if (loading) return false
+      const validVisitsToSameStation = all.filter(
+        (sv) =>
+          sv.stationId === this.stationVisit.stationId &&
+          sv.acceptedAt &&
+          !sv.rejectedAt &&
+          !sv.needsVerification &&
+          sv.verifiedAt
+      )
+      if (!validVisitsToSameStation.length) return false
+      validVisitsToSameStation.sort((a, b) => a.createdAt - b.createdAt)
+      return validVisitsToSameStation[0]
+    },
     isPurchase() {
-      const { loading, all } = useStationVisits()
+      return this.purchase?.id === this.stationVisit.id
+    },
+    isSelfVisit() {
       return (
-        !loading &&
-        all
-          .slice()
-          .sort((a, b) => a.createdAt - b.createdAt)
-          .find(
-            (sv) =>
-              sv.stationId === this.stationVisit.stationId &&
-              sv.acceptedAt &&
-              !sv.rejectedAt &&
-              !sv.needsVerification &&
-              sv.verifiedAt
-          )?.id === this.stationVisit.id
+        this.purchase?.id !== this.stationVisit.id &&
+        this.purchase?.groupId === this.stationVisit.groupId
       )
     },
     stationOwnerName() {
@@ -198,11 +219,15 @@ export default {
             ? 'danger'
             : this.isPurchase
             ? 'success'
+            : this.isSelfVisit
+            ? 'dark'
             : 'warning'
           : this.isRejected
           ? 'danger'
           : 'primary'
         : this.isPurchase
+        ? 'dark'
+        : this.isSelfVisit
         ? 'dark'
         : 'success'
     },

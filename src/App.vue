@@ -101,7 +101,7 @@ export default {
     signOut,
     support() {
       showAlert(
-        'Wänn öppis nöd aazäigt wird, tuän mal d Siitä noi ladä 🔄<br/>Wänns dänn immär nonig gaht, lüüt am Cosinus aa:<br/>Null Sibä Nüün, Drüü Acht Sächs, Sächs Sibä, Null Sächs'
+        'Wänn öppis nöd azäigt wird, tuän mal d Sitä noi ladä 🔄<br/>Wänns dänn immär nonig gaht, lüüt am Cosinus a:<br/>Null Sibä Nüün, Drüü Acht Sächs, Sächs Sibä, Null Sächs'
       )
     },
   },

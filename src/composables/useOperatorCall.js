@@ -18,7 +18,7 @@ export function useOperatorCall(user, operator) {
     } catch (error) {
       console.log(error)
       showAlert(
-        'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä. D Zentralä tuät notfalls de Aaruäf selber beendä.'
+        'Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä. D Zentralä tuät notfalls de Aruäf selber beendä.'
       )
     }
   }

@@ -12,9 +12,7 @@
           <o-button
             variant="primary"
             outlined
-            @click="
-              $router.push({ name: 'chat', query: { action: 'visitStation' } })
-            "
+            @click="$router.push({ name: 'chat', query: { action: 'visit' } })"
             >🚉 Station chaufä</o-button
           >
         </div>
@@ -26,13 +24,21 @@
             :closable="false"
             ><h3>Mäldäd oi!</h3>
             Oii Gruppä isch aktuell Mr. T. Darum müändär mindischtäns all 10
-            Minutä bi dä Zentralä aalütä. Bitte mäldäd oi bi oinä
+            Minutä bi dä Zentralä alütä. Bitte mäldäd oi bi oinä
             Telefonischt*innä.</o-notification
           >
           <call-operator-button v-if="user" :user="user"></call-operator-button>
           <div class="is-size-7" style="margin-top: 10px">
             {{ operatorPhoneInWords }}
           </div>
+        </div>
+        <div>
+          <o-button
+            variant="primary"
+            outlined
+            @click="$router.push({ name: 'chat', query: { action: 'visit' } })"
+            >🃏 Jokär bsuächä</o-button
+          >
         </div>
       </div>
     </div>
@@ -45,7 +51,7 @@
           <h4 class="card-header-title title is-4">Wo isch dä Mr. T? 🕵️</h4>
         </header>
         <div class="card-content">
-          <p>Zum das usäfindä, muäsch i dä Zentralä aalütä.</p>
+          <p>Zum das usäfindä, muäsch i dä Zentralä alütä.</p>
           <call-operator-button v-if="user" :user="user"></call-operator-button>
         </div>
       </div>

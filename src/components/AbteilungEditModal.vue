@@ -98,7 +98,7 @@ export default {
       if (result.error) {
         console.log(result.error)
         showAlert(
-          'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä und dä Stationsbsuäch nomal z erfassä.'
+          'Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä und dä Stationsbsuäch nomal z erfassä.'
         )
       }
       this.station = null
@@ -117,7 +117,7 @@ export default {
       if (error) {
         console.log(error)
         showAlert(
-          'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä und d Abteilig nomal z erfassä.'
+          'Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä und d Abteilig nomal z erfassä.'
         )
         return null
       }

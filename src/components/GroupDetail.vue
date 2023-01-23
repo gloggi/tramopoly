@@ -65,7 +65,7 @@
       class="card-content has-background-grey-lighter"
     >
       <div class="columns is-mobile has-text-left">
-        <div v-if="!betterGroupLoading" class="column">
+        <div v-if="!betterGroupLoading" class="column is-align-self-flex-end">
           <div class="title is-6">Die Nächscht&shy;bessärä</div>
           <div v-if="betterGroup" class="columns is-vcentered is-gapless">
             <div class="column is-narrow is-flex">
@@ -91,7 +91,10 @@
             </h4>
           </div>
         </div>
-        <div v-if="!worseGroupLoading && worseGroup" class="column">
+        <div
+          v-if="!worseGroupLoading && worseGroup"
+          class="column is-align-self-flex-end"
+        >
           <div class="title is-6">Die Nächscht&shy;schlächtärä</div>
           <div class="columns is-vcentered is-gapless">
             <div class="column is-narrow is-flex">

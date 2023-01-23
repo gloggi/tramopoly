@@ -42,7 +42,7 @@
       <o-field label="Ich telefoniär liäbär mit...">
         <o-select v-model="preferredCallMethod" expanded required>
           <option value="phone">Telefon</option>
-          <option value="whatsapp">WhatsÄpp Aarüäf</option>
+          <option value="whatsapp">WhatsÄpp Arüäf</option>
         </o-select>
       </o-field>
       <button class="button is-link" type="submit">Abschickä</button>
@@ -151,7 +151,7 @@ export default {
       if (error) {
         console.log(error)
         showAlert(
-          'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä oder s Tramopoly imnä anonymä Browsertab ufzmachä.'
+          'Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä oder s Tramopoly imnä anonymä Browsertab ufzmachä.'
         )
         return
       }
@@ -175,7 +175,7 @@ export default {
         if (error) {
           console.log(error)
           showAlert(
-            'Öppis isch schiäf gangä. Probiär mal d Siitä neu z ladä oder s Tramopoly imnä anonymä Browsertab ufzmachä.'
+            'Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä oder s Tramopoly imnä anonymä Browsertab ufzmachä.'
           )
         }
       })

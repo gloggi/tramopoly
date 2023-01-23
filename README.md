@@ -10,7 +10,7 @@
   * Optional: Under authentication -> Providers, open Phone and set up [Twilio integration](https://supabase.com/docs/guides/auth/phone-login/twilio#finding-your-twilio-credentials) and activate "Enable phone confirmations", but don't activate "Enable Phone provider". Don't forget to save.
   * Under authentication -> URL Configuration, set Site URL to your productive URL, and add your productive URL and http://localhost:5173 as Redirect URLs.
   * Under SQL editor -> New query, paste the contents of **each except the first file** from supabase/migrations, and then supabase/seed.sql. If that sounds like too much work, see below for how to do this step using the supabase CLI instead.
-  * Under Database -> Replication -> 0 tables, activate the toggle on the `abteilungen`, `groups`, `message_files`, `messages`, `mr_t_rewards`, `profiles`, `settings` and `station_visits` tables.
+  * Under Database -> Replication -> 0 tables, activate the toggle on the `abteilungen`, `groups`, `joker_visits`, `jokers`, `message_files`, `messages`, `mr_t_rewards`, `profiles`, `settings` and `station_visits` tables.
   * Under Database -> Extensions, enable the PLV8 extension.
   * Under Project settings -> API, find your values for the Supabase project URL and API key.
 * Create a copy of the file .env, name it .env.local and fill in your Supabase project URL and API key.
