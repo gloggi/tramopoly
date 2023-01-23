@@ -51,8 +51,27 @@ export const useChatContents = (groupId) => {
     actions: {
       subscribe() {
         this.subscribed = true
-        this.allStores.forEach((store) => store.subscribe())
+
+        // For some reason, this only keeps the last added of each store subscribed...
+        //this.allStores.forEach((store) => store.subscribe())
+        // Instead, we manage the subscriptions of paginated slices right here.
+        this._subscribeAll('messages', 'messagesStores')
+        this._subscribeAll('station_visits', 'stationVisitsStores')
+        this._subscribeAll('joker_visits', 'jokerVisitsStores')
+
         return this.fetch()
+      },
+      _subscribeAll(table, storesGetter) {
+        supabase
+          .channel('public:' + table)
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table },
+            () => {
+              this[storesGetter].forEach((store) => store.fetch(true))
+            }
+          )
+          .subscribe()
       },
       async fetch(forceReload = false) {
         if (this.fetching && !forceReload) return
@@ -89,9 +108,6 @@ export const useChatContents = (groupId) => {
           select:
             '*,message_files(*),sender:sender_id(*),reply_message:reply_message_id(*,message_files(*),sender:sender_id(*))',
         })
-        const messagesLoaded = this.subscribed
-          ? moreMessagesStore.subscribe()
-          : moreMessagesStore.fetch()
         this.messagesStores = [...this.messagesStores, moreMessagesStore]
 
         const moreStationVisitsStore = useStationVisits({
@@ -101,9 +117,6 @@ export const useChatContents = (groupId) => {
           },
           select: '*,group:group_id(*),station:station_id(*)',
         })
-        const stationVisitsLoaded = this.subscribed
-          ? moreStationVisitsStore.subscribe()
-          : moreStationVisitsStore.fetch()
         this.stationVisitsStores = [
           ...this.stationVisitsStores,
           moreStationVisitsStore,
@@ -113,18 +126,15 @@ export const useChatContents = (groupId) => {
           filter: { group_id: groupId, ...this._nextPageFilter(newCursor) },
           select: '*,group:group_id(*),joker:joker_id(*)',
         })
-        const jokerVisitsLoaded = this.subscribed
-          ? moreJokerVisitsStore.subscribe()
-          : moreJokerVisitsStore.fetch()
         this.jokerVisitsStores = [
           ...this.jokerVisitsStores,
           moreJokerVisitsStore,
         ]
 
         await Promise.all([
-          messagesLoaded,
-          stationVisitsLoaded,
-          jokerVisitsLoaded,
+          moreMessagesStore.fetch(),
+          moreStationVisitsStore.fetch(),
+          moreJokerVisitsStore.fetch(),
         ])
 
         this.cursor = newCursor
