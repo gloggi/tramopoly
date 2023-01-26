@@ -13,7 +13,7 @@
           required
       /></o-field>
       <o-field label="Pfadinamä">
-        <o-input v-model="scoutName" required />
+        <o-input :model-value="scoutName" required disabled />
       </o-field>
       <o-field label="Gruppänamä">
         <o-autocomplete
@@ -98,7 +98,6 @@ export default {
   data() {
     return {
       phone: '',
-      scoutName: '',
       groupName: '',
       abteilung: '',
       preferredCallMethod: '',
@@ -132,6 +131,10 @@ export default {
     shouldVerifyOtp() {
       return this.verifyPhoneNumber && this.savedUserData
     },
+    scoutName() {
+      const userSession = useUserSession()
+      return userSession.payload?.nickname || userSession.payload?.name || 'Anonymous'
+    }
   },
   methods: {
     async register() {
