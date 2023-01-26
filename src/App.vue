@@ -4,7 +4,7 @@
       <div class="level-item is-gap-2">
         <span v-if="isRegistered"> Willkommä, {{ user.scoutName }}. </span>
         <span v-else-if="isLoggedIn"> Willkommä bim Tramopoly. </span>
-        <a v-if="isLoggedIn" @click="signOut"> Uusloggä </a>
+        <a v-if="isLoggedIn" @click="signOut"> Usloggä </a>
         <a @click="support">Hilfe</a>
       </div>
       <div class="level-item is-gap-2" v-if="isLoggedIn && !isOperator">

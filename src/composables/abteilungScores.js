@@ -29,7 +29,7 @@ export const useAbteilungScores = () => {
 
   function averageScore(groups, scores) {
     if (groups.length === 0) return 0
-    return (
+    return Math.round(
       groups
         .map((group) => scores.value[group.id])
         .reduce((sum, score) => sum + score, 0) / groups.length

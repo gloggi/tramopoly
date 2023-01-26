@@ -85,8 +85,5 @@ const mrTShouldCallOperator = false
 <script>
 export default {
   name: 'DashboardView',
-  watch: {
-    'user.group.abteilung.operator': function () {},
-  },
 }
 </script>

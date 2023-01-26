@@ -16,12 +16,8 @@ INSERT INTO public.mr_t_rewards (duration, value) VALUES (90, 10000);
 
 INSERT INTO public.abteilungen (name, active, logo_url) VALUES ('Zentralä', true, NULL);
 
-SELECT pg_catalog.setval('public.abteilungen_id_seq', 1, true);
-
 
 INSERT INTO public.groups (name, active, abteilung_id) VALUES ('Zentralä', true, 1);
-
-SELECT pg_catalog.setval('public.groups_id_seq', 1, true);
 
 
 INSERT INTO public.stations (name, value) VALUES ('Affoltern, Bhf.', 2000);
@@ -109,8 +105,6 @@ INSERT INTO public.stations (name, value) VALUES ('Wollishoferplatz', 1000);
 INSERT INTO public.stations (name, value) VALUES ('Zentrum Witikon', 1500);
 INSERT INTO public.stations (name, value) VALUES ('Zoo', 2000);
 
-SELECT pg_catalog.setval('public.stations_id_seq', (SELECT MAX(id) FROM public.stations), true);
-
 
 INSERT INTO public.jokers (name, value, challenge, bonus_call_value) VALUES ('Albisgütli', 500, NULL, 500);
 INSERT INTO public.jokers (name, value, challenge, bonus_call_value) VALUES ('Alte Trotte', 750, NULL, 500);
@@ -144,4 +138,3 @@ INSERT INTO public.jokers (name, value, challenge, bonus_call_value) VALUES ('Tr
 INSERT INTO public.jokers (name, value, challenge, bonus_call_value) VALUES ('Waidhof', 2500, NULL, NULL);
 INSERT INTO public.jokers (name, value, challenge, bonus_call_value) VALUES ('Zoo/Forrenweid', 2000, 'Stelläd als Gruppä zämä äs Tiär dar.', 500);
 
-SELECT pg_catalog.setval('public.jokers_id_seq', (SELECT MAX(id) FROM public.jokers), true);

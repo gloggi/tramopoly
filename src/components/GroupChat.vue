@@ -106,14 +106,6 @@ export default {
           message.replyMessage.files = replyMessage.files
         }
       }
-      // TODO persist to supabase
-      if (files) {
-        for (let index = 0; index < files.length; index++) {
-          // TODO persist files to supabase
-          //  await this.uploadFile({ file: files[index], messageId: id, roomId })
-        }
-      }
-
       this.$emit('addMessage', message)
     },
     formattedFiles(files) {
