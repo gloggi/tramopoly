@@ -126,6 +126,7 @@ import { useProfiles } from '@/stores/profiles'
 import { useAbteilungScores } from '@/composables/abteilungScores'
 import AbteilungEditModal from '@/components/AbteilungEditModal'
 import { computed } from 'vue'
+import { useCurrentMrT } from '@/composables/useCurrentMrT'
 
 const abteilungenStore = useAbteilungen()
 abteilungenStore.subscribe()
@@ -168,11 +169,9 @@ function rowClass(row) {
   return 'has-content-vcentered'
 }
 
-// TODO
-const currentMrT = null
-
+const { currentMrT } = useCurrentMrT()
 const isCurrentlyMrT = (abteilung) => {
-  return computed(() => abteilung.id === currentMrT?.abteilungId)
+  return computed(() => abteilung.id === currentMrT.value?.group?.abteilungId)
 }
 </script>
 

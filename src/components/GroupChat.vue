@@ -5,7 +5,7 @@
     :rooms-list-opened="!singleRoom"
     :room-id="`${groupId}`"
     :rooms="[{ roomId: '1', roomName: operatorName, users: [] }]"
-    :messages="messagesWithInitialMessage"
+    :messages="messagesWithStaticMessages"
     :message-actions="[{ name: 'replyMessage', title: 'Antwortä' }]"
     :text-messages="translations"
     :messages-loaded="messagesLoaded"
@@ -24,6 +24,9 @@
     <template v-for="(idx, name) in $slots" #[name]="data">
       <slot :name="name" v-bind="data" />
     </template>
+    <template #message_mr-t-should-call-operator>
+      <mr-t-should-call-notification></mr-t-should-call-notification>
+    </template>
     <template #paperclip-icon>
       <o-icon icon="image"></o-icon>
     </template>
@@ -34,10 +37,12 @@
 import ChatWindow from '@/vue-advanced-chat/src/lib/ChatWindow.vue'
 import { useUserSession } from '@/stores/userSession'
 import { useOperator } from '@/composables/useOperator'
+import { useCurrentMrT } from '@/composables/useCurrentMrT'
+import MrTShouldCallNotification from '@/components/MrTShouldCallNotification'
 
 export default {
   name: 'GroupChat',
-  components: { ChatWindow },
+  components: { MrTShouldCallNotification, ChatWindow },
   props: {
     singleRoom: { type: Boolean, default: false },
     groupId: { type: Number, required: true },
@@ -66,7 +71,22 @@ export default {
     operatorName() {
       return useOperator(this.groupId).operatorName
     },
-    messagesWithInitialMessage() {
+    mrTShouldCallOperatorMessage() {
+      const { isCurrentMrT, mrTShouldCallOperator } = useCurrentMrT()
+      if (!(isCurrentMrT(this.groupId) && mrTShouldCallOperator.value))
+        return []
+      return [
+        {
+          _id: 'mr-t-should-call-operator',
+          senderId: '0',
+          system: true,
+          content: '',
+          date: new Date().toDateString(),
+          created_at: new Date(),
+        },
+      ]
+    },
+    messagesWithStaticMessages() {
       return [
         {
           _id: '0',
@@ -76,7 +96,9 @@ export default {
           date: new Date().toDateString(),
           created_at: new Date(),
         },
+        ...this.mrTShouldCallOperatorMessage,
         ...this.messages,
+        ...this.mrTShouldCallOperatorMessage,
       ]
     },
   },

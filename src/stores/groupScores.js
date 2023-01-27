@@ -26,6 +26,7 @@ export const useGroupScores = () => {
       interestRates: {},
       realEstatePoints: {},
       mrTPoints: {},
+      refreshTimeout: null,
     }),
     getters: {
       loading: (state) => state.data === undefined || settingsStore.loading,
@@ -45,8 +46,10 @@ export const useGroupScores = () => {
         subscribeToTable('abteilungen', () => this.fetch(true))
         subscribeToTable('groups', () => this.fetch(true))
         subscribeToTable('settings', () => this.fetch(true))
-        // subscribeToTable('joker_visits', () => this.fetch(true)) // TODO
+        subscribeToTable('mr_t_rewards', () => this.fetch(true))
+        subscribeToTable('joker_visits', () => this.fetch(true))
         subscribeToTable('station_visits', () => this.fetch(true))
+        subscribeToTable('mr_t_changes', () => this.fetch(true))
         return this.fetch()
       },
       async fetch(forceReload = false, onDone = () => {}) {
@@ -70,8 +73,17 @@ export const useGroupScores = () => {
             this.mrTPoints[entry.group_id] = 0
           }
         })
-        if (data && data.length)
+        if (this.refreshTimeout) clearTimeout(this.refreshTimeout)
+        if (data && data.length) {
           this.t0 = data[0].t0 ? new Date(data[0].t0) : null
+          if (data[0].invalid_after) {
+            // Refresh once the current scores are known to be outdated
+            this.refreshTimeout = setTimeout(
+              () => this.fetch(true),
+              new Date(data[0].invalid_after) - Date.now() + 3000
+            )
+          }
+        }
         this._animate(2)
       },
       _animate(seconds) {

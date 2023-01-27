@@ -110,6 +110,7 @@ import { useGroups } from '@/stores/groups'
 import { computed } from 'vue'
 import { useAbteilungen } from '@/stores/abteilungen'
 import { useGroupScores } from '@/stores/groupScores'
+import { useCurrentMrT } from '@/composables/useCurrentMrT'
 
 const groupsStore = useGroups()
 groupsStore.subscribe()
@@ -147,11 +148,9 @@ const sortByScore = (scoring) => (a, b, isAsc) => {
   return (isAsc ? 1 : -1) * (scoring[a.id] - scoring[b.id])
 }
 
-// TODO
-const currentMrT = null
-
+const { currentMrT } = useCurrentMrT()
 const isCurrentlyMrT = (group) => {
-  return computed(() => group.id === currentMrT?.id)
+  return computed(() => group.id === currentMrT.value?.group?.id)
 }
 </script>
 

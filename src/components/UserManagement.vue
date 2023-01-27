@@ -96,6 +96,7 @@ import { storeToRefs } from 'pinia'
 import { supabase } from '@/client'
 import { useGroups } from '@/stores/groups'
 import { computed } from 'vue'
+import { useCurrentMrT } from '@/composables/useCurrentMrT'
 
 const profilesStore = useProfiles({
   select: '*,group:group_id(*,abteilung:abteilung_id(*))',
@@ -115,11 +116,9 @@ const changeGroup = async (id, newGroupId) => {
   await supabase.from('profiles').update({ group_id: newGroupId }).eq('id', id)
 }
 
-// TODO
-const currentMrT = null
-
+const { currentMrT } = useCurrentMrT()
 const isCurrentlyMrT = (user) => {
-  return computed(() => user.groupId === currentMrT?.id)
+  return computed(() => user.groupId === currentMrT.value?.group?.id)
 }
 </script>
 

@@ -126,6 +126,7 @@ import { storeToRefs } from 'pinia'
 import { toRefs, computed, onMounted } from 'vue'
 import { useGroupScores } from '@/stores/groupScores'
 import { useCompetitors } from '@/composables/useCompetitors'
+import { useCurrentMrT } from '@/composables/useCurrentMrT'
 
 const props = defineProps({
   groupId: { type: Number, required: true },
@@ -152,8 +153,8 @@ const interestPerMinute = computed(() =>
 const { betterGroup, betterGroupLoading, worseGroup, worseGroupLoading } =
   useCompetitors(groupId)
 
-// TODO
-const groupIsCurrentlyMrT = false
+const { isCurrentMrT } = useCurrentMrT()
+const groupIsCurrentlyMrT = computed(() => isCurrentMrT(groupId.value))
 </script>
 
 <script>

@@ -20,6 +20,9 @@ INSERT INTO public.abteilungen (name, active, logo_url) VALUES ('Zentralä', tru
 INSERT INTO public.groups (name, active, abteilung_id) VALUES ('Zentralä', true, 1);
 
 
+INSERT INTO public.mr_t_changes(group_id) VALUES ((SELECT MAX(id) FROM public.groups));
+
+
 INSERT INTO public.stations (name, value) VALUES ('Affoltern, Bhf.', 2000);
 INSERT INTO public.stations (name, value) VALUES ('Albisgütli', 2000);
 INSERT INTO public.stations (name, value) VALUES ('Albisrieden', 1000);

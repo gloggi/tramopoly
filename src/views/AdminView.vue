@@ -48,16 +48,11 @@
             </o-field>
           </div>
           <div class="column">
-            <h5 class="title is-6">{{ minutesSinceLastActiveMrTChange }}</h5>
+            <p class="title is-6">{{ timeSinceLastActiveMrTChange }}</p>
+            <p class="title is-6">{{ timeSinceLastMrTReport }}</p>
             <o-field grouped>
-              <p
-                class="control"
-                v-if="mrTChanges && mrTChanges.length && !mrTShouldCallOperator"
-              >
-                <button
-                  class="button is-link is-warning"
-                  @click="() => promptMrT(currentMrT)"
-                >
+              <p class="control" v-if="currentMrT && !mrTShouldCallOperator">
+                <button class="button is-link is-warning" @click="promptMrT">
                   Gruppä zum Aruäf uffordärä
                 </button>
               </p>
@@ -71,7 +66,7 @@
                   class="button is-link is-warning is-outlined"
                   @click="releaseMrT"
                 >
-                  Mr T. hät sich gmäldät
+                  Mr T. hät sich gmäldät, wieder freigä
                 </button>
               </p>
             </o-field>
@@ -146,6 +141,7 @@ import UserManagement from '@/components/UserManagement'
 import GroupManagement from '@/components/GroupManagement'
 import AbteilungManagement from '@/components/AbteilungManagement'
 import MockDataCreator from '@/components/MockDataCreator'
+import { useCurrentMrT } from '@/composables/useCurrentMrT'
 
 const userSession = useUserSession()
 const { isAdmin } = storeToRefs(userSession)
@@ -162,17 +158,20 @@ const { gameStart, gameEnd, setStartTimeToNow, setEndTimeToNow } =
 
 const dev = import.meta.env.DEV
 
+const {
+  currentMrT,
+  currentMrTActive,
+  mrTShouldCallOperator,
+  timeSinceLastActiveMrTChange,
+  timeSinceLastMrTReport,
+  promptMrT,
+  confiscateMrT,
+  releaseMrT,
+} = useCurrentMrT()
+
 // TODO
-const mrTChanges = []
 const message = ''
-const currentMrT = null
-const currentMrTActive = false
-const mrTShouldCallOperator = true
-const minutesSinceLastActiveMrTChange = 0
 const setMessage = () => {}
-const promptMrT = () => {}
-const confiscateMrT = () => {}
-const releaseMrT = () => {}
 </script>
 
 <script>

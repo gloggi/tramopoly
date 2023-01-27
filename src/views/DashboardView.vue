@@ -4,6 +4,9 @@
   >
     <slot v-if="operator" name="message"></slot>
     <div class="card">
+      <mr-t-should-call-notification
+        v-if="groupIsCurrentlyMrT && mrTShouldCallOperator"
+      ></mr-t-should-call-notification>
       <div
         class="card-content is-flex is-flex-direction-column is-flex-direction-row-widescreen is-justify-content-space-evenly"
         style="gap: 0.5rem"
@@ -17,16 +20,6 @@
           >
         </div>
         <div v-if="operator">
-          <o-notification
-            v-if="groupIsCurrentlyMrT && mrTShouldCallOperator"
-            variant="danger"
-            title="Mäldäd oi!"
-            :closable="false"
-            ><h3>Mäldäd oi!</h3>
-            Oii Gruppä isch aktuell Mr. T. Darum müändär mindischtäns all 10
-            Minutä bi dä Zentralä alütä. Bitte mäldäd oi bi oinä
-            Telefonischt*innä.</o-notification
-          >
           <call-operator-button v-if="user" :user="user"></call-operator-button>
           <div class="is-size-7" style="margin-top: 10px">
             {{ operatorPhoneInWords }}
@@ -44,14 +37,25 @@
     </div>
     <slot name="message2"></slot>
     <group-detail v-if="user.groupId" :group-id="user.groupId" />
-    <div v-if="!groupIsCurrentlyMrT">
+    <div>
       <slot name="message3"></slot>
+      <mr-t-should-call-notification
+        v-if="groupIsCurrentlyMrT && mrTShouldCallOperator"
+      ></mr-t-should-call-notification>
       <div class="card">
         <header class="card-header has-background-light">
           <h4 class="card-header-title title is-4">Wo isch dä Mr. T? 🕵️</h4>
         </header>
-        <div class="card-content">
+        <div v-if="!groupIsCurrentlyMrT" class="card-content">
           <p>Zum das usäfindä, muäsch i dä Zentralä alütä.</p>
+          <call-operator-button v-if="user" :user="user"></call-operator-button>
+          <p>{{ timeSinceLastActiveMrTChange }}</p>
+        </div>
+        <div v-else class="card-content">
+          <p v-if="!mrTShouldCallOperator">
+            Oii Gruppä isch aktuell Mr. T. Darum müändär spätistens alli 10
+            Minutä i dä Zentralä alütä.
+          </p>
           <call-operator-button v-if="user" :user="user"></call-operator-button>
         </div>
       </div>
@@ -66,6 +70,9 @@ import { useRouter } from 'vue-router'
 import GroupDetail from '@/components/GroupDetail.vue'
 import { useOperator } from '@/composables/useOperator'
 import CallOperatorButton from '@/components/CallOperatorButton'
+import { useCurrentMrT } from '@/composables/useCurrentMrT'
+import { computed } from 'vue'
+import MrTShouldCallNotification from '@/components/MrTShouldCallNotification'
 
 const userSession = useUserSession()
 const { user, isOperator } = storeToRefs(userSession)
@@ -77,9 +84,9 @@ if (isOperator.value) {
 
 const { operator, operatorPhoneInWords } = useOperator(user.value.groupId)
 
-// TODO
-const groupIsCurrentlyMrT = false
-const mrTShouldCallOperator = false
+const { isCurrentMrT, mrTShouldCallOperator, timeSinceLastActiveMrTChange } =
+  useCurrentMrT()
+const groupIsCurrentlyMrT = computed(() => isCurrentMrT(user.value.groupId))
 </script>
 
 <script>
