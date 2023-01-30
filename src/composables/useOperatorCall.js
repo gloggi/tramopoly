@@ -35,6 +35,8 @@ export function useOperatorCall(user, operator) {
 
   const activeCallerId = computed(() => operator.value?.activeCallerId)
 
+  const activeCaller = computed(() => operator.value?.activeCaller)
+
   return {
     callOperator,
     finishCall,

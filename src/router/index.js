@@ -22,6 +22,14 @@ const router = createRouter({
       },
     },
     {
+      path: '/zentrale',
+      name: 'zentrale',
+      component: () => import('../views/OperatorView.vue'),
+      meta: {
+        title: 'Zentralä',
+      },
+    },
+    {
       path: '/admin',
       name: 'admin',
       component: () => import('../views/AdminView.vue'),

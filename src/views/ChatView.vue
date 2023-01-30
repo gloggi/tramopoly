@@ -6,7 +6,6 @@
       :messages="allChatContent"
       :messages-loaded="allChatContentLoaded"
       init-message="Willkommä bim Tramopoly-Chät 💬 Da chasch mit de Zentralä kommuniziärä. Mit äm Tram-Chnopf chasch Stationä und Jokärs bsuächä ↴"
-      single-room
       @fetch-messages="fetchMoreChatContent"
       @add-message="addMessage"
       @textarea-action-handler="openModal"

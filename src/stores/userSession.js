@@ -7,7 +7,9 @@ export const useUserSession = defineStore('userSession', {
   getters: {
     profileStore: (state) => {
       if (!state.session?.user.id) return null
-      const profileStore = useProfile(state.session?.user.id)
+      const profileStore = useProfile(state.session?.user.id, {
+        select: '*,active_caller:active_caller_id(*,group:group_id(*))',
+      })
       profileStore.subscribe()
       return profileStore
     },
@@ -36,6 +38,9 @@ export const useUserSession = defineStore('userSession', {
       return this.profileStore.entry
     },
     userId: (state) => state.session?.user.id,
+    isPlayer() {
+      return this.isRegistered && this.user?.role === 'player'
+    },
     isOperator() {
       return this.isRegistered && this.user?.role === 'operator'
     },

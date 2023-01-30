@@ -1,10 +1,10 @@
 <template>
-  <chat-window
+  <vue-advanced-chat
     height="100%"
     :current-user-id="userId"
-    :rooms-list-opened="!singleRoom"
+    :rooms-list-opened="false"
     :room-id="`${groupId}`"
-    :rooms="[{ roomId: '1', roomName: operatorName, users: [] }]"
+    :rooms="[{ roomId: '1', roomName, users: [] }]"
     :messages="messagesWithStaticMessages"
     :message-actions="[{ name: 'replyMessage', title: 'Antwortä' }]"
     :text-messages="translations"
@@ -30,11 +30,11 @@
     <template #paperclip-icon>
       <o-icon icon="image"></o-icon>
     </template>
-  </chat-window>
+  </vue-advanced-chat>
 </template>
 
 <script>
-import ChatWindow from '@/vue-advanced-chat/src/lib/ChatWindow.vue'
+import VueAdvancedChat from '@/vue-advanced-chat/src/lib/ChatWindow.vue'
 import { useUserSession } from '@/stores/userSession'
 import { useOperator } from '@/composables/useOperator'
 import { useCurrentMrT } from '@/composables/useCurrentMrT'
@@ -42,9 +42,8 @@ import MrTShouldCallNotification from '@/components/MrTShouldCallNotification'
 
 export default {
   name: 'GroupChat',
-  components: { MrTShouldCallNotification, ChatWindow },
+  components: { MrTShouldCallNotification, VueAdvancedChat },
   props: {
-    singleRoom: { type: Boolean, default: false },
     groupId: { type: Number, required: true },
     initMessage: { type: String, default: 'Willkommä bim Tramopoly-Chät.' },
     messages: { type: Array, default: () => [] },
@@ -68,7 +67,7 @@ export default {
     },
   }),
   computed: {
-    operatorName() {
+    roomName() {
       return useOperator(this.groupId).operatorName
     },
     mrTShouldCallOperatorMessage() {

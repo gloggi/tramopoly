@@ -79,7 +79,7 @@
       <template v-else-if="isSelfVisit">
         <div class="is-size-5 has-text-weight-semibold">
           {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi, aber diä
-          Station ghört ihnä scho 🤷
+          Station ghört ihnä scho 🤦
         </div>
       </template>
       <template v-else>
@@ -92,7 +92,7 @@
     <div class="is-size-6 is-multiline-text">
       {{ stationVisit.operatorComment }}
     </div>
-    <div v-if="stationVisit.proofPhotoUrl">
+    <div v-if="isOwnGroup && stationVisit.proofPhotoUrl">
       <a v-if="isOwnGroup" :href="stationVisit.proofPhotoUrl" target="_blank">
         <span
           class="station-visit-image"
@@ -231,6 +231,9 @@ export default {
         ? 'dark'
         : 'success'
     },
+  },
+  mounted() {
+    useSettings().subscribe()
   },
 }
 </script>
