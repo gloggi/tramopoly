@@ -52,7 +52,41 @@
         Zum {{ jokerVisit.joker.bonusCallValue }}.- Bonus übärzcho, chöndär no
         dä Zentralä aalütä.
       </p>
-      <call-operator-button v-if="user" :user="user"></call-operator-button>
+      <call-operator-button
+        v-if="user && !isOperator"
+        :user="user"
+      ></call-operator-button>
+    </div>
+    <div v-if="isOperator">
+      <o-field addons root-class="is-justify-content-center">
+        <o-button
+          icon-left="check"
+          variant="success"
+          :outlined="!isAccepted"
+          @click="rate('accepted')"
+        >
+          Akzeptiärt
+        </o-button>
+        <o-button
+          icon-left="search"
+          variant="dark"
+          :outlined="isAccepted || isRejected"
+          @click="rate(null)"
+        >
+          No unklar
+        </o-button>
+        <o-button
+          icon-left="xmark"
+          variant="danger"
+          :outlined="!isRejected"
+          @click="rate('rejected')"
+        >
+          Abglehnt
+        </o-button>
+        <o-button icon-left="comment" variant="primary" outlined>
+          Kommentiärä
+        </o-button>
+      </o-field>
     </div>
     <div class="vac-text-timestamp">
       <span>{{ jokerVisit.createdAt?.toLocaleString() }}</span>
@@ -64,6 +98,7 @@
 import MessageBox from '@/components/MessageBox'
 import { useUserSession } from '@/stores/userSession'
 import CallOperatorButton from '@/components/CallOperatorButton'
+import { supabase } from '@/client'
 
 export default {
   name: 'JokerVisitMessage',
@@ -71,6 +106,7 @@ export default {
   props: {
     jokerVisit: { type: Object, required: true },
     groupId: { type: Number, required: true },
+    isOperator: { type: Boolean, default: false },
   },
   data: () => ({
     alwaysSpinning: true,
@@ -104,6 +140,14 @@ export default {
         : this.isRejected
         ? 'danger'
         : 'primary'
+    },
+  },
+  methods: {
+    async rate(rating) {
+      await supabase.rpc('rate_joker_visit', {
+        joker_visit_id: this.jokerVisit.id,
+        rating,
+      })
     },
   },
 }

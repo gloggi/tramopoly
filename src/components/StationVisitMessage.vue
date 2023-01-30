@@ -33,12 +33,6 @@
               >
             </div>
           </template>
-          <template v-else-if="isSelfVisit">
-            <div class="is-size-5 has-text-weight-semibold">
-              {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi, aber
-              diä Station ghört ois scho 😴
-            </div>
-          </template>
           <template v-else>
             <div class="is-size-5 has-text-weight-semibold">
               {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi, aber
@@ -76,12 +70,6 @@
           und häts gchauft 💰💰💰
         </div>
       </template>
-      <template v-else-if="isSelfVisit">
-        <div class="is-size-5 has-text-weight-semibold">
-          {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi, aber diä
-          Station ghört ihnä scho 🤦
-        </div>
-      </template>
       <template v-else>
         <div class="is-size-5 has-text-weight-semibold">
           {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi und hät
@@ -109,6 +97,37 @@
         }"
       ></span>
     </div>
+    <div v-if="isOwnGroup && isOperator">
+      <o-field addons root-class="is-justify-content-center">
+        <o-button
+          icon-left="check"
+          variant="success"
+          :outlined="!isAccepted"
+          @click="rate('accepted')"
+        >
+          Akzeptiärt
+        </o-button>
+        <o-button
+          icon-left="search"
+          variant="dark"
+          :outlined="isAccepted || isRejected"
+          @click="rate(null)"
+        >
+          No unklar
+        </o-button>
+        <o-button
+          icon-left="xmark"
+          variant="danger"
+          :outlined="!isRejected"
+          @click="rate('rejected')"
+        >
+          Abglehnt
+        </o-button>
+        <o-button icon-left="comment" variant="primary" outlined>
+          Kommentiärä
+        </o-button>
+      </o-field>
+    </div>
     <div class="vac-text-timestamp">
       <span>{{ stationVisit.createdAt?.toLocaleString() }}</span>
     </div>
@@ -116,9 +135,9 @@
 </template>
 
 <script>
-import { useStationVisits } from '@/stores/stationVisits'
 import { useSettings } from '@/stores/settings'
 import MessageBox from '@/components/MessageBox'
+import { supabase } from '@/client'
 
 export default {
   name: 'StationVisitMessage',
@@ -126,6 +145,7 @@ export default {
   props: {
     stationVisit: { type: Object, required: true },
     groupId: { type: Number, required: true },
+    isOperator: { type: Boolean, default: false },
   },
   data: () => ({
     alwaysSpinning: true,
@@ -146,31 +166,8 @@ export default {
     isInvalid() {
       return !this.needsVerification && !this.stationVisit.verifiedAt
     },
-    purchase() {
-      const stationVisitsStore = useStationVisits()
-      stationVisitsStore.subscribe()
-      const { loading, all } = stationVisitsStore
-      if (loading) return false
-      const validVisitsToSameStation = all.filter(
-        (sv) =>
-          sv.stationId === this.stationVisit.stationId &&
-          sv.acceptedAt &&
-          !sv.rejectedAt &&
-          !sv.needsVerification &&
-          sv.verifiedAt
-      )
-      if (!validVisitsToSameStation.length) return false
-      validVisitsToSameStation.sort((a, b) => a.createdAt - b.createdAt)
-      return validVisitsToSameStation[0]
-    },
     isPurchase() {
-      return this.purchase?.id === this.stationVisit.id
-    },
-    isSelfVisit() {
-      return (
-        this.purchase?.id !== this.stationVisit.id &&
-        this.purchase?.groupId === this.stationVisit.groupId
-      )
+      return this.stationVisit.isPurchase
     },
     stationOwnerName() {
       return this.isPurchase
@@ -216,24 +213,28 @@ export default {
           ? this.needsVerification
             ? 'info'
             : this.isInvalid
-            ? 'danger'
+            ? 'dark'
             : this.isPurchase
             ? 'success'
-            : this.isSelfVisit
-            ? 'dark'
             : 'warning'
           : this.isRejected
           ? 'danger'
           : 'primary'
         : this.isPurchase
         ? 'dark'
-        : this.isSelfVisit
-        ? 'dark'
         : 'success'
     },
   },
   mounted() {
     useSettings().subscribe()
+  },
+  methods: {
+    async rate(rating) {
+      await supabase.rpc('rate_station_visit', {
+        station_visit_id: this.stationVisit.id,
+        rating,
+      })
+    },
   },
 }
 </script>

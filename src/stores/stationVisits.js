@@ -19,6 +19,7 @@ export class StationVisit {
     this.operatorComment = data.operator_comment
     this.needsVerification = data.needs_verification
     this.verifiedAt = data.verified_at ? new Date(data.verified_at) : null
+    this.isPurchase = data.is_purchase
     this._subscribed = subscribe
   }
 

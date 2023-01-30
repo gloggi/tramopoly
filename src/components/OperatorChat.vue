@@ -40,6 +40,7 @@
         v-if="groupId !== null"
         :station-visit="stationVisit"
         :group-id="groupId"
+        is-operator
       ></station-visit-message>
     </template>
     <template
@@ -51,6 +52,7 @@
         v-if="groupId !== null"
         :joker-visit="jokerVisit"
         :group-id="groupId"
+        is-operator
       ></joker-visit-message>
     </template>
     <template #custom-action-icon>
@@ -111,6 +113,7 @@ async function fetchMessages({ room }) {
   groupId.value = room.roomId
   messagesLoaded.value = false
   chatContentsStore.value = useChatContents(room.roomId)
+  chatContentsStore.value.subscribe()
   const moreToLoad = await chatContentsStore.value.fetchMore()
   if (moreToLoad !== undefined) {
     messagesLoaded.value = !moreToLoad

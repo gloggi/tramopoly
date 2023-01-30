@@ -115,7 +115,7 @@ export const useChatContents = (groupId) => {
             overlaps: ['accessible_to', [groupId]],
             ...this._nextPageFilter(newCursor),
           },
-          select: '*,group:group_id(*),station:station_id(*)',
+          select: '*,is_purchase,group:group_id(*),station:station_id(*)',
         })
         this.stationVisitsStores = [
           ...this.stationVisitsStores,
