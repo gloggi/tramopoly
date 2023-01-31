@@ -71,6 +71,7 @@ import { useChatContents } from '@/stores/chatContent'
 import MrTShouldCallNotification from '@/components/MrTShouldCallNotification'
 import StationVisitMessage from '@/components/StationVisitMessage'
 import JokerVisitMessage from '@/components/JokerVisitMessage'
+import useMessageSending from '@/composables/useMessageSending'
 
 const { userId, user } = useUserSession()
 
@@ -129,44 +130,7 @@ const jokerVisits = computed(() => {
   return chatContentsStore.value?.allJokerVisits
 })
 
-async function sendMessage({ content, files, replyMessage }) {
-  const message = {
-    _id: crypto.randomUUID(),
-    senderId: this.userId,
-    content,
-    created_at: new Date(),
-    timestamp: new Date(),
-    date: new Date().toDateString(),
-  }
-  if (files) {
-    message.files = formattedFiles(files)
-  }
-  if (replyMessage) {
-    message.replyMessage = {
-      _id: replyMessage._id,
-      content: replyMessage.content,
-      senderId: replyMessage.senderId,
-    }
-    if (replyMessage.files) {
-      message.replyMessage.files = replyMessage.files
-    }
-  }
-  this.$emit('addMessage', message)
-}
-function formattedFiles(files) {
-  const formattedFiles = []
-  files.forEach((file) => {
-    const messageFile = {
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      extension: file.extension || file.type,
-      url: file.url || file.localUrl,
-    }
-    formattedFiles.push(messageFile)
-  })
-  return formattedFiles
-}
+const { sendMessage } = useMessageSending(groupId, userId, user.scoutName)
 </script>
 
 <script>

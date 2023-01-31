@@ -7,7 +7,6 @@
       :messages-loaded="allChatContentLoaded"
       init-message="Willkommä bim Tramopoly-Chät 💬 Da chasch mit de Zentralä kommuniziärä. Mit äm Tram-Chnopf chasch Stationä und Jokärs bsuächä ↴"
       @fetch-messages="fetchMoreChatContent"
-      @add-message="addMessage"
       @textarea-action-handler="openModal"
       @toggle-rooms-list="$router.push({ name: 'dashboard' })"
     >
@@ -219,40 +218,6 @@ export default {
       const moreToLoad = await this.chatContentsStore.fetchMore()
       if (moreToLoad !== undefined) {
         this.allChatContentLoaded = !moreToLoad
-      }
-    },
-    async addMessage(message) {
-      try {
-        const uploadedFiles = await Promise.all(
-          (message.files || []).map(async (file) => {
-            const timestamp = new Date().toISOString()
-            const groupName = useGroup(this.groupId).entry?.name || this.groupId
-            const extension = file.extension
-            const filename = slugify(
-              `${timestamp}-${groupName}-${this.userName}`
-            ).substring(0, 62 - extension.length)
-            const { data, error } = await supabase.storage
-              .from('messageFiles')
-              .upload(
-                `${filename}.${extension}`,
-                await (await fetch(file.url)).blob(),
-                { contentType: file.type }
-              )
-            if (error) throw error
-            return data.path
-          })
-        )
-        const { error } = await supabase.rpc('post_message', {
-          content: message.content,
-          file_paths: uploadedFiles,
-          reply_message_id: message.replyMessage?._id || null,
-        })
-        if (error) throw error
-      } catch (error) {
-        console.log(error)
-        showAlert(
-          'Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä und dä Stations- odär Jokärbsuäch nomal z erfassä.'
-        )
       }
     },
     async openModal() {

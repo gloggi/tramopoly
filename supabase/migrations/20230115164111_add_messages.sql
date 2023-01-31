@@ -46,7 +46,7 @@ alter table "public"."messages" validate constraint "messages_sender_id_fkey";
 
 set check_function_bodies = off;
 
-CREATE OR REPLACE FUNCTION public.post_message(content text, file_paths text[], reply_message_id uuid)
+CREATE OR REPLACE FUNCTION public.post_message(content text, file_paths text[], reply_message_id uuid, group_id bigint)
  RETURNS SETOF messages
  LANGUAGE plpgsql
  SECURITY DEFINER
@@ -56,7 +56,7 @@ message_id uuid;
 file_path text;
 BEGIN
   INSERT INTO messages(sender_id, group_id, content, reply_message_id)
-  VALUES(auth.uid(), (SELECT group_id FROM profiles u WHERE u.id=auth.uid() LIMIT 1), content, reply_message_id)
+  VALUES(auth.uid(), CASE WHEN role_for(auth.uid())='player' THEN (SELECT u.group_id FROM profiles u WHERE u.id=auth.uid() LIMIT 1) ELSE group_id END, content, reply_message_id)
   RETURNING id into message_id;
 
   FOREACH file_path IN ARRAY file_paths

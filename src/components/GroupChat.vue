@@ -39,6 +39,8 @@ import { useUserSession } from '@/stores/userSession'
 import { useOperator } from '@/composables/useOperator'
 import { useCurrentMrT } from '@/composables/useCurrentMrT'
 import MrTShouldCallNotification from '@/components/MrTShouldCallNotification'
+import useMessageSending from '@/composables/useMessageSending'
+import { computed } from 'vue'
 
 export default {
   name: 'GroupChat',
@@ -49,23 +51,27 @@ export default {
     messages: { type: Array, default: () => [] },
     messagesLoaded: { type: Boolean, default: false },
   },
-  data: () => ({
-    userId: useUserSession().userId,
-    translations: {
-      ROOMS_EMPTY: 'Kei Rüüm',
-      ROOM_EMPTY: 'Kein Ruum usgwählt',
-      NEW_MESSAGES: 'Neui Nachrichtä',
-      MESSAGE_DELETED: 'Nachricht isch glöscht wordä',
-      MESSAGES_EMPTY: 'Kei Nachrichtä',
-      CONVERSATION_STARTED: '',
-      TYPE_MESSAGE: 'Schrib öppis netts...',
-      SEARCH: 'Suächä',
-      IS_ONLINE: 'isch online',
-      LAST_SEEN: 'zletscht gsee am ',
-      IS_TYPING: 'schribt...',
-      CANCEL_SELECT_MESSAGE: 'Abbrächä',
-    },
-  }),
+  data: () => {
+    const userSession = useUserSession()
+    return {
+      userId: userSession.userId,
+      userName: userSession.user?.scoutName,
+      translations: {
+        ROOMS_EMPTY: 'Kei Rüüm',
+        ROOM_EMPTY: 'Kein Ruum usgwählt',
+        NEW_MESSAGES: 'Neui Nachrichtä',
+        MESSAGE_DELETED: 'Nachricht isch glöscht wordä',
+        MESSAGES_EMPTY: 'Kei Nachrichtä',
+        CONVERSATION_STARTED: '',
+        TYPE_MESSAGE: 'Schrib öppis netts...',
+        SEARCH: 'Suächä',
+        IS_ONLINE: 'isch online',
+        LAST_SEEN: 'zletscht gsee am ',
+        IS_TYPING: 'schribt...',
+        CANCEL_SELECT_MESSAGE: 'Abbrächä',
+      },
+    }
+  },
   computed: {
     roomName() {
       return useOperator(this.groupId).operatorName
@@ -105,43 +111,12 @@ export default {
     fetchMessages(...args) {
       this.$emit('fetch-messages', ...args)
     },
-    async sendMessage({ content, files, replyMessage }) {
-      const message = {
-        _id: crypto.randomUUID(),
-        senderId: this.userId,
-        content,
-        created_at: new Date(),
-        timestamp: new Date(),
-        date: new Date().toDateString(),
-      }
-      if (files) {
-        message.files = this.formattedFiles(files)
-      }
-      if (replyMessage) {
-        message.replyMessage = {
-          _id: replyMessage._id,
-          content: replyMessage.content,
-          senderId: replyMessage.senderId,
-        }
-        if (replyMessage.files) {
-          message.replyMessage.files = replyMessage.files
-        }
-      }
-      this.$emit('addMessage', message)
-    },
-    formattedFiles(files) {
-      const formattedFiles = []
-      files.forEach((file) => {
-        const messageFile = {
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          extension: file.extension || file.type,
-          url: file.url || file.localUrl,
-        }
-        formattedFiles.push(messageFile)
-      })
-      return formattedFiles
+    sendMessage(args) {
+      useMessageSending(
+        computed(() => this.groupId),
+        this.userId,
+        this.userName
+      ).sendMessage(args)
     },
   },
 }
