@@ -10,6 +10,7 @@ export class Message {
     this.senderId = data.sender_id || data.sender?.id
     this._senderData = data.sender
     this.content = data.content
+    this.groupId = data.group_id
     this.replyMessageId = data.reply_message_id || data.reply_message?.id
     this._replyMessageData = data.reply_message
     this.files = (data.message_files || []).map(
@@ -44,7 +45,9 @@ export class Message {
       _id: this.id,
       senderId: this.senderId,
       content: this.content,
-      username: this.sender?.scoutName,
+      username:
+        this.sender?.scoutName +
+        (this.sender?.groupId === this.groupId ? '' : ' (Zentralä)'),
       createdAt: this.createdAt,
       timestamp: this.createdAt.toString().substring(16, 21),
       date: this.createdAt.toDateString(),

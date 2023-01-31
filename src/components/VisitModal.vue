@@ -155,7 +155,6 @@ export default {
     },
   },
   mounted() {
-    console.log('starting to fetch')
     this.groupScoresStore.fetch(true, () => {
       this.loading = false
     })
@@ -176,6 +175,7 @@ export default {
         'Niä! Zäig Fotti!',
         'So en Lügäbüütel...',
         'Sheesh Bruder, ächt?',
+        'Dayum! Häsch es Fotti?',
         'Eh nöd! Chaschs bewisä?',
         'Das cha doch nöd sii..?',
         'Und das sölli der abnää?',

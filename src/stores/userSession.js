@@ -14,7 +14,7 @@ export const useUserSession = defineStore('userSession', {
       return profileStore
     },
     payload: (state) => {
-      if (!state.session) return null
+      if (!state.session || !state.session.provider_token) return null
       const base64Url = state.session.provider_token.split('.')[1]
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/')
       const jsonPayload = decodeURIComponent(

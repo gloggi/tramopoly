@@ -1,7 +1,12 @@
 <template>
   <div ref="top" style="width: 100%; height: 0" />
   <div class="fullscreen-chat" :style="{ top: chatTop + 'px' }">
-    <operator-chat>
+    <group-chat
+      is-operator
+      :loading-groups="loadingGroups"
+      :groups="groups"
+      :initial-group-id="groupId"
+    >
       <div v-if="activeCallerId" class="card">
         <div v-if="loggedInUserIsActiveCaller" class="card-content">
           <header class="card-header-title is-centered">
@@ -33,8 +38,7 @@
           </button>
         </div>
       </div>
-      <slot name="message"></slot>
-    </operator-chat>
+    </group-chat>
   </div>
 </template>
 
@@ -43,8 +47,9 @@ import { useUserSession } from '@/stores/userSession'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useOperatorCall } from '@/composables/useOperatorCall'
-import OperatorChat from '@/components/OperatorChat'
+import GroupChat from '@/components/GroupChat.vue'
 import { onMounted, ref } from 'vue'
+import { useGroups } from '@/stores/groups'
 
 const top = ref(null)
 const chatTop = ref(0)
@@ -67,6 +72,10 @@ onMounted(() => {
     chatTop.value = Math.ceil(top.value.getBoundingClientRect().bottom)
   }
 })
+
+const groupsStore = useGroups()
+groupsStore.subscribe()
+const { loading: loadingGroups, all: groups } = storeToRefs(groupsStore)
 
 // TODO
 const loggedInOperator = { activeCall: {} }

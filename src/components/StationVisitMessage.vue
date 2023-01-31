@@ -148,7 +148,10 @@
     <div class="is-size-6 is-multiline-text">
       {{ stationVisit.operatorComment }}
     </div>
-    <div v-if="isOwnGroup && isOperator">
+    <div
+      v-if="isOwnGroup && isOperator"
+      class="is-flex is-flex-wrap-wrap is-justify-content-center is-gap-2"
+    >
       <o-field addons root-class="is-justify-content-center">
         <o-button
           icon-left="check"
@@ -174,6 +177,8 @@
         >
           Abglehnt
         </o-button>
+      </o-field>
+      <o-field addons root-class="is-justify-content-center">
         <comment-edit-modal
           table="station_visits"
           :id="stationVisit.id"

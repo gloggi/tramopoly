@@ -1,6 +1,3 @@
-create extension if not exists "pg_cron" with schema "extensions";
-
-
 create table "public"."station_visits" (
     "id" uuid not null default gen_random_uuid(),
     "created_at" timestamp with time zone not null default now(),

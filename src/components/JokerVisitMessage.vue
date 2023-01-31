@@ -66,7 +66,10 @@
         :user="user"
       ></call-operator-button>
     </div>
-    <div v-if="isOperator">
+    <div
+      v-if="isOperator"
+      class="is-flex is-flex-wrap-wrap is-justify-content-center is-gap-2"
+    >
       <o-field addons root-class="is-justify-content-center">
         <o-button
           icon-left="check"
@@ -92,6 +95,8 @@
         >
           Abglehnt
         </o-button>
+      </o-field>
+      <o-field addons root-class="is-justify-content-center">
         <comment-edit-modal
           table="joker_visits"
           :id="jokerVisit.id"
