@@ -78,21 +78,27 @@
       </template>
     </template>
     <div v-if="isOwnGroup && stationVisit.proofPhotoUrl">
-      <a v-if="isOwnGroup" :href="stationVisit.proofPhotoUrl" target="_blank">
+      <a :href="stationVisit.proofPhotoUrl" target="_blank">
+        <video
+          v-if="isVideo"
+          width="300"
+          height="200"
+          controls="controls"
+          preload="none"
+        >
+          <source :src="stationVisit.proofPhotoUrl" />
+          <a :href="stationVisit.proofPhotoUrl" target="_blank"
+            >Video aazäigä</a
+          >
+        </video>
         <span
+          v-else
           class="station-visit-image"
           :style="{
             backgroundImage: `url('${stationVisit.proofPhotoPreviewUrl}')`,
           }"
-        ></span
-      ></a>
-      <span
-        v-else
-        class="station-visit-image"
-        :style="{
-          backgroundImage: `url('${stationVisit.proofPhotoPreviewUrl}')`,
-        }"
-      ></span>
+        ></span>
+      </a>
     </div>
     <div class="is-size-6 is-multiline-text">
       {{ stationVisit.operatorComment }}
@@ -173,6 +179,12 @@ export default {
     },
     isPurchase() {
       return this.stationVisit.isPurchase
+    },
+    isVideo() {
+      if (!this.stationVisit.proofPhotoUrl) return false
+      return !!this.stationVisit._proofPhotoPath.match(
+        /\.(mp4|mov|wmv|avi|webm|m4v|3gp|flv)$/i
+      )
     },
     stationOwnerName() {
       return this.isPurchase

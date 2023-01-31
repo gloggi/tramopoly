@@ -43,7 +43,7 @@ alter table "public"."joker_visits" validate constraint "joker_visits_joker_id_f
 
 set check_function_bodies = off;
 
-CREATE OR REPLACE FUNCTION public.visit_joker(joker_id bigint, proof_photo_path text)
+CREATE OR REPLACE FUNCTION public.visit_joker(joker_id bigint, proof_photo_path text, group_id bigint)
  RETURNS SETOF joker_visits
  LANGUAGE plpgsql
  SECURITY DEFINER
@@ -51,7 +51,7 @@ AS $function$
       BEGIN
           RETURN QUERY
           INSERT INTO joker_visits(joker_id, group_id, proof_photo_path)
-          VALUES(joker_id, (SELECT group_id FROM profiles u WHERE u.id=auth.uid() LIMIT 1), proof_photo_path)
+          VALUES(joker_id, CASE WHEN role_for(auth.uid())='player' THEN (SELECT u.group_id FROM profiles u WHERE u.id=auth.uid() LIMIT 1) ELSE group_id END, proof_photo_path)
           RETURNING *;
       END;
   $function$

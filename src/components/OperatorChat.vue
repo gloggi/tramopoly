@@ -16,10 +16,11 @@
     :show-audio="false"
     :show-add-room="false"
     :user-tags-enabled="false"
-    accepted-files="image/*"
+    accepted-files="image/*, video/*"
     @fetch-messages="fetchMessages"
     @fetch-room="(clickedRoom) => (groupId = clickedRoom)"
     @send-message="sendMessage"
+    @textarea-action-handler="modalOpen = true"
     v-bind="$attrs"
   >
     <template v-for="(idx, name) in $slots" #[name]="data">
@@ -59,6 +60,11 @@
       <o-icon icon="subway"></o-icon>
     </template>
   </vue-advanced-chat>
+  <visit-modal
+    v-if="groupId"
+    v-model:active="modalOpen"
+    :group-id="groupId"
+  ></visit-modal>
 </template>
 
 <script setup>
@@ -72,6 +78,7 @@ import MrTShouldCallNotification from '@/components/MrTShouldCallNotification'
 import StationVisitMessage from '@/components/StationVisitMessage'
 import JokerVisitMessage from '@/components/JokerVisitMessage'
 import useMessageSending from '@/composables/useMessageSending'
+import VisitModal from '@/components/VisitModal'
 
 const { userId, user } = useUserSession()
 
@@ -111,9 +118,11 @@ const chatContentsStore = ref(null)
 const groupId = ref(null)
 
 async function fetchMessages({ room }) {
+  const changedRoom = groupId.value !== room.roomId
   groupId.value = room.roomId
   messagesLoaded.value = false
   chatContentsStore.value = useChatContents(room.roomId)
+  if (changedRoom) chatContentsStore.value.$reset()
   chatContentsStore.value.subscribe()
   const moreToLoad = await chatContentsStore.value.fetchMore()
   if (moreToLoad !== undefined) {
@@ -131,6 +140,8 @@ const jokerVisits = computed(() => {
 })
 
 const { sendMessage } = useMessageSending(groupId, userId, user.scoutName)
+
+const modalOpen = ref(false)
 </script>
 
 <script>

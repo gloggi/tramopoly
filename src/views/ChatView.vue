@@ -7,7 +7,7 @@
       :messages-loaded="allChatContentLoaded"
       init-message="Willkommä bim Tramopoly-Chät 💬 Da chasch mit de Zentralä kommuniziärä. Mit äm Tram-Chnopf chasch Stationä und Jokärs bsuächä ↴"
       @fetch-messages="fetchMoreChatContent"
-      @textarea-action-handler="openModal"
+      @textarea-action-handler="modalOpen = true"
       @toggle-rooms-list="$router.push({ name: 'dashboard' })"
     >
       <template
@@ -35,89 +35,11 @@
       </template>
     </group-chat>
   </div>
-  <o-modal v-model:active="modalOpen">
-    <div class="card modal-card">
-      <div class="card-content">
-        <form @submit.prevent="submit">
-          <o-field label="Guäthabä">
-            <o-input
-              :model-value="balance"
-              class="has-text-weight-semibold"
-              expanded
-              disabled
-            ></o-input>
-          </o-field>
-          <o-field label="Wo sinder grad?">
-            <o-select v-model="stop" expanded required @input="onChangeStop">
-              <option
-                v-for="stop in stationsAndJokers"
-                :value="`${stop.type}-${stop.id}`"
-                :key="`${stop.type}-${stop.id}`"
-                :disabled="groupHasLessMoneyThan(stop)"
-              >
-                <template v-if="groupHasLessMoneyThan(stop)">
-                  🚫 {{ stop.name }} - {{ stop.value }}.- (nöd gnuäg Cäsh)
-                </template>
-                <template v-else-if="stop.type === 'joker'">
-                  🃏 {{ stop.name }} (Jokär) - {{ stop.value }}.-
-                  <template v-if="stop.bonusCallValue"
-                    >(+{{ stop.bonusCallValue }}.- Bonus-Aruäf)</template
-                  >
-                </template>
-                <template v-else>
-                  {{ stop.name }} - {{ stop.value }}.-
-                </template>
-              </option>
-            </o-select>
-          </o-field>
-          <o-field v-if="station" :label="fileLabel">
-            <o-upload v-model="photo" capture accept="image/*" required>
-              <o-button tag="a" variant="secondary">
-                <o-icon icon="camera"></o-icon>
-                <span>Lug, da!</span>
-              </o-button>
-            </o-upload>
-          </o-field>
-          <o-button
-            v-if="station && photo"
-            variant="primary"
-            native-type="submit"
-            outlined
-          >
-            Geilo, probieremer z chaufä!
-          </o-button>
-          <o-field v-if="joker">
-            <template #label>
-              <template v-if="joker.challenge">
-                <div>
-                  Ah ächt? Dänn müändär aber uf oiäm Bewisfotti ä Challenge
-                  erfüllä:
-                </div>
-                <div class="has-text-primary is-size-3">
-                  {{ joker.challenge }}
-                </div>
-              </template>
-              <template v-else>{{ fileLabel }}</template>
-            </template>
-            <o-upload v-model="photo" capture accept="image/*" required>
-              <o-button tag="a" variant="secondary">
-                <o-icon icon="camera"></o-icon>
-                <span>Lug, da!</span>
-              </o-button>
-            </o-upload>
-          </o-field>
-          <o-button
-            v-if="joker && photo"
-            variant="primary"
-            native-type="submit"
-            outlined
-          >
-            Let's goooo!
-          </o-button>
-        </form>
-      </div>
-    </div>
-  </o-modal>
+  <visit-modal
+    v-if="groupId"
+    v-model:active="modalOpen"
+    :group-id="groupId"
+  ></visit-modal>
 </template>
 
 <script>
@@ -134,10 +56,11 @@ import { useGroupScores } from '@/stores/groupScores'
 import { useChatContents } from '@/stores/chatContent'
 import { useJokers } from '@/stores/jokers'
 import JokerVisitMessage from '@/components/JokerVisitMessage'
+import VisitModal from '@/components/VisitModal'
 
 export default {
   name: 'ChatView',
-  components: { JokerVisitMessage, StationVisitMessage, GroupChat },
+  components: { VisitModal, JokerVisitMessage, StationVisitMessage, GroupChat },
   props: {
     groupId: { type: Number, required: true },
   },
@@ -210,7 +133,7 @@ export default {
       this.chatTop = Math.ceil(this.$refs.top.getBoundingClientRect().bottom)
     }
     if (this.$route.query.action === 'visit') {
-      this.openModal()
+      this.modalOpen = true
     }
   },
   methods: {
@@ -219,11 +142,6 @@ export default {
       if (moreToLoad !== undefined) {
         this.allChatContentLoaded = !moreToLoad
       }
-    },
-    async openModal() {
-      this.groupScoresStore.fetch(true, () => {
-        this.modalOpen = true
-      })
     },
     onChangeStop() {
       const responses = [

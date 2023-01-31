@@ -16,7 +16,7 @@
     :show-audio="false"
     :show-add-room="false"
     :user-tags-enabled="false"
-    accepted-files="image/*"
+    accepted-files="image/*, video/*"
     @fetch-messages="fetchMessages"
     @send-message="sendMessage"
     v-bind="$attrs"

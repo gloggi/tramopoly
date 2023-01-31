@@ -35,14 +35,23 @@
       Challenge: {{ jokerVisit.joker?.challenge }}
     </div>
     <div v-if="jokerVisit.proofPhotoUrl">
-      <a :href="jokerVisit.proofPhotoUrl" target="_blank">
-        <span
-          class="joker-visit-image"
-          :style="{
-            backgroundImage: `url('${jokerVisit.proofPhotoPreviewUrl}')`,
-          }"
-        ></span
-      ></a>
+      <video
+        v-if="isVideo"
+        width="300"
+        height="200"
+        controls="controls"
+        preload="none"
+      >
+        <source :src="jokerVisit.proofPhotoUrl" />
+        <a :href="jokerVisit.proofPhotoUrl" target="_blank">Video aazäigä</a>
+      </video>
+      <span
+        v-else
+        class="station-visit-image"
+        :style="{
+          backgroundImage: `url('${jokerVisit.proofPhotoPreviewUrl}')`,
+        }"
+      ></span>
     </div>
     <div class="is-size-6 is-multiline-text">
       {{ jokerVisit.operatorComment }}
@@ -139,6 +148,12 @@ export default {
     },
     isRejected() {
       return !!this.jokerVisit.rejectedAt
+    },
+    isVideo() {
+      if (!this.jokerVisit.proofPhotoUrl) return false
+      return !!this.jokerVisit._proofPhotoPath.match(
+        /\.(mp4|mov|wmv|avi|webm|m4v|3gp|flv)$/i
+      )
     },
     canCallOperatorForBonus() {
       return (

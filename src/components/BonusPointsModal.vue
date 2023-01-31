@@ -2,7 +2,7 @@
   <o-button
     variant="primary"
     outlined
-    icon-left="comment"
+    icon-left="comments-dollar"
     @click="modalOpen = true"
   >
     <slot></slot>

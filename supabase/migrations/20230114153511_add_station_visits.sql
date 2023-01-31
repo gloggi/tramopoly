@@ -31,7 +31,7 @@ alter table "public"."station_visits" validate constraint "station_visits_statio
 
 set check_function_bodies = off;
 
-CREATE OR REPLACE FUNCTION public.visit_station(station_id bigint, proof_photo_path text)
+CREATE OR REPLACE FUNCTION public.visit_station(station_id bigint, proof_photo_path text, group_id bigint)
  RETURNS SETOF station_visits
  LANGUAGE plpgsql
  SECURITY DEFINER
@@ -39,7 +39,7 @@ AS $function$
       BEGIN
           RETURN QUERY
           INSERT INTO station_visits(station_id, group_id, proof_photo_path)
-          VALUES(station_id, (SELECT group_id FROM profiles u WHERE u.id=auth.uid() LIMIT 1), proof_photo_path)
+          VALUES(station_id, CASE WHEN role_for(auth.uid())='player' THEN (SELECT u.group_id FROM profiles u WHERE u.id=auth.uid() LIMIT 1) ELSE group_id END, proof_photo_path)
           RETURNING *;
       END;
   $function$
