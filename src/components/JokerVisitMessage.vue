@@ -31,9 +31,6 @@
         </span>
       </div>
     </template>
-    <div class="is-size-6 is-multiline-text">
-      {{ jokerVisit.operatorComment }}
-    </div>
     <div v-if="jokerVisit.joker?.challenge" class="is-size-6 is-multiline-text">
       Challenge: {{ jokerVisit.joker?.challenge }}
     </div>
@@ -46,6 +43,9 @@
           }"
         ></span
       ></a>
+    </div>
+    <div class="is-size-6 is-multiline-text">
+      {{ jokerVisit.operatorComment }}
     </div>
     <div v-if="canCallOperatorForBonus" class="mb-2">
       <p class="has-text-weight-bold">
@@ -83,9 +83,13 @@
         >
           Abglehnt
         </o-button>
-        <o-button icon-left="comment" variant="primary" outlined>
+        <comment-edit-modal
+          table="joker_visits"
+          :id="jokerVisit.id"
+          :value="jokerVisit.operatorComment"
+        >
           Kommentiärä
-        </o-button>
+        </comment-edit-modal>
       </o-field>
     </div>
     <div class="vac-text-timestamp">
@@ -99,10 +103,11 @@ import MessageBox from '@/components/MessageBox'
 import { useUserSession } from '@/stores/userSession'
 import CallOperatorButton from '@/components/CallOperatorButton'
 import { supabase } from '@/client'
+import CommentEditModal from '@/components/CommentEditModal'
 
 export default {
   name: 'JokerVisitMessage',
-  components: { CallOperatorButton, MessageBox },
+  components: { CommentEditModal, CallOperatorButton, MessageBox },
   props: {
     jokerVisit: { type: Object, required: true },
     groupId: { type: Number, required: true },

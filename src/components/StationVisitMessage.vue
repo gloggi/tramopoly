@@ -77,9 +77,6 @@
         </div>
       </template>
     </template>
-    <div class="is-size-6 is-multiline-text">
-      {{ stationVisit.operatorComment }}
-    </div>
     <div v-if="isOwnGroup && stationVisit.proofPhotoUrl">
       <a v-if="isOwnGroup" :href="stationVisit.proofPhotoUrl" target="_blank">
         <span
@@ -96,6 +93,9 @@
           backgroundImage: `url('${stationVisit.proofPhotoPreviewUrl}')`,
         }"
       ></span>
+    </div>
+    <div class="is-size-6 is-multiline-text">
+      {{ stationVisit.operatorComment }}
     </div>
     <div v-if="isOwnGroup && isOperator">
       <o-field addons root-class="is-justify-content-center">
@@ -123,9 +123,13 @@
         >
           Abglehnt
         </o-button>
-        <o-button icon-left="comment" variant="primary" outlined>
+        <comment-edit-modal
+          table="station_visits"
+          :id="stationVisit.id"
+          :value="stationVisit.operatorComment"
+        >
           Kommentiärä
-        </o-button>
+        </comment-edit-modal>
       </o-field>
     </div>
     <div class="vac-text-timestamp">
@@ -138,10 +142,11 @@
 import { useSettings } from '@/stores/settings'
 import MessageBox from '@/components/MessageBox'
 import { supabase } from '@/client'
+import CommentEditModal from '@/components/CommentEditModal'
 
 export default {
   name: 'StationVisitMessage',
-  components: { MessageBox },
+  components: { CommentEditModal, MessageBox },
   props: {
     stationVisit: { type: Object, required: true },
     groupId: { type: Number, required: true },
