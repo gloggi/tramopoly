@@ -18,6 +18,7 @@ export class JokerVisit {
     this.rejectedAt = data.rejected_at ? new Date(data.rejected_at) : null
     this.operatorComment = data.operator_comment
     this.earnedBonusValue = data.earned_bonus_value
+    this.isDuplicate = data.is_duplicate
     this._subscribed = subscribe
   }
 

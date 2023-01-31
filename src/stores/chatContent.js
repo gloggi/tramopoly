@@ -115,7 +115,8 @@ export const useChatContents = (groupId) => {
             overlaps: ['accessible_to', [groupId]],
             ...this._nextPageFilter(newCursor),
           },
-          select: '*,is_purchase,group:group_id(*),station:station_id(*)',
+          select:
+            '*,is_purchase,is_duplicate,group:group_id(*),station:station_id(*)',
         })
         this.stationVisitsStores = [
           ...this.stationVisitsStores,
@@ -124,7 +125,7 @@ export const useChatContents = (groupId) => {
 
         const moreJokerVisitsStore = useJokerVisits({
           filter: { group_id: groupId, ...this._nextPageFilter(newCursor) },
-          select: '*,group:group_id(*),joker:joker_id(*)',
+          select: '*,is_duplicate,group:group_id(*),joker:joker_id(*)',
         })
         this.jokerVisitsStores = [
           ...this.jokerVisitsStores,

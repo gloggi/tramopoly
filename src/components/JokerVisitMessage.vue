@@ -70,6 +70,12 @@
       v-if="isOperator"
       class="is-flex is-flex-wrap-wrap is-justify-content-center is-gap-2"
     >
+      <o-notification v-if="isDuplicate" variant="warning"
+        ><o-icon icon="exclamation-triangle"></o-icon>
+        {{ visitorGroupName }} isch scho früähnär mal bi
+        {{ visitedJokerName }} gsi. Das isch gägä d Spielreglä, und mer sött dä
+        Bsuäch da vermuätlich ablehnä.</o-notification
+      >
       <o-field addons root-class="is-justify-content-center">
         <o-button
           icon-left="check"
@@ -159,6 +165,9 @@ export default {
       return !!this.jokerVisit._proofPhotoPath.match(
         /\.(mp4|mov|wmv|avi|webm|m4v|3gp|flv)$/i
       )
+    },
+    isDuplicate() {
+      return this.jokerVisit.isDuplicate
     },
     canCallOperatorForBonus() {
       return (

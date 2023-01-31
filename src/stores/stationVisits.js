@@ -20,6 +20,7 @@ export class StationVisit {
     this.needsVerification = data.needs_verification
     this.verifiedAt = data.verified_at ? new Date(data.verified_at) : null
     this.isPurchase = data.is_purchase
+    this.isDuplicate = data.is_duplicate
     this._subscribed = subscribe
   }
 
