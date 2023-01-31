@@ -5,7 +5,7 @@ create table "public"."mr_t_changes" (
     "group_id" bigint not null,
     "vehicle" text,
     "direction" text,
-    "last_known_stop" text,
+    "last_known_location" text,
     "description" text,
     "should_call_operator" boolean not null default false,
     "deactivated" boolean not null default false

@@ -10,7 +10,7 @@ export class MrTChange {
     this.createdAt = new Date(data.created_at)
     this.vehicle = data.vehicle
     this.direction = data.direction
-    this.lastKnownStop = data.last_known_stop
+    this.lastKnownLocation = data.last_known_location
     this.description = data.description
     this.lastChangeAt = new Date(data.last_change_at)
     this.lastReportAt = new Date(data.last_report_at)
@@ -106,6 +106,43 @@ export function useCurrentMrT() {
         : 'Dä aktivi Mr. T hät sich no niä gmäldät...'
   ).text
 
+  const lastKnownMrTLocation = computed(() => {
+    if (!entry.value) return 'Käinä wäiss es so rächt...'
+    const mrT = entry.value
+    let text = ''
+    const inactive = mrT.deactivated === true
+    if (inactive) {
+      text += 'Dä Mr. T isch scho lang nümä gsee wordä. Zletscht'
+    } else {
+      text += 'Dä Mr. T isch zletscht'
+    }
+    if (mrT.vehicle) {
+      if (/^[sS]/i.test(mrT.vehicle)) {
+        text += ' i dä ' + mrT.vehicle
+      } else if (/^[a-zäöü]/i.test(mrT.vehicle)) {
+        text += ' im ' + mrT.vehicle
+      } else if (parseInt(mrT.vehicle > 17)) {
+        text += ' im ' + mrT.vehicle + 'er'
+      } else {
+        text += ' im ' + mrT.vehicle + 'i'
+      }
+    }
+    if (mrT.lastKnownLocation) {
+      text += ' bi ' + mrT.lastKnownLocation
+    } else {
+      text += ' irgendwo'
+    }
+    if (mrT.direction) {
+      text += ' in Richtig ' + mrT.direction
+    }
+    if (inactive) text += '.'
+    else text += ' gsichtät wordä.'
+    if (mrT.description) {
+      text += ' ' + mrT.description
+    }
+    return text
+  })
+
   async function promptMrT() {
     if (!entry.value) return
     await supabase.from('mr_t_changes').insert({
@@ -151,6 +188,7 @@ export function useCurrentMrT() {
     isCurrentMrT,
     mrTShouldCallOperator,
     currentMrTActive,
+    lastKnownMrTLocation,
     timeSinceLastActiveMrTChange,
     timeSinceLastMrTReport,
     promptMrT,

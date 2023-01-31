@@ -131,7 +131,6 @@ import { useCurrentMrT } from '@/composables/useCurrentMrT'
 const props = defineProps({
   groupId: { type: Number, required: true },
 })
-
 const { groupId } = toRefs(props)
 
 const groupStore = useGroup(groupId.value)

@@ -76,6 +76,7 @@ textarea.textarea::placeholder {
   background-color: white;
   z-index: 1;
   width: 66vw;
+  overflow-y: scroll;
 
   @media screen and (max-width: 768px) {
     width: 100vw;
