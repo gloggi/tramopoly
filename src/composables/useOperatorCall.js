@@ -43,6 +43,7 @@ export function useOperatorCall(user, operator) {
     loggedInUserIsActiveCaller,
     callLinkHref,
     activeCallerId,
+    activeCaller,
   }
 }
 

@@ -6,39 +6,47 @@
       :loading-groups="loadingGroups"
       :groups="groups"
       :initial-group-id="groupId"
-    >
-      <div v-if="activeCallerId" class="card">
-        <div v-if="loggedInUserIsActiveCaller" class="card-content">
-          <header class="card-header-title is-centered">
-            Aktivä Aruäf: {{ loggedInOperator.activeCall.scoutName }}
-          </header>
-          <button @click="clearActiveCall" class="button is-danger">
-            Aktivä Aruäf beändä
-          </button>
-        </div>
-        <div v-else class="card-content">
-          <header class="card-header-title is-centered">
-            Aktuell wird ich als bsetzt azäigt.
-          </header>
-          <button
-            @click="clearActiveCall"
-            class="button is-success is-outlined"
-          >
-            ☎️ Mich als frei azäigä
-          </button>
-        </div>
-      </div>
-      <div v-else class="card">
+      @room-info="roomInfoModalOpen = true"
+    ></group-chat>
+    <o-modal v-model:active="roomInfoModalOpen">
+      <div class="card modal-card">
         <div class="card-content">
-          <button
-            @click="setActiveCallToBusy"
-            class="button is-info is-outlined"
-          >
-            📞 Mich als bsetzt azäigä
-          </button>
+          <div v-if="activeCallerId" class="card">
+            <div
+              v-if="loggedInUserIsActiveCaller"
+              class="card-content is-flex is-align-items-baseline is-gap-2"
+            >
+              <button @click="finishCall" class="button is-success is-outlined">
+                ☎️ Mich als frei azäigä
+              </button>
+              Aktuell wird ich als bsetzt azäigt.
+            </div>
+            <div
+              v-else
+              class="card-content is-flex is-align-items-baseline is-gap-2"
+            >
+              <button @click="finishCall" class="button is-danger">
+                Aktivä Aruäf beändä
+              </button>
+              Aktivä Aruäf: {{ activeCaller.scoutName }} ({{
+                activeCaller.group?.name
+              }})
+            </div>
+          </div>
+          <div v-else class="card">
+            <div class="card-content">
+              <button
+                @click="setActiveCallToBusy"
+                class="button is-info is-outlined"
+              >
+                📞 Mich als bsetzt azäigä
+              </button>
+            </div>
+          </div>
+          <group-detail :group-id="groupId"></group-detail>
         </div>
       </div>
-    </group-chat>
+    </o-modal>
   </div>
 </template>
 
@@ -50,17 +58,22 @@ import { useOperatorCall } from '@/composables/useOperatorCall'
 import GroupChat from '@/components/GroupChat.vue'
 import { onMounted, ref } from 'vue'
 import { useGroups } from '@/stores/groups'
+import GroupDetail from '@/components/GroupDetail'
 
 const top = ref(null)
 const chatTop = ref(0)
+const roomInfoModalOpen = ref(false)
 
 const userSession = useUserSession()
 const { isPlayer, user } = storeToRefs(userSession)
 
-const { activeCallerId, loggedInUserIsActiveCaller } = useOperatorCall(
-  user,
-  user
-)
+const {
+  activeCallerId,
+  loggedInUserIsActiveCaller,
+  activeCaller,
+  finishCall,
+  callOperator: setActiveCallToBusy,
+} = useOperatorCall(user, user)
 
 if (isPlayer.value) {
   const router = useRouter()
@@ -76,11 +89,6 @@ onMounted(() => {
 const groupsStore = useGroups()
 groupsStore.subscribe()
 const { loading: loadingGroups, all: groups } = storeToRefs(groupsStore)
-
-// TODO
-const loggedInOperator = { activeCall: {} }
-const clearActiveCall = () => {}
-const setActiveCallToBusy = () => {}
 </script>
 
 <script>
