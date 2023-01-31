@@ -90,6 +90,14 @@
         >
           Kommentiärä
         </comment-edit-modal>
+        <bonus-points-modal
+          v-if="jokerVisit.joker?.bonusCallValue"
+          :max="jokerVisit.joker.bonusCallValue"
+          :id="jokerVisit.id"
+          :value="jokerVisit.earnedBonusValue"
+        >
+          Bonus vergä
+        </bonus-points-modal>
       </o-field>
     </div>
     <div class="vac-text-timestamp">
@@ -104,10 +112,16 @@ import { useUserSession } from '@/stores/userSession'
 import CallOperatorButton from '@/components/CallOperatorButton'
 import { supabase } from '@/client'
 import CommentEditModal from '@/components/CommentEditModal'
+import BonusPointsModal from '@/components/BonusPointsModal'
 
 export default {
   name: 'JokerVisitMessage',
-  components: { CommentEditModal, CallOperatorButton, MessageBox },
+  components: {
+    BonusPointsModal,
+    CommentEditModal,
+    CallOperatorButton,
+    MessageBox,
+  },
   props: {
     jokerVisit: { type: Object, required: true },
     groupId: { type: Number, required: true },

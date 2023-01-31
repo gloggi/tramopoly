@@ -6,7 +6,7 @@ CREATE OR REPLACE FUNCTION public.is_purchase(station_visits)
  SECURITY DEFINER
 AS $function$
 BEGIN
-  RETURN(SELECT NOT EXISTS(SELECT 1 FROM station_visits other_visit WHERE other_visit.created_at<$1.created_at AND other_visit.station_id=$1.station_id AND other_visit.accepted_at IS NOT NULL AND other_visit.rejected_at IS NULL AND other_visit.needs_verification=FALSE AND other_visit.verified_at IS NOT NULL));
+  RETURN(SELECT $1.accepted_at IS NOT NULL AND $1.rejected_at IS NULL AND $1.needs_verification=FALSE AND $1.verified_at IS NOT NULL AND NOT EXISTS(SELECT 1 FROM station_visits other_visit WHERE other_visit.created_at<$1.created_at AND other_visit.station_id=$1.station_id AND other_visit.accepted_at IS NOT NULL AND other_visit.rejected_at IS NULL AND other_visit.needs_verification=FALSE AND other_visit.verified_at IS NOT NULL));
 END
 $function$
 ;
@@ -43,6 +43,26 @@ if (role !== 'operator' && role !== 'admin') return
 plv8.execute('UPDATE joker_visits SET accepted_at=$1, rejected_at=$2 WHERE id=$3', [
   rating === 'accepted' ? new Date() : null,
   rating === 'rejected' ? new Date() : null,
+  joker_visit_id,
+])
+
+// Force re-verification of all station visits after the edited joker visit, because balances might have changed now
+plv8.execute('UPDATE station_visits SET needs_verification=TRUE WHERE created_at >= (SELECT created_at FROM joker_visits WHERE id=$1)', [joker_visit_id])
+plv8.execute('SELECT verify_all()')
+
+$function$
+;
+
+CREATE OR REPLACE FUNCTION public.grant_joker_bonus(joker_visit_id uuid, earned_bonus_value smallint)
+    RETURNS void
+    LANGUAGE plv8
+AS $function$
+
+const { role } = plv8.execute('SELECT role_for(auth.uid()) AS role LIMIT 1')[0]
+if (role !== 'operator' && role !== 'admin') return
+
+plv8.execute('UPDATE joker_visits SET earned_bonus_value=$1 WHERE id=$2', [
+  earned_bonus_value,
   joker_visit_id,
 ])
 
