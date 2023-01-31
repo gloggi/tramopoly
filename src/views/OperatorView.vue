@@ -7,7 +7,21 @@
       :groups="groups"
       :initial-group-id="groupId"
       @room-info="openRoomInfo"
-    ></group-chat>
+    >
+      <template
+        v-for="group in groups"
+        #[`room-list-options_${group.id}`]
+        :key="group.id"
+      >
+        <span
+          v-if="isCurrentMrT(group.id)"
+          class="tag is-info is-pulled-right is-small mb-2 is-valign-middle has-text-weight-bold"
+          title="🕵️"
+        >
+          Mr. T
+        </span>
+      </template>
+    </group-chat>
     <o-modal v-model:active="roomInfoModalOpen">
       <div class="card modal-card">
         <div class="card-content">
@@ -61,6 +75,7 @@ import { onMounted, ref } from 'vue'
 import { useGroups } from '@/stores/groups'
 import GroupDetail from '@/components/GroupDetail'
 import MrTChangeForm from '@/components/MrTChangeForm'
+import { useCurrentMrT } from '@/composables/useCurrentMrT'
 
 const top = ref(null)
 const chatTop = ref(0)
@@ -97,6 +112,8 @@ function openRoomInfo(room) {
   openRoomId.value = parseInt(room.roomId)
   roomInfoModalOpen.value = true
 }
+
+const { isCurrentMrT } = useCurrentMrT()
 </script>
 
 <script>
