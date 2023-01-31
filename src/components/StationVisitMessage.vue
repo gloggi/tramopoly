@@ -64,16 +64,61 @@
       </template>
     </template>
     <template v-else>
-      <template v-if="isPurchase">
+      <template v-if="isAccepted">
+        <template v-if="needsVerification">
+          <div class="is-size-5 has-text-weight-semibold">
+            {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi. D
+            Zentralä muäs grad no schnäll berächnä ob zu däm Zitpunkt gnuäg Cäsh
+            umä gsi isch zums chaufä 🏦
+            <span class="checking-spinner">
+              <o-loading
+                :full-page="false"
+                v-model:active="alwaysSpinning"
+                overlayClass="no-overlay"
+                :can-cancel="false"
+              ></o-loading>
+            </span>
+          </div>
+        </template>
+        <template v-else-if="isInvalid">
+          <div class="is-size-5 has-text-weight-semibold">
+            {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi, aber
+            sie händ läidär nöd gnuäg Cäsh gha zums chaufä 💔
+          </div>
+        </template>
+        <template v-else>
+          <template v-if="isPurchase">
+            <div class="is-size-5 has-text-weight-semibold">
+              {{ visitorGroupName }} isch vor ois bi
+              {{ visitedStationName }} gsi und häts gchauft 💰💰💰
+            </div>
+          </template>
+          <template v-else>
+            <div class="is-size-5 has-text-weight-semibold">
+              {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi und
+              hät ois {{ rentAmount }} Miäti zahlt 🤑
+            </div>
+          </template>
+        </template>
+      </template>
+      <template v-else-if="isRejected">
         <div class="is-size-5 has-text-weight-semibold">
-          {{ visitorGroupName }} isch vor ois bi {{ visitedStationName }} gsi
-          und häts gchauft 💰💰💰
+          {{ visitorGroupName }} hät behauptät, dass sie bi
+          {{ visitedStationName }} gsi sind, aber d Zentralä hät das abglehnt 🙅
         </div>
       </template>
       <template v-else>
         <div class="is-size-5 has-text-weight-semibold">
-          {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi und hät
-          ois {{ rentAmount }} Miäti zahlt 🤑
+          {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi. D
+          Zentralä überprüäft das grad no 🕵️
+          <span class="checking-spinner">
+            <o-loading
+              :full-page="false"
+              v-model:active="alwaysSpinning"
+              overlayClass="no-overlay"
+              :can-cancel="false"
+            ></o-loading>
+          </span>
         </div>
       </template>
     </template>
@@ -237,9 +282,17 @@ export default {
           : this.isRejected
           ? 'danger'
           : 'primary'
-        : this.isPurchase
+        : this.isAccepted
+        ? this.needsVerification
+          ? 'dark'
+          : this.isInvalid
+          ? 'dark'
+          : this.isPurchase
+          ? 'dark'
+          : 'success'
+        : this.isRejected
         ? 'dark'
-        : 'success'
+        : 'dark'
     },
   },
   mounted() {
