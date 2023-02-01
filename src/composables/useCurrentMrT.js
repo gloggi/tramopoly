@@ -48,9 +48,10 @@ export function useCurrentMrT() {
     },
     actions: {
       subscribe() {
+        if (this.subscribed) return
         this.subscribed = true
         supabase
-          .channel(`public:mr_t_changes`)
+          .channel('currentMrT')
           .on(
             'postgres_changes',
             { event: '*', schema: 'public', table: 'mr_t_changes' },

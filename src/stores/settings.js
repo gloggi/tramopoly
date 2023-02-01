@@ -46,9 +46,10 @@ export const useSettings = () =>
     },
     actions: {
       subscribe() {
+        if (this.subscribed) return
         this.subscribed = true
         supabase
-          .channel(`public:settings`)
+          .channel('settings')
           .on(
             'postgres_changes',
             { event: '*', schema: 'public', table: 'settings' },

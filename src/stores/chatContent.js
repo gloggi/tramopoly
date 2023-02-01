@@ -50,11 +50,11 @@ export const useChatContents = (groupId) => {
     },
     actions: {
       subscribe() {
+        if (this.subscribed) return
         this.subscribed = true
 
-        // For some reason, this only keeps the last added of each store subscribed...
-        //this.allStores.forEach((store) => store.subscribe())
-        // Instead, we manage the subscriptions of paginated slices right here.
+        // In order to reduce the number of subscriptions, we only subscribe once to each table
+        // and then delegate the callback to all our paginaged slice stores
         this._subscribeAll('messages', 'messagesStores')
         this._subscribeAll('station_visits', 'stationVisitsStores')
         this._subscribeAll('joker_visits', 'jokerVisitsStores')
@@ -63,20 +63,16 @@ export const useChatContents = (groupId) => {
       },
       _subscribeAll(table, storesGetter) {
         supabase
-          .channel('public:' + table)
-          .on(
-            'postgres_changes',
-            { event: '*', schema: 'public', table },
-            () => {
-              this[storesGetter].forEach((store) => store.fetch(true))
-            }
+          .channel(`chatContent-${table}`)
+          .on('postgres_changes', { event: '*', schema: 'public', table }, () =>
+            this[storesGetter].forEach((store) => store.fetch(true))
           )
           .subscribe()
       },
       async fetch(forceReload = false) {
-        if (this.fetching && !forceReload) return
+        if (this.fetching) return
         this.fetching = true
-        await Promise.all(
+        await Promise.allSettled(
           this.allStores.map((store) => store.fetch(forceReload))
         )
         this.fetching = false

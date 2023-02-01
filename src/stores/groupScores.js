@@ -6,7 +6,7 @@ import { gsap } from 'gsap'
 export const useGroupScores = () => {
   const subscribeToTable = (table, callback) => {
     supabase
-      .channel(`public:${table}`)
+      .channel(`groupScores-${table}`)
       .on('postgres_changes', { event: '*', schema: 'public', table }, callback)
       .subscribe()
   }
@@ -42,6 +42,7 @@ export const useGroupScores = () => {
     },
     actions: {
       subscribe() {
+        if (this.subscribed) return
         this.subscribed = true
         subscribeToTable('abteilungen', () => this.fetch(true))
         subscribeToTable('groups', () => this.fetch(true))

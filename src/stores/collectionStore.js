@@ -33,9 +33,10 @@ export const useCollectionStore = (
     },
     actions: {
       subscribe() {
+        if (this.subscribed) return
         this.subscribed = true
         supabase
-          .channel('public:' + table)
+          .channel(storeId)
           .on('postgres_changes', { event: '*', schema: 'public', table }, () =>
             this.fetch(true)
           )
@@ -43,7 +44,7 @@ export const useCollectionStore = (
         return this.fetch()
       },
       async fetch(forceReload = false) {
-        if ((this.fetching || this.data) && !forceReload) return
+        if (this.fetching || (this.data && !forceReload)) return
         this.fetching = true
         const query = supabase.from(table).select(select)
         const { data } = await applyFilterToQuery(query, filter)

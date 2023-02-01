@@ -7,7 +7,8 @@ export const useEntryStore = (
   { initialData = undefined, select = '*' }
 ) => {
   return (id) => {
-    return defineStore(`${table}-${id}-${select}`, {
+    const storeId = `${table}-${id}-${select}`
+    return defineStore(storeId, {
       state: () => ({ data: initialData, subscribed: false, fetching: false }),
       getters: {
         loading: (state) => state.data === undefined,
@@ -16,9 +17,10 @@ export const useEntryStore = (
       },
       actions: {
         subscribe() {
+          if (this.subscribed) return
           this.subscribed = true
           supabase
-            .channel(`public:${table}:id=eq.${id}`)
+            .channel(storeId)
             .on(
               'postgres_changes',
               {
@@ -33,7 +35,7 @@ export const useEntryStore = (
           return this.fetch()
         },
         async fetch(forceReload = false) {
-          if ((this.fetching || this.data) && !forceReload) return
+          if (this.fetching || (this.data && !forceReload)) return
           this.fetching = true
           const { data } = await supabase
             .from(table)
