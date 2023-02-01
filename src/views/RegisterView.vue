@@ -163,6 +163,7 @@ export default {
       if (this.verifyPhoneNumber) {
         // Direct the user to the OTP field
         this.$refs.otp.focus()
+        this.$refs.otp.scrollIntoView()
       } else {
         // If we don't have to verify the phone number, we can skip right ahead to saving the group
         await this.assignGroup()
