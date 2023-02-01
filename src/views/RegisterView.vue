@@ -61,6 +61,7 @@
           pattern="\d*"
           inputmode="numeric"
           v-model="otp"
+          autocomplete="one-time-code"
           required
       /></o-field>
       <button class="button is-link" type="submit">SMS-Code beschtätigä</button>
