@@ -20,9 +20,10 @@ export default function useMessageReading(groupId, isOperator, initMessage) {
       room.roomId !== undefined
     ) {
       groupId.value = parseInt(room.roomId)
+      chatContentsStore.value?.$reset()
     }
-    chatContentsStore.value.subscribe()
-    const moreToLoad = await chatContentsStore.value.fetchMore()
+    chatContentsStore.value?.subscribe()
+    const moreToLoad = await chatContentsStore.value?.fetchMore()
     if (moreToLoad !== undefined) {
       messagesLoaded.value = !moreToLoad
     }
