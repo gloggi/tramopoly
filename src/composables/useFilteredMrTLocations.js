@@ -38,7 +38,6 @@ export default function useFilteredMrTLocations(lastKnownLocation, direction) {
   const { all: allLocations } = storeToRefs(locationsStore)
 
   const locationsFilteredByLastKnownLocation = computed(() => {
-    console.log('searching')
     return searchArrayFor(allLocations.value, lastKnownLocation.value)
   })
   const locationsFilteredByDirection = computed(() => {

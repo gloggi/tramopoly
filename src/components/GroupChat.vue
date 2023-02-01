@@ -7,6 +7,7 @@
     :room-id="String(groupId)"
     :rooms-loaded="!loadingGroups"
     :rooms="rooms"
+    rooms-order="asc"
     :messages="messages"
     :username-options="{ minUsers: 0 }"
     :message-actions="[{ name: 'replyMessage', title: 'Antwortä' }]"

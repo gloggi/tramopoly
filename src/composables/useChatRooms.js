@@ -3,10 +3,23 @@ import { useProfiles } from '@/stores/profiles'
 import { storeToRefs } from 'pinia'
 
 export default function useChatRooms(groups, isOperator, user) {
+  function sortIndexForGroup(group) {
+    const isOwnGroup = group.abteilung?.operatorId === user.id ? '0' : '9'
+    const abteilung = group.abteilung?.name
+    console.log(
+      group,
+      group.abteilung?.operatorId,
+      user.id,
+      group.abteilung?.name
+    )
+    return `${isOwnGroup}-${abteilung}-${group.name}`
+  }
+
   const rooms = computed(() => {
     return groups.value
       .filter((group) => isOperator.value || group.id === user.groupId)
       .map((group) => ({
+        index: sortIndexForGroup(group),
         roomId: String(group.id),
         roomName: group.name,
         avatar: group.abteilung.logoUrl,

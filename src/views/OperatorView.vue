@@ -13,6 +13,16 @@
         #[`room-list-options_${group.id}`]
         :key="group.id"
       >
+        <o-icon
+          v-if="group.abteilung?.operatorId === user.id"
+          icon="eye"
+        ></o-icon>
+        <span
+          v-if="activeCaller && activeCaller.groupId === group.id"
+          class="tag is-warning is-pulled-right is-small mb-2 is-valign-middle has-text-weight-bold"
+        >
+          📞 {{ activeCaller.scoutName }}
+        </span>
         <span
           v-if="isCurrentMrT(group.id)"
           class="tag is-info is-pulled-right is-small mb-2 is-valign-middle has-text-weight-bold"
