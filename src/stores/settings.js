@@ -37,7 +37,7 @@ export class MrTReward {
 }
 
 export const useSettings = () =>
-  defineStore(`settings`, {
+  defineStore('settings', {
     state: () => ({ data: undefined, subscribed: false, fetching: false }),
     getters: {
       loading: (state) => state.data === undefined,

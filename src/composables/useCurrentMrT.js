@@ -33,7 +33,7 @@ export class MrTChange {
 }
 
 export function useCurrentMrT() {
-  const currentMrTStore = defineStore(`currentMrT`, {
+  const currentMrTStore = defineStore('currentMrT', {
     state: () => ({ data: undefined, subscribed: false, fetching: false }),
     getters: {
       loading: (state) => state.data === undefined,

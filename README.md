@@ -9,10 +9,9 @@
   * Under Authentication -> Providers, disable the Email provider
   * Under Authentcation -> Providers, set up keycloak authentication according to the [documentation](https://supabase.com/docs/guides/auth/social-login/auth-keycloak).
   * Optional: Under Authentication -> Providers, open Phone and set up [Twilio integration](https://supabase.com/docs/guides/auth/phone-login/twilio#finding-your-twilio-credentials) and activate "Enable phone confirmations", but don't activate "Enable Phone provider". Don't forget to save.
-  * Under authentication -> URL Configuration, set Site URL to your productive URL, and add your productive URL and http://localhost:5173 as Redirect URLs.
-  * Under Database -> Extensions, enable the PLV8 extension.
+  * Under authentication -> URL Configuration, set Site URL to your productive URL, and add your productive URL and http://localhost:5173 and http://localhost:4173 as Redirect URLs.
   * Under SQL editor -> New query, paste the contents of **each except the first file** from supabase/migrations, and then supabase/seed.sql. If that sounds like too much work, see below for how to do this step using the supabase CLI instead.
-  * Under Database -> Replication -> 0 tables, activate the toggle on the `abteilungen`, `groups`, `joker_visits`, `jokers`, `message_files`, `messages`, `mr_t_rewards`, `profiles`, `settings` and `station_visits` tables.
+  * Under Database -> Replication -> 0 tables, activate the toggle on the `abteilungen`, `groups`, `joker_visits`, `jokers`, `message_files`, `messages`, `mr_t_changes`, `mr_t_rewards`, `profiles`, `settings` and `station_visits` tables.
   * Under Project settings -> API, find your values for the Supabase project URL and API key.
 * Create a copy of the file .env, name it .env.local and fill in your Supabase project URL and API key.
   * If you set up Twilio integration with Supabase, set VITE_USE_TWILIO_PHONE_VERIFICATION in your .env.local to true
@@ -35,7 +34,7 @@ If you don't want to copy-paste the contents of all migrations files, you can in
 
 If you've made it this far, during development you can also create new migrations by editing the database structure in the online editor, and then running:
 ```bash
-yarn supabase db remote commit
+yarn create-migration
 ```
 
 ### Compile and hot-reload for development

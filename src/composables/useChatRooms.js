@@ -6,12 +6,6 @@ export default function useChatRooms(groups, isOperator, user) {
   function sortIndexForGroup(group) {
     const isOwnGroup = group.abteilung?.operatorId === user.id ? '0' : '9'
     const abteilung = group.abteilung?.name
-    console.log(
-      group,
-      group.abteilung?.operatorId,
-      user.id,
-      group.abteilung?.name
-    )
     return `${isOwnGroup}-${abteilung}-${group.name}`
   }
 

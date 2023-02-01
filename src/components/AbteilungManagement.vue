@@ -101,9 +101,6 @@
               {{ option.scoutName }}
             </option>
           </o-select>
-          <abteilung-edit-modal :abteilung="row">
-            <o-icon icon="edit"></o-icon>
-          </abteilung-edit-modal>
         </span>
       </o-table-column>
       <o-table-column #default="{ row }" field="active" label="Aktiv" sortable>
@@ -112,6 +109,9 @@
             :model-value="row.active"
             @update:modelValue="(value) => setAbteilungActive(row.id, value)"
           ></o-switch>
+          <abteilung-edit-modal :abteilung="row">
+            <o-icon icon="edit"></o-icon>
+          </abteilung-edit-modal>
         </span>
       </o-table-column>
     </o-table>
