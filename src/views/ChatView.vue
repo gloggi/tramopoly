@@ -21,7 +21,6 @@ import GroupChat from '@/components/GroupChat.vue'
 import { useUserSession } from '@/stores/userSession'
 import { useOperator } from '@/composables/useOperator'
 import { useGroups } from '@/stores/groups'
-import { useChatContents } from '@/stores/chatContent'
 import VisitModal from '@/components/VisitModal'
 
 export default {
@@ -32,8 +31,6 @@ export default {
   },
   data() {
     const userSessionStore = useUserSession()
-    const chatContentsStore = useChatContents(this.groupId)
-    chatContentsStore.subscribe()
     const groupsStore = useGroups({
       filter: { id: this.groupId },
       select: '*,abteilung:abteilungen(*,operator:operator_id(*))',
@@ -46,7 +43,6 @@ export default {
       operatorName: useOperator(this.groupId).operatorName,
       userId: userSessionStore.userId,
       userName: userSessionStore.user?.scoutName,
-      chatContentsStore,
       groupsStore,
       allChatContentLoaded: false,
     }
@@ -57,12 +53,6 @@ export default {
     },
     groups() {
       return this.groupsStore.all
-    },
-    stationVisits() {
-      return this.chatContentsStore.allStationVisits
-    },
-    jokerVisits() {
-      return this.chatContentsStore.allJokerVisits
     },
   },
   async mounted() {

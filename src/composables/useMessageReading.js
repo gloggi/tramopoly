@@ -6,7 +6,9 @@ export default function useMessageReading(groupId, isOperator, initMessage) {
   const messagesLoaded = ref(true)
 
   const chatContentsStore = computed(() => {
-    return useChatContents(groupId.value)
+    const store = useChatContents(groupId.value)
+    store.subscribe()
+    return store
   })
 
   async function fetchMessages({ room }) {
@@ -18,7 +20,6 @@ export default function useMessageReading(groupId, isOperator, initMessage) {
       room.roomId !== undefined
     ) {
       groupId.value = parseInt(room.roomId)
-      //chatContentsStore.value.$reset()
     }
     chatContentsStore.value.subscribe()
     const moreToLoad = await chatContentsStore.value.fetchMore()
@@ -75,11 +76,16 @@ export default function useMessageReading(groupId, isOperator, initMessage) {
     ]
   })
 
+  function clearChatContentCache() {
+    chatContentsStore.value?.$reset()
+  }
+
   return {
     messagesLoaded,
     fetchMessages,
     messages: messagesWithStaticMessages,
     stationVisits,
     jokerVisits,
+    clearChatContentCache,
   }
 }

@@ -74,7 +74,7 @@
 <script setup>
 import VueAdvancedChat from '@/vue-advanced-chat/src/lib/ChatWindow.vue'
 import { useUserSession } from '@/stores/userSession'
-import { ref, toRefs } from 'vue'
+import { onUnmounted, ref, toRefs } from 'vue'
 import MrTShouldCallNotification from '@/components/MrTShouldCallNotification'
 import StationVisitMessage from '@/components/StationVisitMessage'
 import JokerVisitMessage from '@/components/JokerVisitMessage'
@@ -114,9 +114,19 @@ const groupId = ref(initialGroupId.value)
 const modalOpen = ref(false)
 
 const { rooms } = useChatRooms(groups, isOperator, user)
-const { messagesLoaded, fetchMessages, messages, stationVisits, jokerVisits } =
-  useMessageReading(groupId, isOperator, initMessage)
+const {
+  messagesLoaded,
+  fetchMessages,
+  messages,
+  stationVisits,
+  jokerVisits,
+  clearChatContentCache,
+} = useMessageReading(groupId, isOperator, initMessage)
 const { sendMessage } = useMessageSending(groupId, userId, user.scoutName)
+
+onUnmounted(() => {
+  clearChatContentCache()
+})
 </script>
 
 <script>
