@@ -121,11 +121,3 @@ textarea.textarea::placeholder {
 .table .inactive-row {
   opacity: 50%;
 }
-
-/* TODO remove if reverting back to using upstream vue-advanced-chat web component */
-.vac-room-header .vac-rotate-icon {
-  transform: rotate(0) !important;
-}
-.vac-message-wrapper .vac-card-system {
-  max-width: 1024px;
-}

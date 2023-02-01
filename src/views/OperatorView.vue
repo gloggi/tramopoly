@@ -6,7 +6,7 @@
       :loading-groups="loadingGroups"
       :groups="groups"
       :initial-group-id="groupId"
-      @room-info="openRoomInfo"
+      @room-info="openRoomInfo($event.detail[0])"
     >
       <template
         v-for="group in groups"

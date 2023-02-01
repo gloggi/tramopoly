@@ -35,7 +35,7 @@ export default function useChatRooms(groups, isOperator, user) {
     return users.value
       .filter((user) => user.groupId === roomId || user.id === operatorId)
       .map((user) => ({
-        _id: user.id,
+        _id: String(user.id),
         username:
           user.scoutName + (user.groupId === roomId ? '' : ` (Zentralä)`),
       }))

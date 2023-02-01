@@ -1,47 +1,49 @@
 <template>
   <vue-advanced-chat
+    ref="chat"
     height="100%"
-    :current-user-id="userId"
+    :current-user-id="String(userId)"
     :loading-rooms="loadingGroups"
     :rooms-list-opened="isOperator"
     :room-id="String(groupId)"
     :rooms-loaded="!loadingGroups"
-    :rooms="rooms"
+    :rooms="JSON.stringify(rooms)"
     rooms-order="asc"
-    :messages="messages"
-    :username-options="{ minUsers: 0 }"
-    :message-actions="[{ name: 'replyMessage', title: 'Antwortä' }]"
-    :text-messages="translations"
+    :messages="JSON.stringify(messages)"
+    :username-options="JSON.stringify({ minUsers: 0 })"
+    :message-actions="
+      JSON.stringify([{ name: 'replyMessage', title: 'Antwortä' }])
+    "
+    :text-messages="JSON.stringify(translations)"
     :messages-loaded="messagesLoaded"
     textarea-action-enabled
     :show-new-messages-divider="false"
-    :show-emojis="false"
     :show-reaction-emojis="false"
     :show-audio="false"
     :show-add-room="false"
     :user-tags-enabled="false"
     accepted-files="image/*, video/*"
-    @fetch-messages="fetchMessages"
-    @fetch-room="(room) => (groupId = room)"
-    @send-message="sendMessage"
-    @textarea-action-handler="modalOpen = true"
+    @fetch-messages="fetchMessages($event.detail[0])"
+    @fetch-room="() => (groupId = $event.detail[0].room)"
+    @send-message="sendMessage($event.detail[0])"
+    @textarea-action-handler="() => (modalOpen = true)"
     v-bind="$attrs"
   >
-    <template v-for="(idx, name) in $slots" #[name]="data">
-      <slot :name="name" v-bind="data" />
-    </template>
-    <template #message_mr-t-should-call-operator>
+    <div v-for="(idx, name) in $slots" :slot="name" :key="idx">
+      <slot :name="name" />
+    </div>
+    <div slot="message_mr-t-should-call-operator">
       <mr-t-should-call-notification></mr-t-should-call-notification>
-    </template>
-    <template #paperclip-icon>
+    </div>
+    <div slot="paperclip-icon">
       <o-icon icon="image"></o-icon>
-    </template>
-    <template #custom-action-icon>
+    </div>
+    <div slot="custom-action-icon">
       <o-icon icon="subway"></o-icon>
-    </template>
-    <template
+    </div>
+    <div
       v-for="stationVisit in stationVisits"
-      #[`message_${stationVisit.id}`]
+      :slot="`message_${stationVisit.id}`"
       :key="stationVisit.id"
     >
       <station-visit-message
@@ -50,10 +52,10 @@
         :group-id="groupId"
         :is-operator="isOperator"
       ></station-visit-message>
-    </template>
-    <template
+    </div>
+    <div
       v-for="jokerVisit in jokerVisits"
-      #[`message_${jokerVisit.id}`]
+      :slot="`message_${jokerVisit.id}`"
       :key="jokerVisit.id"
     >
       <joker-visit-message
@@ -62,7 +64,7 @@
         :group-id="groupId"
         :is-operator="isOperator"
       ></joker-visit-message>
-    </template>
+    </div>
   </vue-advanced-chat>
   <visit-modal
     v-if="groupId"
@@ -72,9 +74,8 @@
 </template>
 
 <script setup>
-import VueAdvancedChat from '@/vue-advanced-chat/src/lib/ChatWindow.vue'
 import { useUserSession } from '@/stores/userSession'
-import { onUnmounted, ref, toRefs } from 'vue'
+import { onMounted, onUnmounted, ref, toRefs } from 'vue'
 import MrTShouldCallNotification from '@/components/MrTShouldCallNotification'
 import StationVisitMessage from '@/components/StationVisitMessage'
 import JokerVisitMessage from '@/components/JokerVisitMessage'
@@ -82,6 +83,9 @@ import useMessageSending from '@/composables/useMessageSending'
 import VisitModal from '@/components/VisitModal'
 import useMessageReading from '@/composables/useMessageReading'
 import useChatRooms from '@/composables/useChatRooms'
+import { register as registerVueAdvancedChatWebComponent } from 'vue-advanced-chat'
+
+registerVueAdvancedChatWebComponent()
 
 const props = defineProps({
   isOperator: { type: Boolean, default: false },
@@ -123,6 +127,23 @@ const {
   clearChatContentCache,
 } = useMessageReading(groupId, isOperator, initMessage)
 const { sendMessage } = useMessageSending(groupId, userId, user.scoutName)
+
+const chat = ref(null)
+
+onMounted(() => {
+  if (chat.value) {
+    const style = document.createElement('style')
+    style.type = 'text/css'
+    style.innerHTML =
+      '.vac-room-header .vac-rotate-icon {\n' +
+      '  transform: rotate(0) !important;\n' +
+      '}\n' +
+      '.vac-message-wrapper .vac-card-system {\n' +
+      '  max-width: 1024px;\n' +
+      '}'
+    chat.value.shadowRoot.appendChild(style)
+  }
+})
 
 onUnmounted(() => {
   clearChatContentCache()

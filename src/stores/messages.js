@@ -43,7 +43,7 @@ export class Message {
   toChatFormat() {
     return {
       _id: this.id,
-      senderId: this.senderId,
+      senderId: this.senderId ? String(this.senderId) : undefined,
       content: this.content,
       username:
         this.sender?.scoutName +

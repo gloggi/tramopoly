@@ -735,6 +735,11 @@ domexception@^4.0.0:
   dependencies:
     webidl-conversions "^7.0.0"
 
+emoji-picker-element@1.12.1:
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/emoji-picker-element/-/emoji-picker-element-1.12.1.tgz#854a9bbae4d9a04fa2b5cd0763845921f4904c83"
+  integrity sha512-F9AY/re8uqZmBcCXLHLGvyy7fxuMQdZl9R8OToLRH8Vnns+WMX8RYUbI2nSJklzl5+82qzpYWeus1/puDepWcQ==
+
 emoji-picker-element@^1.15.0:
   version "1.15.0"
   resolved "https://registry.yarnpkg.com/emoji-picker-element/-/emoji-picker-element-1.15.0.tgz#7065d5c5c50ca732a21dd87b7a491b4c3f726295"
@@ -1316,6 +1321,11 @@ levn@~0.3.0:
   dependencies:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
+
+linkifyjs@2.1.9:
+  version "2.1.9"
+  resolved "https://registry.yarnpkg.com/linkifyjs/-/linkifyjs-2.1.9.tgz#af06e45a2866ff06c4766582590d098a4d584702"
+  integrity sha512-74ivurkK6WHvHFozVaGtQWV38FzBwSTGNmJolEgFp7QgR2bl6ArUWlvT4GcHKbPe1z3nWYi+VUdDZk16zDOVug==
 
 linkifyjs@^4.1.0:
   version "4.1.0"
@@ -1982,6 +1992,14 @@ vitest@^0.25.6:
     tinypool "^0.3.0"
     tinyspy "^1.0.2"
     vite "^3.0.0 || ^4.0.0"
+
+vue-advanced-chat@^2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/vue-advanced-chat/-/vue-advanced-chat-2.0.7.tgz#bd35830c19fc5eb4e26545dc554d88e7808913cc"
+  integrity sha512-s+6v+KtVT46lFM8YohneLLS/vN10sSTAPfZiqAczXf13Q8vQWD9rSeWAokL0zuJeQ+jguNgFI6oN2wbI/RC1iw==
+  dependencies:
+    emoji-picker-element "1.12.1"
+    linkifyjs "2.1.9"
 
 vue-demi@*:
   version "0.13.11"
