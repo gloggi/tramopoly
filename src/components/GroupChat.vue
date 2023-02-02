@@ -18,7 +18,6 @@
     :messages-loaded="messagesLoaded"
     textarea-action-enabled
     :show-new-messages-divider="false"
-    :show-reaction-emojis="false"
     :show-audio="false"
     :show-add-room="false"
     :user-tags-enabled="false"
@@ -26,6 +25,7 @@
     @fetch-messages="fetchMessages($event.detail[0])"
     @fetch-room="() => (groupId = $event.detail[0].room)"
     @send-message="sendMessage($event.detail[0])"
+    @send-message-reaction="sendMessageReaction($event.detail[0])"
     @textarea-action-handler="() => (modalOpen = true)"
     v-bind="$attrs"
   >
@@ -126,7 +126,11 @@ const {
   jokerVisits,
   clearChatContentCache,
 } = useMessageReading(groupId, isOperator, initMessage)
-const { sendMessage } = useMessageSending(groupId, userId, user.scoutName)
+const { sendMessage, sendMessageReaction } = useMessageSending(
+  groupId,
+  userId,
+  user.scoutName
+)
 
 const chat = ref(null)
 

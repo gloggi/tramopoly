@@ -16,6 +16,7 @@ export class Message {
     this.files = (data.message_files || []).map(
       (file) => new MessageFile(file, subscribe)
     )
+    this.reactions = data.reactions
     this._subscribed = subscribe
   }
 
@@ -53,6 +54,7 @@ export class Message {
       date: this.createdAt.toDateString(),
       files: this.files.map((file) => file.toChatFormat()),
       replyMessage: this.replyMessage?.toChatFormat(),
+      reactions: this.reactions,
     }
   }
 }

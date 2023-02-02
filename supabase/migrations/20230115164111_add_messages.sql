@@ -14,7 +14,8 @@ create table "public"."messages" (
     "sender_id" uuid not null,
     "content" text not null,
     "reply_message_id" uuid,
-    "group_id" bigint not null
+    "group_id" bigint not null,
+    "reactions" jsonb not null default '{}'::jsonb
 );
 
 

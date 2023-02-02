@@ -80,5 +80,13 @@ export default function useMessageSending(groupId, userId, username) {
     }
   }
 
-  return { sendMessage }
+  async function sendMessageReaction({ messageId, reaction, remove }) {
+    await supabase.rpc('post_message_reaction', {
+      message_id: messageId,
+      reaction: reaction.unicode,
+      mode: remove ? 'remove' : 'add',
+    })
+  }
+
+  return { sendMessage, sendMessageReaction }
 }
