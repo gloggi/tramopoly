@@ -18,7 +18,7 @@ export function useOperator(groupId) {
 
   const operatorPhoneInWords = computed(() => {
     if (loading.value || !operator.value.phone) return ''
-    const phoneFormat = operator.value.phone.replace(/^\+41/g, '0').split('')
+    const phoneFormat = operator.value.phone.replace(/^\+?41/g, '0').split('')
     if (phoneFormat.length === 10) {
       phoneFormat.splice(3, 0, ',')
       phoneFormat.splice(7, 0, ',')

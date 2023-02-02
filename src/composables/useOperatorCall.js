@@ -29,8 +29,8 @@ export function useOperatorCall(user, operator) {
 
   const callLinkHref = computed(() =>
     user.value.preferredCallMethod === 'whatsapp'
-      ? `https://api.whatsapp.com/send?phone=${operator.value.phone}`
-      : `tel:${operator.value.phone}`
+      ? `whatsapp://send/?phone=${operator.value.phone}&text&type=phone_number&app_absent=0`
+      : `tel:${operator.value.phone?.replace(/^\+?41/, '+41')}`
   )
 
   const activeCallerId = computed(() => operator.value?.activeCallerId)
