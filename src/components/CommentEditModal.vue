@@ -31,6 +31,7 @@ export default {
   props: {
     table: { type: String, required: true },
     id: { type: String, required: true },
+    groupId: { type: Number, required: true },
     value: { type: String, required: false },
   },
   data() {
@@ -52,6 +53,10 @@ export default {
         .from(this.table)
         .update({ operator_comment: this.localValue })
         .eq('id', this.id)
+      await supabase.rpc('increment_unseen_counter', {
+        chat_id: this.groupId,
+        increment: 1,
+      })
       this.modalOpen = false
     },
   },

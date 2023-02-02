@@ -145,7 +145,7 @@
         ></span>
       </a>
     </div>
-    <div class="is-size-6 is-multiline-text">
+    <div v-if="isOwnGroup" class="is-size-6 is-multiline-text">
       {{ stationVisit.operatorComment }}
     </div>
     <div
@@ -188,6 +188,7 @@
         <comment-edit-modal
           table="station_visits"
           :id="stationVisit.id"
+          :group-id="stationVisit.groupId"
           :value="stationVisit.operatorComment"
         >
           Kommentiärä

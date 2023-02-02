@@ -106,6 +106,7 @@
         <comment-edit-modal
           table="joker_visits"
           :id="jokerVisit.id"
+          :group-id="jokerVisit.groupId"
           :value="jokerVisit.operatorComment"
         >
           Kommentiärä

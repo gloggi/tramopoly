@@ -1,20 +1,27 @@
 <template>
   <div class="level">
     <div class="level-left">
-      <div class="level-item is-gap-2">
+      <div class="level-item is-gap-3">
         <span v-if="isRegistered"> Willkommä, {{ user.scoutName }}. </span>
         <span v-else-if="isLoggedIn"> Willkommä bim Tramopoly. </span>
         <a v-if="isLoggedIn" @click="signOut"> Usloggä </a>
         <a @click="support">Hilfe</a>
       </div>
-      <div class="level-item is-gap-2" v-if="isLoggedIn && !isOperator">
-        <router-link :to="{ name: 'dashboard' }">Dashboard</router-link>
-        <router-link :to="{ name: 'chat' }">Chat</router-link>
+      <div class="level-item is-gap-3" v-if="isLoggedIn && !isOperator">
+        <router-link :to="{ name: 'dashboard' }">Mini Gruppä</router-link>
+        <router-link :to="{ name: 'chat' }">
+          Chat
+          <span
+            v-if="unseenCount > 0"
+            class="tag is-danger is-small is-rounded is-valign-text-top has-text-weight-bold"
+            >{{ unseenCount }}</span
+          ></router-link
+        >
       </div>
-      <div class="level-item is-gap-2" v-if="isLoggedIn && !isPlayer">
+      <div class="level-item is-gap-3" v-if="isLoggedIn && !isPlayer">
         <router-link :to="{ name: 'zentrale' }">Zentralä</router-link>
       </div>
-      <div class="level-item is-gap-2" v-if="isLoggedIn && isAdmin">
+      <div class="level-item is-gap-3" v-if="isLoggedIn && isAdmin">
         <router-link :to="{ name: 'admin' }">Admin</router-link>
       </div>
     </div>
@@ -67,6 +74,8 @@
 <script setup>
 import { useUserSession } from '@/stores/userSession'
 import { storeToRefs } from 'pinia'
+import useUnseenChatActivity from '@/composables/useUnseenChatActivity'
+import { computed } from 'vue'
 
 const userSession = useUserSession()
 const {
@@ -80,6 +89,18 @@ const {
 } = storeToRefs(userSession)
 userSession.subscribeAuth()
 userSession.fetchAuth()
+
+const { activityCounts } = useUnseenChatActivity()
+const unseenCount = computed(() => {
+  if (
+    !user.value?.groupId ||
+    !activityCounts.value ||
+    !(user.value?.groupId in activityCounts.value)
+  ) {
+    return 0
+  }
+  return activityCounts.value[user.value?.groupId] || 0
+})
 </script>
 
 <script>

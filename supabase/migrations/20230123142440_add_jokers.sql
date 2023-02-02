@@ -49,6 +49,8 @@ CREATE OR REPLACE FUNCTION public.visit_joker(joker_id bigint, proof_photo_path 
  SECURITY DEFINER
 AS $function$
       BEGIN
+          PERFORM increment_unseen_counter(CASE WHEN role_for(auth.uid())='player' THEN (SELECT u.group_id FROM profiles u WHERE u.id=auth.uid() LIMIT 1) ELSE group_id END, 1);
+
           RETURN QUERY
           INSERT INTO joker_visits(joker_id, group_id, proof_photo_path)
           VALUES(joker_id, CASE WHEN role_for(auth.uid())='player' THEN (SELECT u.group_id FROM profiles u WHERE u.id=auth.uid() LIMIT 1) ELSE group_id END, proof_photo_path)

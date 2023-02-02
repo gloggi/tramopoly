@@ -66,6 +66,8 @@ BEGIN
     VALUES(message_id, file_path);
   END LOOP;
 
+  PERFORM increment_unseen_counter(group_id, 1);
+
   RETURN QUERY
   SELECT *
   FROM messages

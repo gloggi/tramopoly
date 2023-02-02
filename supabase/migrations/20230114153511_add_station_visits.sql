@@ -34,6 +34,8 @@ CREATE OR REPLACE FUNCTION public.visit_station(station_id bigint, proof_photo_p
  SECURITY DEFINER
 AS $function$
       BEGIN
+          PERFORM increment_unseen_counter(CASE WHEN role_for(auth.uid())='player' THEN (SELECT u.group_id FROM profiles u WHERE u.id=auth.uid() LIMIT 1) ELSE group_id END, 1);
+
           RETURN QUERY
           INSERT INTO station_visits(station_id, group_id, proof_photo_path)
           VALUES(station_id, CASE WHEN role_for(auth.uid())='player' THEN (SELECT u.group_id FROM profiles u WHERE u.id=auth.uid() LIMIT 1) ELSE group_id END, proof_photo_path)

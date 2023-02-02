@@ -11,7 +11,7 @@
   * Optional: Under Authentication -> Providers, open Phone and set up [Twilio integration](https://supabase.com/docs/guides/auth/phone-login/twilio#finding-your-twilio-credentials) and activate "Enable phone confirmations", but don't activate "Enable Phone provider". If you want to enable auto-filling the OTP code on iOS devices, make sure the SMS message contains `Code: {{ .Code }}`. Don't forget to save.
   * Under authentication -> URL Configuration, set Site URL to your productive URL, and add your productive URL and http://localhost:5173 and http://localhost:4173 as Redirect URLs.
   * Under SQL editor -> New query, paste the contents of **each except the first file** from supabase/migrations, and then supabase/seed.sql. If that sounds like too much work, see below for how to do this step using the supabase CLI instead.
-  * Under Database -> Replication -> 0 tables, activate the toggle on the `abteilungen`, `groups`, `joker_visits`, `jokers`, `message_files`, `messages`, `mr_t_changes`, `mr_t_rewards`, `profiles`, `settings` and `station_visits` tables.
+  * Under Database -> Replication -> 0 tables, activate the toggle on the `abteilungen`, `groups`, `joker_visits`, `jokers`, `message_files`, `messages`, `mr_t_changes`, `mr_t_rewards`, `profiles`, `settings`, `station_visits` and `unseen_chat_activity` tables.
   * Under Project settings -> API, find your values for the Supabase project URL and API key.
 * Create a copy of the file .env, name it .env.local and fill in your Supabase project URL and API key.
   * If you set up Twilio integration with Supabase, set VITE_USE_TWILIO_PHONE_VERIFICATION in your .env.local to true

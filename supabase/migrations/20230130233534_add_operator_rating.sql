@@ -46,6 +46,9 @@ plv8.execute('UPDATE joker_visits SET accepted_at=$1, rejected_at=$2 WHERE id=$3
   joker_visit_id,
 ])
 
+// Report the changed joker visit, which is not automatically reported by verify_all
+plv8.execute('SELECT increment_unseen_counter((SELECT group_id FROM joker_visits WHERE id=$1), 1)', [joker_visit_id])
+
 // Force re-verification of all station visits after the edited joker visit, because balances might have changed now
 plv8.execute('UPDATE station_visits SET needs_verification=TRUE WHERE created_at >= (SELECT created_at FROM joker_visits WHERE id=$1)', [joker_visit_id])
 plv8.execute('SELECT verify_all()')
@@ -66,6 +69,9 @@ plv8.execute('UPDATE joker_visits SET earned_bonus_value=$1 WHERE id=$2', [
   joker_visit_id,
 ])
 
+// Report the changed joker visit, which is not automatically reported by verify_all
+plv8.execute('SELECT increment_unseen_counter((SELECT group_id FROM joker_visits WHERE id=$1), 1)', [joker_visit_id])
+
 // Force re-verification of all station visits after the edited joker visit, because balances might have changed now
 plv8.execute('UPDATE station_visits SET needs_verification=TRUE WHERE created_at >= (SELECT created_at FROM joker_visits WHERE id=$1)', [joker_visit_id])
 plv8.execute('SELECT verify_all()')
@@ -78,7 +84,7 @@ CREATE OR REPLACE FUNCTION public.verify_all()
  LANGUAGE plv8
 AS $function$
 
-const stationVisits = plv8.execute('SELECT sv.*, stations.value AS value FROM station_visits sv INNER JOIN stations ON sv.station_id=stations.id WHERE (sv.accepted_at IS NOT NULL OR sv.rejected_at IS NOT NULL) AND sv.needs_verification=TRUE ORDER BY sv.created_at ASC')
+const stationVisits = plv8.execute('SELECT sv.*, stations.value AS value, is_purchase(sv) AS is_purchase FROM station_visits sv INNER JOIN stations ON sv.station_id=stations.id WHERE (sv.accepted_at IS NOT NULL OR sv.rejected_at IS NOT NULL) AND sv.needs_verification=TRUE ORDER BY sv.created_at ASC')
 
 stationVisits.forEach(stationVisit => {
    const balanceCoeffs = plv8.execute('SELECT * FROM calculate_balance_coeffs($1)', [stationVisit.created_at])
@@ -88,6 +94,15 @@ stationVisits.forEach(stationVisit => {
       isValid ? new Date() : null,
       stationVisit.id,
    ])
+})
+const numChangedPerGroup = plv8.execute('SELECT sv.group_id AS group_id, COUNT(sv.id) AS num_changed FROM station_visits sv WHERE (id=ANY($1) AND sv.verified_at IS NULL) OR (id=ANY($2) AND sv.verified_at IS NOT NULL) OR (id=ANY($3) AND is_purchase(sv)=FALSE) OR (id=ANY($4) AND is_purchase(sv)=TRUE) GROUP BY sv.group_id', [
+  stationVisits.filter(sv => sv.verified_at !== null).map(sv => sv.id),
+  stationVisits.filter(sv => sv.verified_at === null).map(sv => sv.id),
+  stationVisits.filter(sv => sv.is_purchase === true).map(sv => sv.id),
+  stationVisits.filter(sv => sv.is_purchase === false).map(sv => sv.id),
+])
+numChangedPerGroup.forEach(({ group_id, num_changed }) => {
+  plv8.execute('SELECT increment_unseen_counter($1, $2)', [group_id, num_changed])
 })
 
 $function$

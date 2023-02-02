@@ -144,6 +144,10 @@ onMounted(() => {
       '}\n' +
       '.vac-message-wrapper .vac-card-system {\n' +
       '  max-width: 1024px;\n' +
+      '}\n' +
+      '.vac-room-container .vac-room-badge {\n' +
+      '  background-color: #f14668;\n' +
+      '  font-weight: bold;\n' +
       '}'
     chat.value.shadowRoot.appendChild(style)
   }

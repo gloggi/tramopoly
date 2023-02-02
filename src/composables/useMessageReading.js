@@ -1,9 +1,12 @@
 import { computed, ref } from 'vue'
 import { useChatContents } from '@/stores/chatContent'
 import { useCurrentMrT } from '@/composables/useCurrentMrT'
+import useUnseenChatActivity from '@/composables/useUnseenChatActivity.js'
 
 export default function useMessageReading(groupId, isOperator, initMessage) {
   const messagesLoaded = ref(true)
+
+  const { markRoomAsSeen } = useUnseenChatActivity()
 
   const chatContentsStore = computed(() => {
     const store = useChatContents(groupId.value)
@@ -22,6 +25,7 @@ export default function useMessageReading(groupId, isOperator, initMessage) {
       groupId.value = parseInt(room.roomId)
       chatContentsStore.value?.$reset()
     }
+    markRoomAsSeen(groupId)
     chatContentsStore.value?.subscribe()
     const moreToLoad = await chatContentsStore.value?.fetchMore()
     if (moreToLoad !== undefined) {

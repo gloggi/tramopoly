@@ -1,12 +1,10 @@
 import { computed } from 'vue'
 import { useProfiles } from '@/stores/profiles'
 import { storeToRefs } from 'pinia'
-import { useUnratedVisitsCount } from '@/stores/unratedVisitsCount'
+import useUnseenChatActivity from '@/composables/useUnseenChatActivity'
 
 export default function useChatRooms(groups, isOperator, user) {
-  const unratedVisitsCountStore = useUnratedVisitsCount()
-  unratedVisitsCountStore.subscribe()
-  const { counts } = storeToRefs(unratedVisitsCountStore)
+  const { counts } = useUnseenChatActivity()
 
   function sortIndexForGroup(group) {
     const isOwnGroup = group.abteilung?.operatorId === user.id ? '0' : '9'
@@ -21,7 +19,10 @@ export default function useChatRooms(groups, isOperator, user) {
         roomId: String(group.id),
         roomName: group.name,
         avatar: group.abteilung.logoUrl,
-        unreadCount: counts.value[group.id] || 0,
+        unreadCount:
+          group?.abteilung?.operatorId === user.id
+            ? counts.value[group.id] || 0
+            : 0,
         index: sortIndexForGroup(group),
         users: usersFor(group.id, group.operatorId),
       }))
