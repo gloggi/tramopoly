@@ -35,12 +35,20 @@ export function useEditableSettings() {
     set: debounce(setGameEnd, 1000),
   })
 
+  const setMapUrl = async (value) => {
+    return supabase
+      .from('settings')
+      .update({ map_url: value })
+      .eq('id', settingsId.value)
+  }
+
   const setStartTimeToNow = () => setGameStart(new Date())
   const setEndTimeToNow = () => setGameEnd(new Date())
 
   return {
     gameStart,
     gameEnd,
+    setMapUrl,
     setStartTimeToNow,
     setEndTimeToNow,
   }

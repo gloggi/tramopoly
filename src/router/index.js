@@ -37,6 +37,14 @@ const router = createRouter({
         title: 'Admin',
       },
     },
+    {
+      path: '/map',
+      name: 'map',
+      component: () => import('../views/MapView.vue'),
+      meta: {
+        title: 'Chartä',
+      },
+    },
   ],
 })
 

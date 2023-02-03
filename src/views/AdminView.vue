@@ -46,6 +46,26 @@
                 </p>
               </o-field>
             </o-field>
+            <o-field grouped group-multiline>
+              <form @submit.prevent="changeMap">
+                <o-field label="Chartä">
+                  <o-upload v-model="mapFile" capture accept="image/*">
+                    <o-button tag="a" variant="secondary">
+                      <o-icon icon="map"></o-icon>
+                      <span>Neui Chartä ufäladä</span>
+                    </o-button>
+                  </o-upload>
+                </o-field>
+                <o-button
+                  variant="primary"
+                  native-type="submit"
+                  outlined
+                  :disabled="!mapFile"
+                >
+                  Let's go!
+                </o-button>
+              </form>
+            </o-field>
           </div>
           <div class="column">
             <p class="title is-6">{{ timeSinceLastActiveMrTChange }}</p>
@@ -142,6 +162,9 @@ import GroupManagement from '@/components/GroupManagement'
 import AbteilungManagement from '@/components/AbteilungManagement'
 import MockDataCreator from '@/components/MockDataCreator'
 import { useCurrentMrT } from '@/composables/useCurrentMrT'
+import { supabase } from '@/client.js'
+import { showAlert } from '@/utils.js'
+import slugify from 'slugify'
 
 const userSession = useUserSession()
 const { isAdmin } = storeToRefs(userSession)
@@ -153,7 +176,7 @@ if (!isAdmin.value) {
 
 const selectedMessageType = ref('is-info')
 
-const { gameStart, gameEnd, setStartTimeToNow, setEndTimeToNow } =
+const { gameStart, gameEnd, setStartTimeToNow, setEndTimeToNow, setMapUrl } =
   useEditableSettings()
 
 const dev = import.meta.env.DEV
@@ -168,6 +191,39 @@ const {
   confiscateMrT,
   releaseMrT,
 } = useCurrentMrT()
+
+const mapFile = ref(null)
+async function changeMap() {
+  if (!mapFile.value) return
+
+  const extension = mapFile.value.name.split('.').pop()
+  const filename = slugify(crypto.randomUUID() + '-map').substring(
+    0,
+    62 - extension.length
+  )
+  const { data, error } = await supabase.storage
+    .from('abteilungLogos')
+    .upload(`${filename}.${extension}`, mapFile.value)
+  if (error) {
+    console.log(error)
+    showAlert(
+      'Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä und d Chartä nomal ufäzladä.'
+    )
+    return
+  }
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from('abteilungLogos').getPublicUrl(data.path)
+
+  const result = await setMapUrl(publicUrl)
+  if (result.error) {
+    console.log(result.error)
+    showAlert(
+      'Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä und d Chartä nomal ufäzladä.'
+    )
+  }
+  mapFile.value = null
+}
 
 // TODO
 const message = ''

@@ -15,11 +15,15 @@
             v-if="unseenCount > 0"
             class="tag is-danger is-small is-rounded is-valign-text-top has-text-weight-bold"
             >{{ unseenCount }}</span
-          ></router-link
-        >
+          >
+        </router-link>
+        <router-link v-if="mapUrl" :to="{ name: 'map' }">
+          Wo häts Jokärs?
+        </router-link>
       </div>
       <div class="level-item is-gap-3" v-if="isLoggedIn && !isPlayer">
         <router-link :to="{ name: 'zentrale' }">Zentralä</router-link>
+        <router-link v-if="mapUrl" :to="{ name: 'map' }">Chartä</router-link>
       </div>
       <div class="level-item is-gap-3" v-if="isLoggedIn && isAdmin">
         <router-link :to="{ name: 'admin' }">Admin</router-link>
@@ -76,6 +80,7 @@ import { useUserSession } from '@/stores/userSession'
 import { storeToRefs } from 'pinia'
 import useUnseenChatActivity from '@/composables/useUnseenChatActivity'
 import { computed } from 'vue'
+import useMapUrl from '@/composables/useMapUrl.js'
 
 const userSession = useUserSession()
 const {
@@ -101,6 +106,8 @@ const unseenCount = computed(() => {
   }
   return activityCounts.value[user.value?.groupId] || 0
 })
+
+const { mapUrl } = useMapUrl()
 </script>
 
 <script>

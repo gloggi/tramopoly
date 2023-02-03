@@ -16,6 +16,7 @@ export class Settings {
     this.realEstateValueRatio = data.real_estate_value_ratio
     this.rentRatio = data.rent_ratio
     this.starterCash = data.starter_cash
+    this.mapUrl = data.map_url
     this._subscribed = subscribe
   }
 
