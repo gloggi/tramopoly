@@ -71,6 +71,9 @@
           </div>
           <mr-t-change-form :group-id="openRoomId"></mr-t-change-form>
           <group-detail :group-id="openRoomId"></group-detail>
+          <o-button @click="roomInfoModalOpen = false" icon-left="xmark">
+            Tschäsee!
+          </o-button>
         </div>
       </div>
     </o-modal>
