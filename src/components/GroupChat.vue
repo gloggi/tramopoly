@@ -140,7 +140,12 @@ onMounted(() => {
     style.type = 'text/css'
     style.innerHTML =
       (isOperator.value
-        ? ''
+        ? '.vac-info-wrapper {\n' +
+          '  cursor: pointer;\n' +
+          '}\n' +
+          '.vac-info-wrapper:hover {\n' +
+          '  opacity: 70%;\n' +
+          '}\n'
         : '.vac-room-header .vac-rotate-icon {\n' +
           '  transform: rotate(0) !important;\n' +
           '}\n') +
@@ -154,11 +159,8 @@ onMounted(() => {
       '.vac-text-username {\n' +
       '  font-weight: bold;\n' +
       '}\n' +
-      '.vac-info-wrapper {\n' +
-      '  cursor: pointer;\n' +
-      '}\n' +
-      '.vac-info-wrapper:hover {\n' +
-      '  opacity: 70%;\n' +
+      '.vac-room-container .vac-room-options-container {\n' +
+      '  align-items: center;\n' +
       '}\n'
     chat.value.shadowRoot.appendChild(style)
   }

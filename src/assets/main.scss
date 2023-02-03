@@ -125,3 +125,9 @@ textarea.textarea::placeholder {
 .table .inactive-row {
   opacity: 50%;
 }
+
+.vac-text-timestamp {
+  font-size: 10px;
+  color: var(--chat-message-color-timestamp);
+  text-align: right;
+}

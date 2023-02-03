@@ -196,7 +196,7 @@
       </o-field>
     </div>
     <div class="vac-text-timestamp">
-      <span>{{ stationVisit.createdAt?.toLocaleString() }}</span>
+      <span>{{ stationVisit.createdAt.toString().substring(16, 21) }}</span>
     </div>
   </message-box>
 </template>

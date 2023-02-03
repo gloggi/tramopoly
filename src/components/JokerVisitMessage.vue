@@ -122,7 +122,7 @@
       </o-field>
     </div>
     <div class="vac-text-timestamp">
-      <span>{{ jokerVisit.createdAt?.toLocaleString() }}</span>
+      <span>{{ jokerVisit.createdAt.toString().substring(16, 21) }}</span>
     </div>
   </message-box>
 </template>
