@@ -2,7 +2,7 @@
   <div
     class="column is-full is-one-third-widescreen is-offset-one-third-widescreen has-text-centered"
   >
-    <slot v-if="operator" name="message"></slot>
+    <global-message></global-message>
     <div class="card">
       <mr-t-should-call-notification
         v-if="groupIsCurrentlyMrT && mrTShouldCallOperator"
@@ -35,10 +35,10 @@
         </div>
       </div>
     </div>
-    <slot name="message2"></slot>
+    <global-message></global-message>
     <group-detail v-if="user.groupId" :group-id="user.groupId" />
     <div>
-      <slot name="message3"></slot>
+      <global-message></global-message>
       <mr-t-should-call-notification
         v-if="groupIsCurrentlyMrT && mrTShouldCallOperator"
       ></mr-t-should-call-notification>
@@ -73,6 +73,7 @@ import CallOperatorButton from '@/components/CallOperatorButton'
 import { useCurrentMrT } from '@/composables/useCurrentMrT'
 import { computed } from 'vue'
 import MrTShouldCallNotification from '@/components/MrTShouldCallNotification'
+import GlobalMessage from '@/components/GlobalMessage.vue'
 
 const userSession = useUserSession()
 const { user, isOperator } = storeToRefs(userSession)

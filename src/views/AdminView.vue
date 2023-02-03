@@ -90,55 +90,53 @@
                 </button>
               </p>
             </o-field>
-            <template v-if="message">
-              <hr />
-              <header class="title is-4">Nachricht a alli</header>
-              <form @submit.prevent="setMessage">
-                <o-field grouped group-multiline>
-                  <o-field>
-                    <o-select name="type" v-model="selectedMessageType">
-                      <option value="is-info">blau</option>
-                      <option value="is-success">grüän</option>
-                      <option value="is-warning">gääl</option>
-                      <option value="is-danger">rot</option>
-                      <option value="is-dark">schwarz</option>
-                    </o-select>
-                  </o-field>
-                  <o-field>
-                    <o-input
-                      type="text"
-                      :value="message.title"
-                      name="title"
-                      placeholder="Titäl"
-                    >
-                    </o-input>
-                  </o-field>
-                  <o-field>
-                    <button
-                      type="submit"
-                      :class="'button ' + selectedMessageType"
-                    >
-                      Speichärä
-                    </button>
-                  </o-field>
+            <hr />
+            <header class="title is-4">Nachricht a alli</header>
+            <form @submit.prevent="setMessage">
+              <o-field grouped group-multiline>
+                <o-field>
+                  <o-select name="type" v-model="selectedMessageType">
+                    <option value="info">blau</option>
+                    <option value="success">grüän</option>
+                    <option value="warning">gääl</option>
+                    <option value="danger">rot</option>
+                    <option value="dark">schwarz</option>
+                  </o-select>
                 </o-field>
                 <o-field>
                   <o-input
-                    type="textarea"
-                    :value="message.message"
-                    name="message"
+                    type="text"
+                    v-model="selectedMessageTitle"
+                    name="title"
+                    placeholder="Titäl"
                   >
                   </o-input>
                 </o-field>
-              </form>
-            </template>
+                <o-field>
+                  <button
+                    type="submit"
+                    :class="'button is-' + selectedMessageType"
+                  >
+                    Speichärä
+                  </button>
+                </o-field>
+              </o-field>
+              <o-field>
+                <o-input
+                  type="textarea"
+                  v-model="selectedMessageText"
+                  name="message"
+                >
+                </o-input>
+              </o-field>
+            </form>
           </div>
         </div>
         <div class="columns">
           <div
             class="column is-full is-one-third-desktop is-offset-one-third-desktop"
           >
-            <slot name="message"></slot>
+            <global-message></global-message>
           </div>
         </div>
       </div>
@@ -165,6 +163,8 @@ import { useCurrentMrT } from '@/composables/useCurrentMrT'
 import { supabase } from '@/client.js'
 import { showAlert } from '@/utils.js'
 import slugify from 'slugify'
+import useGlobalMessage from '@/composables/useGlobalMessage.js'
+import GlobalMessage from '@/components/GlobalMessage.vue'
 
 const userSession = useUserSession()
 const { isAdmin } = storeToRefs(userSession)
@@ -174,10 +174,14 @@ if (!isAdmin.value) {
   router.replace({ name: 'dashboard' })
 }
 
-const selectedMessageType = ref('is-info')
-
-const { gameStart, gameEnd, setStartTimeToNow, setEndTimeToNow, setMapUrl } =
-  useEditableSettings()
+const {
+  gameStart,
+  gameEnd,
+  setStartTimeToNow,
+  setEndTimeToNow,
+  setMapUrl,
+  setGlobalMessage,
+} = useEditableSettings()
 
 const dev = import.meta.env.DEV
 
@@ -225,9 +229,17 @@ async function changeMap() {
   mapFile.value = null
 }
 
-// TODO
-const message = ''
-const setMessage = () => {}
+const { messageTitle, messageText, messageType } = useGlobalMessage()
+const selectedMessageTitle = ref(messageTitle.value)
+const selectedMessageText = ref(messageText.value)
+const selectedMessageType = ref(messageType.value)
+function setMessage() {
+  setGlobalMessage({
+    messageTitle: selectedMessageTitle.value,
+    messageText: selectedMessageText.value,
+    messageType: selectedMessageType.value,
+  })
+}
 </script>
 
 <script>

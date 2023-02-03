@@ -2,6 +2,7 @@ import { computed, ref } from 'vue'
 import { useChatContents } from '@/stores/chatContent'
 import { useCurrentMrT } from '@/composables/useCurrentMrT'
 import useUnseenChatActivity from '@/composables/useUnseenChatActivity.js'
+import useGlobalMessage from '@/composables/useGlobalMessage.js'
 
 export default function useMessageReading(groupId, isOperator, initMessage) {
   const messagesLoaded = ref(true)
@@ -58,6 +59,21 @@ export default function useMessageReading(groupId, isOperator, initMessage) {
     ]
   })
 
+  const globalMessage = computed(() => {
+    const { messageText } = useGlobalMessage()
+    if (!messageText.value) return []
+    return [
+      {
+        _id: 'global',
+        senderId: '0',
+        system: true,
+        content: messageText.value,
+        date: new Date().toDateString(),
+        created_at: new Date(),
+      },
+    ]
+  })
+
   const initMessageEntry = computed(() => {
     if (!initMessage.value) return []
     return [
@@ -75,9 +91,9 @@ export default function useMessageReading(groupId, isOperator, initMessage) {
   const messagesWithStaticMessages = computed(() => {
     return [
       ...initMessageEntry.value,
-      ...mrTShouldCallOperatorMessage.value,
       ...messages.value,
       ...mrTShouldCallOperatorMessage.value,
+      ...globalMessage.value,
     ]
   })
 

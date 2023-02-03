@@ -36,41 +36,10 @@
       <template v-if="loading"></template>
       <login-view v-else-if="!isLoggedIn"></login-view>
       <register-view v-else-if="!isRegistered"></register-view>
-      <router-view v-else-if="user.groupId" :group-id="user.groupId">
-        <template #message="{ message, type, title }">
-          <o-notification
-            v-if="message"
-            :variant="type"
-            :closable="false"
-            aria-close-label="Close notification"
-          >
-            <h5 class="title is-5">{{ title }}</h5>
-            <p>{{ message }}&#xa;....... Piiiiiiiiiiiiiip.....</p>
-          </o-notification>
-        </template>
-        <template #message2="{ message, type, title }">
-          <o-notification
-            v-if="message"
-            :variant="type"
-            :closable="false"
-            aria-close-label="Close notification"
-          >
-            <h5 class="title is-5">{{ title }}</h5>
-            <p>{{ message }}&#xa;....... Piiiiiiiiiiiiiip.....</p>
-          </o-notification>
-        </template>
-        <template #message3="{ message, type, title }">
-          <o-notification
-            v-if="message"
-            :variant="type"
-            :closable="false"
-            aria-close-label="Close notification"
-          >
-            <h5 class="title is-5">{{ title }}</h5>
-            <p>{{ message }}&#xa;....... Piiiiiiiiiiiiiip.....</p>
-          </o-notification>
-        </template>
-      </router-view>
+      <router-view
+        v-else-if="user.groupId"
+        :group-id="user.groupId"
+      ></router-view>
     </template>
   </main>
 </template>

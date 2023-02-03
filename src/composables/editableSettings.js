@@ -42,6 +42,21 @@ export function useEditableSettings() {
       .eq('id', settingsId.value)
   }
 
+  const setGlobalMessage = async ({
+    messageTitle,
+    messageText,
+    messageType,
+  }) => {
+    return supabase
+      .from('settings')
+      .update({
+        message_title: messageTitle,
+        message_text: messageText,
+        message_type: messageType,
+      })
+      .eq('id', settingsId.value)
+  }
+
   const setStartTimeToNow = () => setGameStart(new Date())
   const setEndTimeToNow = () => setGameEnd(new Date())
 
@@ -49,6 +64,7 @@ export function useEditableSettings() {
     gameStart,
     gameEnd,
     setMapUrl,
+    setGlobalMessage,
     setStartTimeToNow,
     setEndTimeToNow,
   }

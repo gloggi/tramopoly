@@ -36,6 +36,9 @@
     <div slot="message_mr-t-should-call-operator">
       <mr-t-should-call-notification></mr-t-should-call-notification>
     </div>
+    <div slot="message_global">
+      <global-message></global-message>
+    </div>
     <div slot="paperclip-icon">
       <o-icon icon="image"></o-icon>
     </div>
@@ -85,6 +88,7 @@ import VisitModal from '@/components/VisitModal'
 import useMessageReading from '@/composables/useMessageReading'
 import useChatRooms from '@/composables/useChatRooms'
 import { register as registerVueAdvancedChatWebComponent } from 'vue-advanced-chat'
+import GlobalMessage from '@/components/GlobalMessage.vue'
 
 registerVueAdvancedChatWebComponent()
 

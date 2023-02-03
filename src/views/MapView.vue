@@ -1,13 +1,14 @@
 <template>
   <div class="column is-full has-text-centered">
-    <slot name="message"></slot>
+    <global-message></global-message>
     <img v-if="mapUrl" :src="mapUrl" alt="Chartä mit dä Jokärs" />
-    <slot name="message2"></slot>
+    <global-message></global-message>
   </div>
 </template>
 
 <script setup>
 import useMapUrl from '@/composables/useMapUrl.js'
+import GlobalMessage from '@/components/GlobalMessage.vue'
 
 const { mapUrl } = useMapUrl()
 </script>
