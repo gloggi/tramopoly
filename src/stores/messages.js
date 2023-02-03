@@ -52,7 +52,9 @@ export class Message {
       createdAt: this.createdAt,
       timestamp: this.createdAt.toString().substring(16, 21),
       date: this.createdAt.toDateString(),
-      files: this.files.map((file) => file.toChatFormat()),
+      files: this.files
+        .map((file) => file.toChatFormat())
+        .filter((file) => file.url),
       replyMessage: this.replyMessage?.toChatFormat(),
       reactions: this.reactions,
     }
@@ -82,7 +84,7 @@ export class MessageFile {
       name: filename,
       type,
       extension,
-      url: this.url || '',
+      url: this.url,
       audio:
         extension.toLowerCase() in ['mp3', 'wav', 'aiff', 'aif', 'ogg', 'm4a'],
     }

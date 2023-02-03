@@ -27,6 +27,7 @@
     @send-message="sendMessage($event.detail[0])"
     @send-message-reaction="sendMessageReaction($event.detail[0])"
     @textarea-action-handler="() => (modalOpen = true)"
+    @open-file="openFile($event.detail[0])"
     v-bind="$attrs"
   >
     <div v-for="(idx, name) in $slots" :slot="name" :key="idx">
@@ -131,6 +132,10 @@ const { sendMessage, sendMessageReaction } = useMessageSending(
   userId,
   user.scoutName
 )
+
+function openFile({ file }) {
+  window.open(file.file.url, '_blank')
+}
 
 const chat = ref(null)
 

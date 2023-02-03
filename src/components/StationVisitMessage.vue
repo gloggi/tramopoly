@@ -125,7 +125,7 @@
     <div v-if="isOwnGroup && stationVisit.proofPhotoUrl">
       <a :href="stationVisit.proofPhotoUrl" target="_blank">
         <video
-          v-if="isVideo"
+          v-if="isVideo && stationVisit.proofPhotoUrl"
           width="300"
           height="200"
           controls="controls"

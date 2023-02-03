@@ -35,23 +35,25 @@
       Challenge: {{ jokerVisit.joker?.challenge }}
     </div>
     <div v-if="jokerVisit.proofPhotoUrl">
-      <video
-        v-if="isVideo"
-        width="300"
-        height="200"
-        controls="controls"
-        preload="none"
-      >
-        <source :src="jokerVisit.proofPhotoUrl" />
-        <a :href="jokerVisit.proofPhotoUrl" target="_blank">Video aazäigä</a>
-      </video>
-      <span
-        v-else
-        class="station-visit-image"
-        :style="{
-          backgroundImage: `url('${jokerVisit.proofPhotoPreviewUrl}')`,
-        }"
-      ></span>
+      <a :href="jokerVisit.proofPhotoUrl" target="_blank">
+        <video
+          v-if="isVideo && jokerVisit.proofPhotoUrl"
+          width="300"
+          height="200"
+          controls="controls"
+          preload="none"
+        >
+          <source :src="jokerVisit.proofPhotoUrl" />
+          <a :href="jokerVisit.proofPhotoUrl" target="_blank">Video aazäigä</a>
+        </video>
+        <span
+          v-else
+          class="station-visit-image"
+          :style="{
+            backgroundImage: `url('${jokerVisit.proofPhotoPreviewUrl}')`,
+          }"
+        ></span>
+      </a>
     </div>
     <div class="is-size-6 is-multiline-text">
       {{ jokerVisit.operatorComment }}
