@@ -139,16 +139,27 @@ onMounted(() => {
     const style = document.createElement('style')
     style.type = 'text/css'
     style.innerHTML =
-      '.vac-room-header .vac-rotate-icon {\n' +
-      '  transform: rotate(0) !important;\n' +
-      '}\n' +
+      (isOperator.value
+        ? ''
+        : '.vac-room-header .vac-rotate-icon {\n' +
+          '  transform: rotate(0) !important;\n' +
+          '}\n') +
       '.vac-message-wrapper .vac-card-system {\n' +
       '  max-width: 1024px;\n' +
       '}\n' +
       '.vac-room-container .vac-room-badge {\n' +
       '  background-color: #f14668;\n' +
       '  font-weight: bold;\n' +
-      '}'
+      '}\n' +
+      '.vac-text-username {\n' +
+      '  font-weight: bold;\n' +
+      '}\n' +
+      '.vac-info-wrapper {\n' +
+      '  cursor: pointer;\n' +
+      '}\n' +
+      '.vac-info-wrapper:hover {\n' +
+      '  opacity: 70%;\n' +
+      '}\n'
     chat.value.shadowRoot.appendChild(style)
   }
 })

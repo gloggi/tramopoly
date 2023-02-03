@@ -33,11 +33,11 @@ CREATE OR REPLACE FUNCTION public.create_profile_for_new_user()
  SECURITY DEFINER
  SET search_path TO 'public'
 AS $function$
-begin
-  insert into public.profiles (id)
-  values (new.id);
-  return new;
-end;
+BEGIN
+  INSERT INTO public.profiles (id, phone)
+  VALUES (new.id, new.phone);
+  RETURN new;
+END;
 $function$
 ;
 
@@ -47,11 +47,11 @@ CREATE OR REPLACE FUNCTION public.delete_profile_for_deleted_user()
  SECURITY DEFINER
  SET search_path TO 'public'
 AS $function$
-begin
-  delete from public.profiles
-  where id=old.id;
-  return old;
-end;
+BEGIN
+  DELETE FROM public.profiles
+  WHERE id=old.id;
+  RETURN old;
+END;
 $function$
 ;
 
@@ -60,29 +60,20 @@ CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXEC
 CREATE TRIGGER on_auth_user_deleted BEFORE DELETE ON auth.users FOR EACH ROW EXECUTE FUNCTION delete_profile_for_deleted_user();
 
 
-create policy "Enable reading own profile"
+CREATE POLICY "Enable reading own profile"
 on "public"."profiles"
-as permissive
-for select
-to authenticated
-using ((auth.uid() = id));
+AS PERMISSIVE
+FOR SELECT
+TO authenticated
+USING ((auth.uid() = id));
 
 
-create policy "Enable updating own profile"
-on "public"."profiles"
-as permissive
-for update
-to authenticated
-using ((auth.uid() = id))
-with check ((auth.uid() = id));
-
-
-create policy "Enable inserting for authenticated users which have no group"
-on "public"."groups"
-as permissive
-for insert
-to authenticated
-with check ((EXISTS ( SELECT 1
+CREATE POLICY "Enable inserting for authenticated users which have no group"
+ON "public"."groups"
+AS PERMISSIVE
+FOR INSERT
+TO authenticated
+WITH CHECK ((EXISTS ( SELECT 1
    FROM profiles
   WHERE ((profiles.id = auth.uid()) AND (profiles.group_id IS NULL)))));
 
