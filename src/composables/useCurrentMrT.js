@@ -124,6 +124,8 @@ export function useCurrentMrT() {
         text += ' im ' + mrT.vehicle
       } else if (parseInt(mrT.vehicle > 17)) {
         text += ' im ' + mrT.vehicle + 'er'
+      } else if (/[0-9]*[1-3]$/.test(mrT.vehicle)) {
+        text += ' im ' + mrT.vehicle + 'er'
       } else {
         text += ' im ' + mrT.vehicle + 'i'
       }
