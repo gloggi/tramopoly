@@ -37,36 +37,50 @@
     <o-modal v-model:active="roomInfoModalOpen">
       <div class="card modal-card">
         <div class="card-content">
-          <div v-if="activeCallerId" class="card">
-            <div
-              v-if="loggedInUserIsActiveCaller"
-              class="card-content is-flex is-align-items-baseline is-gap-2"
-            >
-              <button @click="finishCall" class="button is-success is-outlined">
-                ☎️ Mich als frei azäigä
-              </button>
-              Aktuell wird ich als bsetzt azäigt.
-            </div>
-            <div
-              v-else
-              class="card-content is-flex is-align-items-baseline is-gap-2"
-            >
-              <button @click="finishCall" class="button is-danger">
-                Aktivä Aruäf beändä
-              </button>
-              Aktivä Aruäf: {{ activeCaller.scoutName }} ({{
-                activeCaller.group?.name
-              }})
-            </div>
-          </div>
-          <div v-else class="card">
+          <div class="card">
             <div class="card-content">
-              <button
-                @click="setActiveCallToBusy"
-                class="button is-info is-outlined"
+              <div
+                class="is-flex is-align-items-baseline is-gap-2"
+                v-if="activeCallerId && loggedInUserIsActiveCaller"
               >
-                📞 Mich als bsetzt azäigä
-              </button>
+                <button
+                  @click="finishCall"
+                  class="button is-success is-outlined"
+                >
+                  ☎️ Mich als frei azäigä
+                </button>
+                Aktuell wird ich als bsetzt azäigt.
+              </div>
+              <div
+                class="is-flex is-align-items-baseline is-gap-2"
+                v-else-if="activeCallerId"
+              >
+                <button @click="finishCall" class="button is-danger">
+                  Aktivä Aruäf beändä
+                </button>
+                Aktivä Aruäf: {{ activeCaller.scoutName }} ({{
+                  activeCaller.group?.name
+                }})
+              </div>
+              <div class="is-flex is-align-items-baseline is-gap-2" v-else>
+                <button
+                  @click="setActiveCallToBusy"
+                  class="button is-info is-outlined"
+                >
+                  📞 Mich als bsetzt azäigä
+                </button>
+              </div>
+              <div>
+                <h3 class="title is-size-3 has-text-weight-semibold mt-5">
+                  Gruppämitgliedär
+                </h3>
+                <ul>
+                  <li v-for="member in groupMembers" :key="member.id">
+                    <strong>{{ member.scoutName }}</strong>
+                    {{ member.phone.replace(/^\+?41/, '0') }}
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
           <mr-t-change-form :group-id="openRoomId"></mr-t-change-form>
@@ -91,6 +105,7 @@ import { useGroups } from '@/stores/groups'
 import GroupDetail from '@/components/GroupDetail'
 import MrTChangeForm from '@/components/MrTChangeForm'
 import { useCurrentMrT } from '@/composables/useCurrentMrT'
+import { useGroupMembers } from '@/composables/useGroupMembers.js'
 
 const top = ref(null)
 const chatTop = ref(0)
@@ -127,6 +142,8 @@ function openRoomInfo(room) {
   openRoomId.value = parseInt(room.roomId)
   roomInfoModalOpen.value = true
 }
+
+const { groupMembers } = useGroupMembers(openRoomId)
 
 const { isCurrentMrT } = useCurrentMrT()
 </script>
