@@ -20,7 +20,7 @@ export default function useChatRooms(groups, isOperator, user) {
         roomName: group.name,
         avatar: group.abteilung.logoUrl,
         unreadCount:
-          group?.abteilung?.operatorId === user.id
+          group?.abteilung?.operatorId === user.id || group?.id === user.groupId
             ? counts.value[group.id] || 0
             : 0,
         index: sortIndexForGroup(group),
