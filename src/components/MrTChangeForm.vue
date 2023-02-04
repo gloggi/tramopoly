@@ -104,7 +104,7 @@ const { locationsFilteredByLastKnownLocation, locationsFilteredByDirection } =
 
 async function submit() {
   await supabase.from('mr_t_changes').insert({
-    group_id: groupId.value,
+    group_id: selectedGroupId.value,
     vehicle: vehicle.value,
     direction: direction.value,
     last_known_location: lastKnownLocation.value,
