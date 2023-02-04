@@ -74,6 +74,7 @@
     v-if="groupId"
     v-model:active="modalOpen"
     :group-id="groupId"
+    :is-operator="isOperator"
   ></visit-modal>
 </template>
 

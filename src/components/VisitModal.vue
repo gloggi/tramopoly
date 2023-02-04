@@ -40,7 +40,7 @@
               v-model="photo"
               capture
               accept="image/*, video/*"
-              required
+              :required="!isOperator"
             >
               <o-button tag="a" variant="secondary">
                 <o-icon icon="camera"></o-icon>
@@ -49,7 +49,7 @@
             </o-upload>
           </o-field>
           <o-button
-            v-if="station && photo"
+            v-if="station && (photo || isOperator)"
             variant="primary"
             native-type="submit"
             outlined
@@ -81,7 +81,7 @@
             </o-upload>
           </o-field>
           <o-button
-            v-if="joker && photo"
+            v-if="joker && (photo || isOperator)"
             variant="primary"
             native-type="submit"
             outlined
@@ -107,6 +107,7 @@ export default {
   name: 'VisitModal',
   props: {
     groupId: { type: Number, required: true },
+    isOperator: { type: Boolean, default: false },
   },
   data() {
     return {
@@ -207,26 +208,32 @@ export default {
       )
     },
     async submit() {
-      const timestamp = new Date().toISOString()
-      const stopName = this.station?.name || this.joker?.name || this.stop
-      const groupName = useGroup(this.groupId).entry?.name || this.groupId
-      const extension = this.photo.name.split('.').pop()
-      const filename = slugify(
-        `${timestamp}-${stopName}-${groupName}`
-      ).substring(0, 62 - extension.length)
-      const { data, error: err } = await supabase.storage
-        .from('proofPhotos')
-        .upload(`${filename}.${extension}`, this.photo)
-      if (err) {
-        console.log(err)
-        showAlert(
-          'Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä und dä Bsuäch nomal z erfassä.'
-        )
-        return
+      if (this.photo) {
+        const timestamp = new Date().toISOString()
+        const stopName = this.station?.name || this.joker?.name || this.stop
+        const groupName = useGroup(this.groupId).entry?.name || this.groupId
+        const extension = this.photo.name.split('.').pop()
+        const filename = slugify(
+          `${timestamp}-${stopName}-${groupName}`
+        ).substring(0, 62 - extension.length)
+        const { data, error: err } = await supabase.storage
+          .from('proofPhotos')
+          .upload(`${filename}.${extension}`, this.photo)
+        if (err) {
+          console.log(err)
+          showAlert(
+            'Öppis isch schiäf gangä. Probiär mal d Sitä neu z ladä und dä Bsuäch nomal z erfassä.'
+          )
+          return
+        }
+        await (this.station
+          ? this.submitStationVisit(data.path)
+          : this.submitJokerVisit(data.path))
+      } else {
+        await (this.station
+          ? this.submitStationVisit(null)
+          : this.submitJokerVisit(null))
       }
-      await (this.station
-        ? this.submitStationVisit(data.path)
-        : this.submitJokerVisit(data.path))
       this.stop = null
       this.photo = null
       this.$emit('update:active', false)
