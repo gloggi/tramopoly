@@ -53,6 +53,7 @@
       <station-visit-message
         v-if="groupId !== null"
         :station-visit="stationVisit"
+        :station-visits="stationVisits"
         :group-id="groupId"
         :is-operator="isOperator"
       ></station-visit-message>

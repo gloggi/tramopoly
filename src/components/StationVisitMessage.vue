@@ -93,10 +93,16 @@
               {{ visitedStationName }} gsi und häts gchauft 💰💰💰
             </div>
           </template>
-          <template v-else>
+          <template v-else-if="belongsToUs">
             <div class="is-size-5 has-text-weight-semibold">
               {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi und
               hät ois {{ rentAmount }} Miäti zahlt 🤑
+            </div>
+          </template>
+          <template v-else>
+            <div class="is-size-5 has-text-weight-semibold">
+              {{ visitorGroupName }} isch bi {{ visitedStationName }} gsi und
+              ois sind {{ rentAmount }} Miäti entgangä 🤷
             </div>
           </template>
         </template>
@@ -212,6 +218,7 @@ export default {
   components: { CommentEditModal, MessageBox },
   props: {
     stationVisit: { type: Object, required: true },
+    stationVisits: { type: Array, default: [] },
     groupId: { type: Number, required: true },
     isOperator: { type: Boolean, default: false },
   },
@@ -239,6 +246,15 @@ export default {
     },
     isDuplicate() {
       return this.stationVisit.isDuplicate
+    },
+    belongsToUs() {
+      return this.stationVisits.find(
+        (sv) =>
+          sv.stationId === this.stationVisit.stationId &&
+          sv.groupId === this.groupId &&
+          sv.createdAt < this.stationVisit.createdAt &&
+          sv.isPurchase
+      )
     },
     isVideo() {
       if (!this.stationVisit.proofPhotoUrl) return false
@@ -304,7 +320,9 @@ export default {
           ? 'dark'
           : this.isPurchase
           ? 'dark'
-          : 'success'
+          : this.belongsToUs
+          ? 'success'
+          : 'dark'
         : this.isRejected
         ? 'dark'
         : 'dark'
