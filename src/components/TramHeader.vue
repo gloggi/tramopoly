@@ -40,20 +40,50 @@ export default {
     drive() {
       const timeline = gsap.timeline()
       const screenWidth = window.innerWidth
-      timeline.to('.rails', {
-        duration: this.duration,
-        x: screenWidth,
-        ease: 'back.in(1.5)',
-        onComplete: () => {
-          this.displayedContent = this.content
-        },
-      })
-      timeline.set('.rails', { x: -screenWidth })
-      timeline.to('.rails', {
-        duration: this.duration,
-        x: 0,
-        ease: 'back(1.5)',
-      })
+      if (Math.random() > 0.1) {
+        timeline.to('.rails', {
+          duration: this.duration,
+          x: screenWidth,
+          ease: 'back.in(1.5)',
+          onComplete: () => {
+            this.displayedContent = this.content
+          },
+        })
+        timeline.set('.rails', { x: -screenWidth })
+        timeline.to('.rails', {
+          duration: this.duration,
+          x: 0,
+          ease: 'back(1.5)',
+        })
+      } else {
+        timeline.to(
+          '.rails',
+          {
+            duration: this.duration * 1.5,
+            rotation: -360,
+            ease: 'back.inOut(1.5)',
+            onComplete: () => {
+              this.displayedContent = this.content
+            },
+          },
+          0.01
+        )
+        timeline.to(
+          '.rails',
+          {
+            duration: this.duration * 0.9,
+            repeat: 1,
+            yoyo: true,
+            y: -250,
+            ease: 'back.in(1.5)',
+            onComplete: () => {
+              this.displayedContent = this.content
+            },
+          },
+          0
+        )
+        timeline.set('.rails', { rotation: 0 })
+      }
     },
   },
 }
@@ -66,6 +96,9 @@ export default {
 .rails {
   display: flex;
   justify-content: center;
+}
+.tram {
+  user-select: none;
 }
 .title {
   color: #fff;
