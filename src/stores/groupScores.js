@@ -3,10 +3,10 @@ import { supabase } from '@/client'
 import { useSettings } from '@/stores/settings'
 import { gsap } from 'gsap'
 
-export const useGroupScores = () => {
+export const useGroupScores = (at = null) => {
   const subscribeToTable = (table, callback) => {
     supabase
-      .channel(`groupScores-${table}`)
+      .channel(`groupScores-${table}-${at}`)
       .on('postgres_changes', { event: '*', schema: 'public', table }, callback)
       .subscribe()
   }
@@ -16,7 +16,7 @@ export const useGroupScores = () => {
 
   const timeline = gsap.timeline()
 
-  return defineStore('groupScores', {
+  return defineStore(`groupScores-${at}`, {
     state: () => ({
       data: undefined,
       t0: undefined,
@@ -39,6 +39,15 @@ export const useGroupScores = () => {
               state.mrTPoints[key],
           ])
         ),
+      staticTotals: (state) => {
+        if (!state.data) return {}
+        return Object.fromEntries(
+          state.data.map((dataPoint) => [
+            dataPoint.group_id,
+            dataPoint.c0 + dataPoint.real_estate_points + dataPoint.mr_t_points,
+          ])
+        )
+      },
     },
     actions: {
       subscribe() {
@@ -56,7 +65,7 @@ export const useGroupScores = () => {
       async fetch(forceReload = false, onDone = () => {}) {
         if ((this.fetching || this.data) && !forceReload) return onDone()
         this.fetching = true
-        this.t0 = new Date()
+        this.t0 = at || new Date()
         const { data } = await supabase.rpc('calculate_balance_coeffs', {
           t0: this.t0,
         })

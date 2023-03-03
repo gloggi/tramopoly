@@ -110,9 +110,8 @@
           :id="jokerVisit.id"
           :group-id="jokerVisit.groupId"
           :value="jokerVisit.operatorComment"
+          >Kommentiärä</comment-edit-modal
         >
-          Kommentiärä
-        </comment-edit-modal>
         <bonus-points-modal
           v-if="jokerVisit.joker?.bonusCallValue"
           :max="jokerVisit.joker.bonusCallValue"

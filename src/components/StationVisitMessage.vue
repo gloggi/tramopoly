@@ -196,9 +196,8 @@
           :id="stationVisit.id"
           :group-id="stationVisit.groupId"
           :value="stationVisit.operatorComment"
+          >Kommentiärä</comment-edit-modal
         >
-          Kommentiärä
-        </comment-edit-modal>
       </o-field>
     </div>
     <div class="vac-text-timestamp">

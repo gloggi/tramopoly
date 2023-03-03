@@ -45,6 +45,14 @@ const router = createRouter({
         title: 'Chartä',
       },
     },
+    {
+      path: '/graph',
+      name: 'graph',
+      component: () => import('../views/GraphView.vue'),
+      meta: {
+        title: 'Uswärtig',
+      },
+    },
   ],
 })
 
