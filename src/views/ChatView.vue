@@ -5,7 +5,7 @@
       :initial-group-id="groupId"
       :loading-groups="loadingGroups"
       :groups="groups"
-      init-message="Willkommä bim Tramopoly-Chät 💬 Da chasch mit de Zentralä kommuniziärä. Mit äm Tram-Chnopf chasch Stationä und Jokärs bsuächä ↴"
+      init-message="Willkommä bim Tramopoly-Chät 💬 Da chasch mit de Zentralä kommuniziärä. Mit äm Tram-Chnopf unä chasch Stationä und Jokärs bsuächä ↴"
       @toggle-rooms-list="() => $router.push({ name: 'dashboard' })"
     ></group-chat>
   </div>

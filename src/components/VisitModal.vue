@@ -54,7 +54,7 @@
             native-type="submit"
             outlined
           >
-            Geilo, probieremer z chaufä!
+            Geilo, probiärämär z chaufä!
           </o-button>
           <o-field v-if="joker">
             <template #label>
@@ -163,36 +163,43 @@ export default {
   methods: {
     onChangeStop() {
       const responses = [
+        'Wük??',
         'Fett!',
         'Als ob!',
+        'SIUUUU!!',
+        'No cap?!',
+        'Love it!',
         'Geiääl!!!',
-        'Unmöglich!',
+        'Side eye...',
         '🤯😳😊👍👍👌',
-        'Schön wärs!',
+        'So än Chad!',
+        'Säg Walla!?',
         'Wärs glaubt.',
-        'Yeah, right.',
+        'Was än Flex!',
+        'Kabutt gäil!',
+        'Sick Bruder!',
+        'Händ sie nöd!',
         'Dude! No way!',
-        'Ja was! Zäig..?',
         'Niä! Zäig Fotti!',
-        'So en Lügäbüütel...',
+        'Hesch Halus Bro?',
+        'Bewiis anefrääse...',
         'Sheesh Bruder, ächt?',
+        'Zogä am bogä! Bewiis?',
         'Dayum! Häsch es Fotti?',
-        'Eh nöd! Chaschs bewisä?',
-        'Das cha doch nöd sii..?',
-        'Und das sölli der abnää?',
-        'Nice! Wiä gsehts det us?',
+        'Fix nöd! Chaschs bewisä?',
+        'Wyld! Wiä gsehts det us?',
         "Pics or it didn't happen!",
         'Alter episch. Häsch Bewiis?',
-        'Verarschä chani mi au sälber.',
+        'Okeyy guut... Aso for real?',
+        'Whack! Das cha doch nöd sii..?',
         'Ja genau, huärä sindär deet...',
         'Ehrämaa. Häsch äs Bild gmacht?',
-        'Ja schön wärs, das glaubi nöd.',
         'Schiibäts? Und das sölli glaubä?',
         'Alter Falter, Gönnung. Häsch Pics?',
-        'Bro wie machäd iär das? Scho deet?',
+        'Bratan wie machäd iär das? Scho deet?',
         'Läuft bei euch. Chamär das au aluägä?',
+        'Bra iär sind ja mad schnäll. Zäig mal?',
         'Wottsch mi nüsslä? Das stimmt doch nöd.',
-        'Bra iär sind ja huärä schnäll. Zäig mal?',
         'Legändä! Nur no schnäll en Bewiis ufäladä',
         'Chillig. Chasch das au dä Zentralä bewiisä?',
         'Gönnäd oi. Also sindär sichär am richtigä Ort?',
