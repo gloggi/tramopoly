@@ -46,6 +46,14 @@ const router = createRouter({
       },
     },
     {
+      path: '/overview',
+      name: 'overview',
+      component: () => import('../views/GroupMapView.vue'),
+      meta: {
+        title: 'Gruppä-Chartä',
+      },
+    },
+    {
       path: '/graph',
       name: 'graph',
       component: () => import('../views/GraphView.vue'),

@@ -6,6 +6,8 @@ export class Station {
     this.id = data.id
     this.name = data.name
     this.value = data.value
+    this.x = data.x
+    this.y = data.y
     this._subscribed = subscribe
   }
 }

@@ -23,7 +23,7 @@
       </div>
       <div class="level-item is-gap-3" v-if="isLoggedIn && !isPlayer">
         <router-link :to="{ name: 'zentrale' }">Zentralä</router-link>
-        <router-link v-if="mapUrl" :to="{ name: 'map' }">Chartä</router-link>
+        <router-link v-if="mapUrl" :to="{ name: 'overview' }">Chartä</router-link>
       </div>
       <div class="level-item is-gap-3" v-if="isLoggedIn && isAdmin">
         <router-link :to="{ name: 'admin' }">Admin</router-link>

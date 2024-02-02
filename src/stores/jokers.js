@@ -8,6 +8,8 @@ export class Joker {
     this.value = data.value
     this.challenge = data.challenge
     this.bonusCallValue = data.bonus_call_value
+    this.x = data.x
+    this.y = data.y
     this._subscribed = subscribe
   }
 }
