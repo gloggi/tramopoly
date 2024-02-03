@@ -173,6 +173,8 @@ export default {
         animations.add(animation, 0)
       })
       animations.timeScale(animations.duration() / 10)
+      animations.progress(1).pause()
+      this.time = 100
       this.animations = animations
     },
     playOrPause() {
