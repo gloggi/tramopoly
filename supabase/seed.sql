@@ -36,7 +36,7 @@ INSERT INTO public.stations (name, value, x, y) VALUES ('Bellevue', 7000, 630, 9
 INSERT INTO public.stations (name, value, x, y) VALUES ('Besenrainstrasse', 1000, 404, 1193);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Bethanien', 1500, 805, 718);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Brunau', 1000, 381, 1134);
-INSERT INTO public.stations (name, value, x, y) VALUES ('Bucheggplatz', 3000, 526, 521);
+INSERT INTO public.stations (name, value, x, y) VALUES ('Bucheggplatz', 3000, 561, 521);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Bürkliplatz', 7000, 580, 970);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Central', 6000, 604, 795);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Elektrowatt', 1500, 707, 1092);
@@ -62,10 +62,10 @@ INSERT INTO public.stations (name, value, x, y) VALUES ('Kirche Fluntern', 1000,
 INSERT INTO public.stations (name, value, x, y) VALUES ('Klusplatz', 3000, 858, 931);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Kronenstrasse', 2000, 622, 649);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Limmatplatz', 2000, 494, 689);
-INSERT INTO public.stations (name, value, x, y) VALUES ('Lochergut', 1000, 241, 710);
+INSERT INTO public.stations (name, value, x, y) VALUES ('Lochergut', 1000, 322, 810);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Löwenplatz', 5000, 373, 706);
-INSERT INTO public.stations (name, value, x, y) VALUES ('Luegisland', 1000, 700, 414);
-INSERT INTO public.stations (name, value, x, y) VALUES ('Manegg', 3000, 215, 1029);
+INSERT INTO public.stations (name, value, x, y) VALUES ('Luegisland', 1000, 934, 414);
+INSERT INTO public.stations (name, value, x, y) VALUES ('Manegg', 3000, 287, 1236);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Meierhofplatz', 1000, 397, 453);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Messe / Hallenstadion', 2000, 754, 375);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Milchbuck', 2000, 619, 536);
@@ -92,7 +92,7 @@ INSERT INTO public.stations (name, value, x, y) VALUES ('Stauffacher', 4000, 436
 INSERT INTO public.stations (name, value, x, y) VALUES ('Sternen Oerlikon', 3000, 717, 368);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Stettbach, Bhf.', 1000, 982, 540);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Stockerstrasse', 3000, 501, 931);
-INSERT INTO public.stations (name, value, x, y) VALUES ('Tiefenbrunnen, Bhf.', 2000, 800, 1164);
+INSERT INTO public.stations (name, value, x, y) VALUES ('Tiefenbrunnen, Bhf.', 2000, 798, 1165);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Toblerplatz', 1000, 832, 759);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Toni-Areal', 1500, 330, 635);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Friedhof Witikon', 2000, 1023, 933);
@@ -104,7 +104,7 @@ INSERT INTO public.stations (name, value, x, y) VALUES ('Waffenplatzstrasse', 20
 INSERT INTO public.stations (name, value, x, y) VALUES ('Werdhölzli', 1000, 213, 482);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Wiedikon, Bhf.', 3000, 408, 889);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Wollishofen, Bhf./Staubstr.', 1500, 493, 1165);
-INSERT INTO public.stations (name, value, x, y) VALUES ('Wollishoferplatz', 1000, 389, 1264);
+INSERT INTO public.stations (name, value, x, y) VALUES ('Wollishoferplatz', 1000, 399, 1265);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Zentrum Witikon', 1500, 963, 934);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Zoo', 2000, 929, 695);
 

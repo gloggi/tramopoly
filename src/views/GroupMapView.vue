@@ -31,13 +31,15 @@
           v-for="station in stations"
           :key="station.id"
           :id="`station${station.id}`"
-          :x="station.x - 6"
-          :y="station.y - 6"
-          width="12"
-          height="12"
+          class="station"
+          :x="station.x - 15"
+          :y="station.y - 15"
+          width="30"
+          height="30"
           stroke="black"
           stroke-width="1"
           fill="white"
+          fill-opacity="70%"
         />
         <g v-for="group in groups" :key="group.id" :id="group.id">
           <circle
@@ -156,7 +158,7 @@ export default {
           return [...abteilungen, group.abteilungId]
         return abteilungen
       }, [])
-      const colors = ['yellow', 'green', 'orange', 'brown', 'blue', 'purple']
+      const colors = ['lightblue', 'purple', 'green', 'orange', 'yellow', 'red']
       return Object.fromEntries(
         abteilungen.map((id, index) => [id, colors[index % colors.length]])
       )
@@ -180,6 +182,7 @@ export default {
           animations.pause()
         },
       })
+      animations.set('.stations', { fill: 'white' }, 0)
       this.groups.forEach((group) => {
         const animation = gsap.timeline({
           onUpdate: this.updateSlider,
