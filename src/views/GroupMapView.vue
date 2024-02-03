@@ -131,7 +131,7 @@ export default {
           return [...abteilungen, group.abteilungId]
         return abteilungen
       }, [])
-      const colors = ['red', 'green', 'blue', 'orange', 'purple', 'yellow']
+      const colors = ['yellow', 'green', 'orange', 'brown', 'blue', 'purple']
       return Object.fromEntries(
         abteilungen.map((id, index) => [id, colors[index % colors.length]])
       )
