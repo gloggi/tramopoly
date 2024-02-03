@@ -27,6 +27,18 @@
           pointer-events: none;
         "
       >
+        <rect
+          v-for="station in stations"
+          :key="station.id"
+          :id="`station${station.id}`"
+          :x="station.x - 6"
+          :y="station.y - 6"
+          width="12"
+          height="12"
+          stroke="black"
+          stroke-width="1"
+          fill="white"
+        />
         <g v-for="group in groups" :key="group.id" :id="group.id">
           <circle
             class="group"
@@ -67,6 +79,7 @@ import { useGroups } from '@/stores/groups'
 import { useJokerVisits } from '@/stores/jokerVisits'
 import { useStationVisits } from '@/stores/stationVisits'
 import { useSettings } from '@/stores/settings'
+import { useStations } from '@/stores/stations'
 
 export default {
   name: 'MapView',
@@ -82,6 +95,11 @@ export default {
       settingsStore.subscribe()
       return settingsStore.entry
     },
+    stations() {
+      const stationsStore = useStations()
+      stationsStore.subscribe()
+      return stationsStore.all
+    },
     allGroups() {
       const groupsStore = useGroups({
         select: '*,abteilung:abteilungen(*)',
@@ -91,7 +109,10 @@ export default {
       return groupsStore.all
     },
     stationVisits() {
-      const stationVisitsStore = useStationVisits()
+      const stationVisitsStore = useStationVisits({
+        select:
+          '*,is_purchase,is_duplicate,group:group_id(*),station:station_id(*)',
+      })
       stationVisitsStore.subscribe()
       return stationVisitsStore.all.filter((sv) => sv.acceptedAt)
     },
@@ -108,6 +129,10 @@ export default {
           time: (sv.createdAt - this.settings.gameStart) / 60000,
           x: sv.station.x || Math.random() * 800,
           y: sv.station.y || Math.random() * 1500,
+          purchasedStationId:
+            sv.isPurchase && sv.acceptedAt && !sv.isDuplicate
+              ? sv.stationId
+              : null,
         }))
         .concat(
           this.jokerVisits.map((jv) => ({
@@ -168,6 +193,11 @@ export default {
             y: position.y,
             duration: position.time - previousTime,
           })
+          if (position.purchasedStationId) {
+            animation.set(`#station${position.purchasedStationId}`, {
+              fill: group.color,
+            })
+          }
           previousTime = position.time
         })
         animations.add(animation, 0)
