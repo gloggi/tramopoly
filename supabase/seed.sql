@@ -131,7 +131,7 @@ INSERT INTO public.jokers (name, value, x, y, challenge, bonus_call_value) VALUE
 INSERT INTO public.jokers (name, value, x, y, challenge, bonus_call_value) VALUES ('Neubühl', 1750, 448, 1299, 'Findäd ä fremdi Person mit mindästäns Schuägrössi 42.', 500);
 INSERT INTO public.jokers (name, value, x, y, challenge, bonus_call_value) VALUES ('Okenstrasse', 750, 517, 640, 'Föttäläd än Uswiis mit äm Jahrgang 2005.', 500);
 INSERT INTO public.jokers (name, value, x, y, challenge, bonus_call_value) VALUES ('Rütihof', 1500, 245, 275, 'Posäd ufämä Föttäli mit dä Schachfigurä wo uf äm Platz vor äm Coop stönd.', NULL);
-INSERT INTO public.jokers (name, value, x, y, challenge, bonus_call_value) VALUES ('SBB-Werkstätte', 290, 678, 1500, 'Versuächäd ä Person zum singä z bringä und filmäds.', 500);
+INSERT INTO public.jokers (name, value, x, y, challenge, bonus_call_value) VALUES ('SBB-Werkstätte', 1500, 290, 678, 'Versuächäd ä Person zum singä z bringä und filmäds.', 500);
 INSERT INTO public.jokers (name, value, x, y, challenge, bonus_call_value) VALUES ('Siemens', 1000, 168, 772, 'Machäd äs professionells Fotti mit äm Siemens-Logo.', NULL);
 INSERT INTO public.jokers (name, value, x, y, challenge, bonus_call_value) VALUES ('Sportweg', 750, 322, 627, 'Machäd äs Fotti mit 3 Lüüt wo zämä 50 Jahr alt sind (oder so näch wiä möglich).', NULL);
 INSERT INTO public.jokers (name, value, x, y, challenge, bonus_call_value) VALUES ('Stadtgrenze', 1000, 543, 1268, 'Laufäd us Züri usä und machäd äs Fotti mit äm Ortsschild.', 500);
