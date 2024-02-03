@@ -92,6 +92,9 @@ export default {
     time: 0,
   }),
   computed: {
+    loading() {
+      return useSettings().loading || useStations().loading || this.groupsStore.loading || this.stationVisitsStore.loading || useJokerVisits().loading
+    },
     settings() {
       const settingsStore = useSettings()
       settingsStore.subscribe()
@@ -102,21 +105,25 @@ export default {
       stationsStore.subscribe()
       return stationsStore.all
     },
-    allGroups() {
-      const groupsStore = useGroups({
+    groupsStore() {
+      return useGroups({
         select: '*,abteilung:abteilungen(*)',
         filter: { active: true },
       })
-      groupsStore.subscribe()
-      return groupsStore.all
     },
-    stationVisits() {
-      const stationVisitsStore = useStationVisits({
+    allGroups() {
+      this.groupsStore.subscribe()
+      return this.groupsStore.all
+    },
+    stationVisitsStore() {
+      return useStationVisits({
         select:
           '*,is_purchase,is_duplicate,group:group_id(*),station:station_id(*)',
       })
-      stationVisitsStore.subscribe()
-      return stationVisitsStore.all.filter((sv) => sv.acceptedAt)
+    },
+    stationVisits() {
+      this.stationVisitsStore.subscribe()
+      return this.stationVisitsStore.all.filter((sv) => sv.acceptedAt)
     },
     jokerVisits() {
       const jokerVisitsStore = useJokerVisits()
@@ -177,6 +184,7 @@ export default {
   },
   methods: {
     setupAnimations() {
+      if (this.loading) return
       const animations = gsap.timeline({
         onComplete: () => {
           animations.pause()
@@ -211,6 +219,7 @@ export default {
       this.animations = animations
     },
     playOrPause() {
+      if (!this.animations) return
       if (this.animations.progress() === 1) {
         this.animations.progress(0).play()
         return null
@@ -220,6 +229,7 @@ export default {
         : this.animations.pause()
     },
     updateSlider() {
+      if (!this.animations) return
       this.time = 100 * this.animations.progress()
     },
     updateAnimation(time) {
@@ -236,7 +246,7 @@ export default {
       if (!this.groups.length) return
       this.$nextTick(() => {
         this.setupAnimations()
-        this.animations.pause()
+        if (this.animations) this.animations.pause()
       })
     },
   },
