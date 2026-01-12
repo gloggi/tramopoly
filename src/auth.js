@@ -7,6 +7,9 @@ async function signInWithOAuth() {
     options: {
       scopes: 'openid',
       redirectTo: location.protocol + '//' + location.host,
+      queryParams: {
+        kc_idp_hint: 'midata'
+      },
     },
   })
   if (error) {
