@@ -24,7 +24,7 @@ INSERT INTO public.mr_t_changes(group_id) VALUES ((SELECT MAX(id) FROM public.gr
 
 
 INSERT INTO public.stations (name, value, x, y) VALUES ('Affoltern, Bhf.', 2000, 443, 216);
-INSERT INTO public.stations (name, value, x, y) VALUES ('Albisgütli', 2000, 224, 1159);
+INSERT INTO public.stations (name, value, x, y) VALUES ('Albisgütli', 2000, 225, 1160);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Albisrieden', 1000, 101, 831);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Albisriederplatz', 2000, 296, 769);
 INSERT INTO public.stations (name, value, x, y) VALUES ('Altstetten, Bhf.', 1500, 237, 608);
@@ -109,7 +109,7 @@ INSERT INTO public.stations (name, value, x, y) VALUES ('Zentrum Witikon', 1500,
 INSERT INTO public.stations (name, value, x, y) VALUES ('Zoo', 2000, 929, 695);
 
 
-INSERT INTO public.jokers (name, value, x, y, challenge, bonus_call_value) VALUES ('Albisgütli', 750, 225, 1158, 'Machäd äs Fotti wo alli dä Bodä nümä berüähräd.', 500);
+INSERT INTO public.jokers (name, value, x, y, challenge, bonus_call_value) VALUES ('Albisgütli', 750, 225, 1160, 'Machäd äs Fotti wo alli dä Bodä nümä berüähräd.', 500);
 INSERT INTO public.jokers (name, value, x, y, challenge, bonus_call_value) VALUES ('Alte Trotte', 750, 415, 503, 'Stönd vor dä Station und posiäräd uf äm Fotti wiä alti Lüüt.', NULL);
 INSERT INTO public.jokers (name, value, x, y, challenge, bonus_call_value) VALUES ('Auzelg Ost', 3000, 926, 317, 'Suächäd ä Münzä mit äm gliichä Jahrgang wiä öppär vo oi und machäd äs Fotti vor dä Station.', NULL);
 INSERT INTO public.jokers (name, value, x, y, challenge, bonus_call_value) VALUES ('Binz Center', 1000, 288, 1045, 'Filmäd än churzä Wättärbricht a dä Station.', 500);

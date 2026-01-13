@@ -18,7 +18,7 @@
           >
         </router-link>
         <router-link v-if="mapUrl" :to="{ name: 'map' }">
-          Wo häts Jokärs?
+          Übärsichts-Chartä
         </router-link>
       </div>
       <div class="level-item is-gap-3" v-if="isLoggedIn && !isPlayer">

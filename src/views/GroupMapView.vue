@@ -84,7 +84,7 @@ import { useSettings } from '@/stores/settings'
 import { useStations } from '@/stores/stations'
 
 export default {
-  name: 'MapView',
+  name: 'GroupMapView',
   data: () => ({
     startX: 580,
     startY: 855,
