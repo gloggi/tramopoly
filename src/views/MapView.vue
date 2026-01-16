@@ -32,7 +32,7 @@
             stroke="black"
             stroke-width="1"
             stroke-opacity="70%"
-            fill="white"
+            :fill="color(station.value, stationValueRange, stationColors)"
             fill-opacity="70%"
           />
         </template>
@@ -48,7 +48,7 @@
             stroke="black"
             stroke-width="1"
             stroke-opacity="70%"
-            fill="white"
+            :fill="color(joker.value, jokerValueRange, jokerColors)"
             fill-opacity="70%"
           />
         </template>
@@ -75,6 +75,8 @@ export default {
     xOffset: 33,
     yOffset: 166,
     mapSize: null,
+    stationColors: ['#ffdab9', '#ffc189', '#ffa56f', '#fc8963', '#f26c5d', '#e45256', '#d3394a', '#be2039', '#a60a23', '#8b0000'],
+    jokerColors: ['#f8d9e4', '#f4c6d9', '#f0b4ce', '#eba2c3', '#e68fb9', '#e17cae', '#db68a4', '#d55399', '#ce3a8f', '#c71585'],
   }),
   computed: {
     loading() {
@@ -93,6 +95,18 @@ export default {
       const jokersStore = useJokers()
       jokersStore.subscribe()
       return jokersStore.all
+    },
+    stationValueRange() {
+      return [
+        Math.min(...this.stations.map(s => s.value)),
+        Math.max(...this.stations.map(s => s.value))
+      ]
+    },
+    jokerValueRange() {
+      return [
+        Math.min(...this.jokers.map(s => s.value)),
+        Math.max(...this.jokers.map(s => s.value))
+      ]
     },
     viewBox() {
       if (!this.mapSize) return ''
@@ -115,6 +129,9 @@ export default {
     },
     transformSize(size) {
       return size * this.scale
+    },
+    color(price, range, colors) {
+      return colors[Math.floor((price - range[0]) / (range[1] - range[0] + 1) * colors.length)]
     }
   }
 }
