@@ -2,8 +2,11 @@ import { useGroup } from '@/stores/groups'
 import slugify from 'slugify'
 import { supabase } from '@/client'
 import { showAlert } from '@/utils'
+import useFileCompression from './useFileCompression'
 
 export default function useMessageSending(groupId, userId, username) {
+  const { getCompressedImageUrl } = useFileCompression()
+
   async function sendMessage({ content, files, replyMessage }) {
     const message = {
       _id: crypto.randomUUID(),
@@ -14,7 +17,7 @@ export default function useMessageSending(groupId, userId, username) {
       date: new Date().toDateString(),
     }
     if (files) {
-      message.files = formattedFiles(files)
+      message.files = await formattedFiles(files)
     }
     if (replyMessage) {
       message.replyMessage = {
@@ -29,19 +32,19 @@ export default function useMessageSending(groupId, userId, username) {
     addMessage(message)
   }
 
-  function formattedFiles(files) {
-    const formattedFiles = []
-    files.forEach((file) => {
-      const messageFile = {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        extension: file.extension || file.type,
-        url: file.url || file.localUrl,
-      }
-      formattedFiles.push(messageFile)
-    })
-    return formattedFiles
+  async function formattedFiles(files) {
+    return Promise.all(files.map((file) => {
+      return new Promise(async (resolve, reject) => {
+        const messageFile = {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          extension: file.extension || file.type,
+          url: await getCompressedImageUrl(file),
+        }
+        resolve(messageFile)
+      })
+    }))
   }
 
   async function addMessage(message) {

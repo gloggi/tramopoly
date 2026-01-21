@@ -102,6 +102,7 @@ import slugify from 'slugify'
 import { useGroup } from '@/stores/groups'
 import { useGroupScores } from '@/stores/groupScores'
 import { useJokers } from '@/stores/jokers'
+import useFileCompression from '../composables/useFileCompression'
 
 export default {
   name: 'VisitModal',
@@ -224,6 +225,8 @@ export default {
     },
     async submit() {
       if (this.photo) {
+        const { getCompressedImage } = useFileCompression()
+        const compressedPhoto = await getCompressedImage(this.photo)
         const timestamp = new Date().toISOString()
         const stopName = this.station?.name || this.joker?.name || this.stop
         const groupName = useGroup(this.groupId).entry?.name || this.groupId
@@ -233,7 +236,7 @@ export default {
         ).substring(0, 62 - extension.length)
         const { data, error: err } = await supabase.storage
           .from('proofPhotos')
-          .upload(`${filename}.${extension}`, this.photo)
+          .upload(`${filename}.${extension}`, compressedPhoto)
         if (err) {
           console.log(err)
           showAlert(
