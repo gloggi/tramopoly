@@ -29,9 +29,9 @@
             :y="transformY(station.y) - transformSize(10)"
             :width="transformSize(20)"
             :height="transformSize(20)"
-            stroke="black"
-            stroke-width="1"
-            stroke-opacity="70%"
+            :stroke="station.street?.color || 'black'"
+            :stroke-width="station.streetId ? 4 : 1"
+            :stroke-opacity="station.streetId ? '100%' : '70%'"
             :fill="color(station.value, stationValueRange, stationColors)"
             fill-opacity="70%"
           />
