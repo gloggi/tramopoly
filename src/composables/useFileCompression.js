@@ -9,8 +9,8 @@ export default function useFileCompression() {
       new Compressor(file.blob || file, {
         retainExif: true,
         checkOrientation: true,
-        maxWidth: 1500,
-        maxHeight: 1500,
+        maxWidth: 1024,
+        maxHeight: 1024,
         success(result) {
           resolve(result)
         },
